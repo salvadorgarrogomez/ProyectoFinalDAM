@@ -1,38 +1,55 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bar El Escobar</title>
-    <link rel="stylesheet" href="Estilos.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bar El Escobar</title>
+  <link rel="stylesheet" href="Estilos.css">
 </head>
-<div id="google_translate_element"></div>
 <body>
-    <header>
-        <img src="bar.png" alt="Imagen de portada" class="imagen-portada">
-        <h1>Bar El Escobar</h1>
-        <div id="redes-sociales">
-            <a href="https://www.instagram.com/barelescobar?igsh=cWQ0ZDNtbmNndXEy&utm_source=qr">Instagram</a>
-        </div>
-        <br>
-        <nav>
-            <ul>
-                <li><a href="entrantes.html">Entrantes</a></li>
-                <li><a href="principales.html">Principales</a></li>
-                <li><a href="postres.html">Postres</a></li>
-                <li><a href="bebidas.html">Bebidas</a></li>
-            </ul>
-        </nav>
-    </header>
-    <footer>
-        <div id="map"></div>
-        <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3153.8014201774745!2d-1.2165041!3d37.7712542!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd649d30b26be2b7%3A0xb9cfcb36c9e33146!2sBar%20El%20Escobar!5e0!3m2!1ses!2ses!4v1709664912209!5m2!1ses!2ses" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-    </footer>
-    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-    <script type="text/javascript">
-        function googleTranslateElementInit() {
-            new google.translate.TranslateElement({pageLanguage: 'es', includedLanguages: 'en,es', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
-        }
+  <header>
+    <img src="bar.png" alt="Imagen de portada" class="imagen-portada">
+    <h1>Bar El Escobar</h1>
+    <div id="redes-sociales">
+      <a href="https://www.instagram.com/barelescobar?igsh=cWQ0ZDNtbmNndXEy&utm_source=qr">Instagram</a>
+    </div>
+    <nav class="paginas_menus">
+      <ul>
+        <li><a href="entrantes.html">Entrantes</a></li>
+        <li><a href="combinados.html">Combinados</a></li>
+        <li><a href="pasta.html">Pasta</a></li>
+        <li><a href="principales.html">Carnes/Pescados</a></li>
+        <li><a href="arroces.html">Arroces y Fideuá</a></li>
+      </ul>
+    </nav>
+    <nav class="paginas_menus">
+      <ul>
+        <li><a href="postres.html">Postres</a></li>
+        <li><a href="bebidas.html">Bebidas</a></li>
+      </ul>
+    </nav>
+  </header>
+  <br>
+  <main>
+    <div id="map">
+      <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3153.8014201774745!2d-1.2165041!3d37.7712542!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd649d30b26be2b7%3A0xb9cfcb36c9e33146!2sBar%20El%20Escobar!5e0!3m2!1ses!2ses!4v1709664912209!5m2!1ses!2ses" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+  </main>
+  <footer>
+    <div id="google_translate_element"></div>
+    <script>
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+          pageLanguage: 'es',
+          includedLanguages: 'en,es,de',
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+          autoDisplay: false
+        }, 'google_translate_element');
+      }
     </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <p>Direccion: <b>Pl. del Cazador, 30333 El Escobar, Murcia</b></p>
+    <p>Teléfenos de contacto (reservas): <b>623191754 | 683572682</b></p>
+  </footer>
 </body>
 </html>

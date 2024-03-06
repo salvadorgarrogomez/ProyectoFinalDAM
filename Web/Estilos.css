@@ -38,29 +38,47 @@ header div a{
     color: beige;
 }
 
-nav ul {
+.paginas_menus ul {
     list-style-type: none;
     padding: 0;
     margin: 0;
     display: table;
-    background-color: beige;
     width: 100%;
-}
-
-nav li {
-    display: table-cell;
-    padding: 10px;
-    border: 1px solid black;
     text-align: center;
 }
 
-nav a {
+.paginas_menus li {
+    display: table-cell;
+}
+
+.paginas_menus a {
+    display: block;
     text-decoration: none;
-    color: black;
+    color: #333;
+    font-weight: bold;
+    padding: 10px;
+    border: 1px solid #333;
+    border-radius: 5px;
+    background-color: #f8f8f8;
+    margin: 5px;
+}
+
+.paginas_menus a:hover {
+    background-color: #333;
+    color: #fff;
 }
 
 main {
     margin-top: 80px; /* Ajusta el margen superior para evitar que el contenido se solape con el header */
+    margin-top: auto;
+    text-align: center;
+}
+
+#google_translate_element {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 100;
 }
 
 footer {
