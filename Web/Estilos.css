@@ -11,9 +11,10 @@ body {
 header {
     text-align: center;
     background-color: beige; /* Color de fondo del header*/
-    width: 100%;
-    color: white;
+    color: beige;
     top: 0;
+    margin: 0;
+    padding: 0;
     z-index: 1000;
     background-image: url('fondo.jpg'); /* Ruta de la imagen de fondo*/
     background-size: cover; /* Ajustar la imagen de fondo para cubrir todo el contenedor*/
@@ -35,7 +36,7 @@ header h1 {
 }
 
 header div a{
-    color: beige;
+    color: white;
 }
 
 .paginas_menus ul {
