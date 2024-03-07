@@ -45,12 +45,12 @@ header div a{
     display: table;
     width: 100%;
     text-align: center;
+    table-layout: fixed; /* Añade esta línea para distribuir equitativamente el ancho de las celdas */
 }
-
 .paginas_menus li {
     display: table-cell;
+    width: 1%; /* Asegúrate de que cada celda tenga un ancho mínimo */
 }
-
 .paginas_menus a {
     display: block;
     text-decoration: none;
