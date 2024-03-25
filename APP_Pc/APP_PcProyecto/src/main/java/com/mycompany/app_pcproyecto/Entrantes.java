@@ -10,7 +10,10 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 /**
@@ -166,7 +169,6 @@ public class Entrantes extends javax.swing.JDialog {
         jLabel13 = new javax.swing.JLabel();
         jTextFieldID = new javax.swing.JTextField();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenuAtras = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
 
         jMenuItem1.setText("jMenuItem1");
@@ -230,7 +232,7 @@ public class Entrantes extends javax.swing.JDialog {
             }
         });
 
-        jSeparator1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jSeparator1.setBorder(javax.swing.BorderFactory.createLineBorder(null));
 
         jLabel8.setText("Nombre:");
 
@@ -263,14 +265,6 @@ public class Entrantes extends javax.swing.JDialog {
         jLabel13.setText("ID");
 
         jTextFieldID.setEditable(false);
-
-        jMenuAtras.setText("Atras");
-        jMenuAtras.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuAtrasActionPerformed(evt);
-            }
-        });
-        jMenuBar1.add(jMenuAtras);
 
         jMenu2.setText("Ensaladas");
         jMenuBar1.add(jMenu2);
@@ -584,16 +578,6 @@ public class Entrantes extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_jButtonActualizarActionPerformed
 
-    private void jMenuAtrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuAtrasActionPerformed
-        // TODO add your handling code here:
-        // Cerrar el JDialog actual
-        dispose();
-        // Obtener el JFrame principal desde el JDialog
-        JFrame ventanaPrincipal = (JFrame) SwingUtilities.getWindowAncestor(this);
-        // Mostrar la ventana principal
-        ventanaPrincipal.setVisible(true);
-    }//GEN-LAST:event_jMenuAtrasActionPerformed
-
     /**
      * @param args the command line arguments
      */
@@ -608,16 +592,24 @@ public class Entrantes extends javax.swing.JDialog {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Entrantes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Entrantes.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Entrantes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Entrantes.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Entrantes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Entrantes.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Entrantes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Entrantes.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
@@ -660,7 +652,6 @@ public class Entrantes extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenu jMenuAtras;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;

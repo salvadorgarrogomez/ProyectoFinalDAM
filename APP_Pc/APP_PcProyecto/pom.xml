@@ -9,7 +9,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <exec.mainClass>com.mycompany.app_pcproyecto.APP_PcProyecto</exec.mainClass>
+        <exec.mainClass>com.mycompany.app_pcproyecto.Principal</exec.mainClass>
     </properties>
     <dependencies>
         <dependency>

@@ -9,6 +9,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 
 /**
  *
@@ -20,8 +21,7 @@ public class Principal extends javax.swing.JFrame {
     private static void crearTablas() throws SQLException {
         String url = "jdbc:postgresql://localhost:5432/Bar_ElEscobar";
 
-        try (Connection con = DriverManager.getConnection(url, "bar_Admin", "Admin123456"); 
-                java.sql.Statement stmt = con.createStatement()) {
+        try (Connection con = DriverManager.getConnection(url, "bar_Admin", "Admin123456"); java.sql.Statement stmt = con.createStatement()) {
             // Crear tabla de platos del menú
             String crearTablasCartaEntrantes = "CREATE TABLE IF NOT EXISTS entrantes ("
                     + "id SERIAL PRIMARY KEY,"
@@ -91,7 +91,7 @@ public class Principal extends javax.swing.JFrame {
             String crearTablasCartaMesas = "CREATE TABLE IF NOT EXISTS mesas ("
                     + "id SERIAL PRIMARY KEY,"
                     + "nombre VARCHAR(50));";
-            
+
             stmt.executeUpdate(crearTablasCartaEntrantes);
             stmt.executeUpdate(crearTablasCartaEnsaladas);
             stmt.executeUpdate(crearTablasCartaCombinados);
@@ -110,6 +110,14 @@ public class Principal extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+    }
+
+    // Método para mostrar el JDialog "Entrantes"
+    public void mostrarDialogoEntrantes() {
+        // Mostrar el diálogo Entrantes
+        Entrantes dialogo = new Entrantes(this, true); // Pasar un nuevo JFrame como propietario del diálogo
+        dialogo.setVisible(true);
     }
 
     public Principal() throws SQLException {
@@ -164,7 +172,6 @@ public class Principal extends javax.swing.JFrame {
         jLabel13 = new javax.swing.JLabel();
         jComboBoxDiario = new javax.swing.JComboBox<>();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenuInicio = new javax.swing.JMenu();
         jMenuMesas = new javax.swing.JMenu();
         jMenuPlatos = new javax.swing.JMenu();
         jMenuItemEntrantes = new javax.swing.JMenuItem();
@@ -391,9 +398,6 @@ public class Principal extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jMenuInicio.setText("Salir");
-        jMenuBar1.add(jMenuInicio);
-
         jMenuMesas.setText("Mesas");
         jMenuBar1.add(jMenuMesas);
 
@@ -478,6 +482,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void jMenuItemEntrantesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemEntrantesActionPerformed
         // TODO add your handling code here:
+        mostrarDialogoEntrantes();
     }//GEN-LAST:event_jMenuItemEntrantesActionPerformed
 
     /**
@@ -506,7 +511,7 @@ public class Principal extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(Principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        
+
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -551,7 +556,6 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenu jMenuInicio;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
