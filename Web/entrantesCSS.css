@@ -1,0 +1,90 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-image: url('fondo_crema.jpg');
+    
+}
+
+
+
+h1 {
+    text-align: center;
+}
+
+.menu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.plato {
+    width: 300px;
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid black;
+    text-align: center;
+}
+
+img {
+    width: 100%;
+    height: auto;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+}
+
+button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+h2 {
+    text-align: center;
+    color: #5f5f5f;
+}
+
+h3 {
+    text-align: center;
+}
+
+.menu-navegacion {
+    position: fixed;
+    top: 50px;
+    left: 10px;
+    z-index: 100;
+}
+
+.menu-navegacion ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-navegacion li {
+    display: inline;
+    margin-right: 10px;
+}
+
+.menu-navegacion a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    padding: 5px 10px;
+    border: 1px solid #333;
+    border-radius: 5px;
+    background-color: #f8f8f8;
+}
+
+.menu-navegacion a:hover {
+    background-color: #333;
+    color: #fff;
+}

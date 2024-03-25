@@ -1,0 +1,110 @@
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background-image: url('fondo.jpg'); /* Ruta de la imagen de fondo */
+    background-size: cover; /* Ajustar la imagen de fondo para cubrir todo el contenedor */
+    background-position: center; /* Centrar la imagen de fondo */
+    background-attachment: fixed; /* Fijar la imagen de fondo para que se mantenga visible al hacer scroll */
+}
+
+header {
+    text-align: center;
+    background-color: beige; /* Color de fondo del header*/
+    color: beige;
+    top: 0;
+    margin: 0;
+    padding: 0;
+    z-index: 1000;
+    background-image: url('fondo.jpg'); /* Ruta de la imagen de fondo*/
+    background-size: cover; /* Ajustar la imagen de fondo para cubrir todo el contenedor*/
+    background-position: center; /* Centrar la imagen de fondo*/
+    background-attachment: fixed; /* Fijar la imagen de fondo para que se mantenga visible al hacer scroll */
+}
+
+header img {
+    width: 100px; /* Ancho de la imagen*/
+    height: auto; /* Altura automática para mantener la proporción*/
+    display: flex;
+    background-attachment: center;
+}
+
+header h1 {
+    background-position: center; /* Centrar la imagen de fondo */
+    background-attachment: fixed; /* Fijar la imagen de fondo para que se mantenga visible al hacer scroll */
+    margin-top: 10px; /* Margen superior para separar la imagen del título */
+}
+
+header div a{
+    color: white;
+}
+
+.paginas_menus ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: table;
+    width: 100%;
+    text-align: center;
+    table-layout: fixed; /* Añade esta línea para distribuir equitativamente el ancho de las celdas */
+}
+.paginas_menus li {
+    display: table-cell;
+    width: 1%; /* Asegúrate de que cada celda tenga un ancho mínimo */
+}
+.paginas_menus a {
+    display: block;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    padding: 10px;
+    border: 1px solid #333;
+    border-radius: 5px;
+    background-color: #f8f8f8;
+    margin: 5px;
+}
+
+.paginas_menus a:hover {
+    background-color: #333;
+    color: #fff;
+}
+
+main {
+    margin-top: 80px; /* Ajusta el margen superior para evitar que el contenido se solape con el header */
+    margin-top: auto;
+    text-align: center;
+}
+
+#google_translate_element {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 100;
+}
+
+footer {
+    margin-top: auto;
+    width: 100%;
+    color: white; /* Color del texto en el footer */
+    text-align: center; /* Centrar el contenido del footer */
+    padding: 20px;
+}
+
+iframe {
+    width: 100%;
+    max-width: 800px; /* Máximo ancho del mapa */
+    border: 2px solid black; /* Añadir borde al mapa */
+    border-radius: 10px; /* Bordes redondeados */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra alrededor del mapa */
+}
+
+.redes-sociales {
+    margin-top: 20px;
+}
+
+.imagen-portada {
+    width: 50%; /* Ajusta el ancho de la imagen al 100% del contenedor */
+    max-width: 500px; /* Ancho máximo de la imagen */
+    display: block; /* Para que la imagen se muestre como bloque y no en línea */
+    margin: 0 auto 20px; /* Margen inferior para separar la imagen del título */
+}
