@@ -4,12 +4,16 @@
  */
 package com.mycompany.app_pcproyecto;
 
+import static com.mycompany.app_pcproyecto.Principal.connection;
 import java.math.BigDecimal;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -22,30 +26,28 @@ import javax.swing.SwingUtilities;
  */
 public class Entrantes extends javax.swing.JDialog {
 
-    private void insertarPlatoEntrante() {
+    private void insertarPlatoEntrante(Connection connection) throws SQLException {
         String nombre = jTextNombre.getText();
         BigDecimal precio = new BigDecimal(jTextPrecio.getText());
         boolean racionCompleta = jCheckBoxCompleta.isSelected();
         boolean mediaRacion = jCheckBoxMedia.isSelected();
         boolean precioUnidad = jCheckBoxUnidad.isSelected();
 
-        String url = "jdbc:postgresql://localhost:5432/Bar_ElEscobar";
-        String usuario = "bar_Admin";
-        String contraseña = "Admin123456";
-
-        try (Connection con = DriverManager.getConnection(url, usuario, contraseña)) {
+        try (Statement stmt = connection.createStatement()) {
             // Verificar si el plato ya existe
             boolean platoNoExiste = true;
             if (mediaRacion) {
-                platoNoExiste = platoNoExiste(con, nombre, true);
+                platoNoExiste = platoNoExiste(connection, nombre, true, false, false);
             } else if (racionCompleta) {
-                platoNoExiste = platoNoExiste(con, nombre, false);
+                platoNoExiste = platoNoExiste(connection, nombre, false, true, false);
+            } else if (precioUnidad) {
+                platoNoExiste = platoNoExiste(connection, nombre, false, false, true);
             }
 
             if (platoNoExiste) {
                 String sql = "INSERT INTO entrantes (nombre, precio, racion_completa, media_racion, precio_unidad) "
                         + "VALUES (?, ?, ?, ?, ?)";
-                try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+                try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                     pstmt.setString(1, nombre);
                     pstmt.setBigDecimal(2, precio);
                     pstmt.setBoolean(3, racionCompleta);
@@ -54,50 +56,65 @@ public class Entrantes extends javax.swing.JDialog {
                     pstmt.executeUpdate();
                 }
                 limpiarCampos();
+                JOptionPane.showMessageDialog(this, "Plato de entrantes se ha añadido correctamente");
+
             } else {
                 // Mostrar mensaje de error
-                System.out.println("El plato ya existe en la base de datos.");
+                JOptionPane.showMessageDialog(this, "El plato ya existe en la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
             // Manejo del error, por ejemplo, mostrar un mensaje al usuario
-            System.out.println("El plato no se ha guardado correctamente, volver a intentar.");
+            JOptionPane.showMessageDialog(this, "El plato no se ha guardado correctamente, volver a intentar.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void cargarPlatos() {
-        String url = "jdbc:postgresql://localhost:5432/Bar_ElEscobar";
-        String usuario = "bar_Admin";
-        String contraseña = "Admin123456";
-
-        try (Connection con = DriverManager.getConnection(url, usuario, contraseña)) {
-            String sql = "SELECT id, nombre, precio FROM entrantes ORDER BY id";
-            try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+    private void cargarPlatos(Connection connection) throws SQLException {
+        try (Statement stmt = connection.createStatement()) {
+            String sql = "SELECT id, nombre, precio, racion_completa, media_racion, precio_unidad FROM entrantes ORDER BY id";
+            try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 try (ResultSet rs = pstmt.executeQuery()) {
                     jComboBoxActualizar.removeAllItems(); // Eliminar todos los elementos existentes
                     while (rs.next()) {
                         Integer id = rs.getInt("id");
                         String nombre = rs.getString("nombre");
                         BigDecimal precio = rs.getBigDecimal("precio");
-                        String item = id + ": " + nombre + " - " + precio.toString();
+                        boolean racionCompleta = rs.getBoolean("racion_completa");
+                        boolean mediaRacion = rs.getBoolean("media_racion");
+                        boolean precioUnidad = rs.getBoolean("precio_unidad");
+
+                        // Construir el texto del item del JComboBox con el tipo de plato
+                        String tipoPlato;
+                        if (racionCompleta) {
+                            tipoPlato = "Ración Completa";
+                        } else if (mediaRacion) {
+                            tipoPlato = "Media Ración";
+                        } else if (precioUnidad) {
+                            tipoPlato = "Precio por unidad";
+                        } else {
+                            tipoPlato = "No especificado";
+                        }
+
+                        String item = id + ": " + nombre + " - " + tipoPlato + " - " + precio.toString();
                         jComboBoxActualizar.addItem(item);
                     }
                 }
             }
-            System.out.println("Base de datos actualizada correctamente");
         } catch (SQLException ex) {
             ex.printStackTrace();
             // Manejo del error, por ejemplo, mostrar un mensaje al usuario
-            System.out.println("Error al cargar los platos.");
+            JOptionPane.showMessageDialog(this, "Error al cargar los platos.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private boolean platoNoExiste(Connection con, String nombre, boolean mediaRacion) throws SQLException {
-        String sql;
+    private boolean platoNoExiste(Connection con, String nombre, boolean mediaRacion, boolean racionCompleta, boolean precioUnidad) throws SQLException {
+        String sql = null;
         if (mediaRacion) {
             sql = "SELECT COUNT(*) FROM entrantes WHERE nombre = ? AND media_racion = true";
-        } else {
+        } else if (racionCompleta) {
             sql = "SELECT COUNT(*) FROM entrantes WHERE nombre = ? AND racion_completa = true";
+        } else if (precioUnidad) {
+            sql = "SELECT COUNT(*) FROM entrantes WHERE nombre = ? AND precio_unidad = true";
         }
         try (PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setString(1, nombre);
@@ -122,10 +139,24 @@ public class Entrantes extends javax.swing.JDialog {
     /**
      * Creates new form Entrantes
      */
-    public Entrantes(java.awt.Frame parent, boolean modal) {
+    public Entrantes(javax.swing.JDialog parent, boolean modal) throws SQLException {
         super(parent, modal);
         initComponents();
-        cargarPlatos();
+        cargarPlatos(connection());
+        //        this.setSize(anchoPredeterminado, altoPredeterminado);
+        this.setSize(500, 550);
+
+        // Agregar el elemento predeterminado al JComboBox al principio
+        jComboBoxActualizar.insertItemAt("< Selecciona un plato >", 0);
+        // Establecer el elemento predeterminado como seleccionado
+        jComboBoxActualizar.setSelectedIndex(0);
+
+        // Configurar el ActionListener para el JComboBox
+        jComboBoxActualizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBoxActualizarActionPerformed(evt);
+            }
+        });
     }
 
     /**
@@ -169,6 +200,10 @@ public class Entrantes extends javax.swing.JDialog {
         jLabel13 = new javax.swing.JLabel();
         jTextFieldID = new javax.swing.JTextField();
         jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        jMenuItemSalir = new javax.swing.JMenuItem();
+        jMenuEnsaladas = new javax.swing.JMenu();
+        jMenuEnsalada = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
 
         jMenuItem1.setText("jMenuItem1");
@@ -218,7 +253,6 @@ public class Entrantes extends javax.swing.JDialog {
 
         jLabel7.setText("Actualizar plato:");
 
-        jComboBoxActualizar.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "< Selecciona un plato >" }));
         jComboBoxActualizar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBoxActualizarActionPerformed(evt);
@@ -266,6 +300,30 @@ public class Entrantes extends javax.swing.JDialog {
 
         jTextFieldID.setEditable(false);
 
+        jMenu1.setText("Inicio");
+
+        jMenuItemSalir.setText("Salir");
+        jMenuItemSalir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemSalirActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItemSalir);
+
+        jMenuBar1.add(jMenu1);
+
+        jMenuEnsaladas.setText("Ensaladas");
+
+        jMenuEnsalada.setText("Añadir plato a las Ensaladas");
+        jMenuEnsalada.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuEnsaladaActionPerformed(evt);
+            }
+        });
+        jMenuEnsaladas.add(jMenuEnsalada);
+
+        jMenuBar1.add(jMenuEnsaladas);
+
         jMenu2.setText("Ensaladas");
         jMenuBar1.add(jMenu2);
 
@@ -280,62 +338,58 @@ public class Entrantes extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jSeparator1)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(jButtonActualizar))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel1)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel4)
+                                .addGap(41, 41, 41)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jCheckBoxMedia)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLabel6)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jCheckBoxUnidad))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jCheckBoxCompleta)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 138, Short.MAX_VALUE)
+                                        .addComponent(jButtonGuardar)
+                                        .addGap(11, 11, 11))))
+                            .addComponent(jLabel7)
+                            .addComponent(jComboBoxActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel7)
-                                    .addComponent(jLabel5)
-                                    .addComponent(jComboBoxActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel3))
+                                .addGap(66, 66, 66)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jTextNombre, javax.swing.GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE)
+                                    .addComponent(jTextPrecio)))
+                            .addComponent(jLabel11)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel10)
+                                .addGap(41, 41, 41)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jCheckBoxMediaActualizar)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jLabel12)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(jCheckBoxUnidadActualizar))
+                                    .addComponent(jCheckBoxCompletaActualizar)))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jButtonActualizar)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel8)
+                                        .addComponent(jLabel9))
+                                    .addGap(66, 66, 66)
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(jLabel1)
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addComponent(jLabel4)
-                                            .addGap(41, 41, 41)
-                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                .addGroup(layout.createSequentialGroup()
-                                                    .addComponent(jCheckBoxCompleta)
-                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                    .addComponent(jButtonGuardar))
-                                                .addGroup(layout.createSequentialGroup()
-                                                    .addComponent(jCheckBoxMedia)
-                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                    .addComponent(jLabel6)
-                                                    .addGap(18, 18, 18)
-                                                    .addComponent(jCheckBoxUnidad))))
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addComponent(jLabel2)
-                                                .addComponent(jLabel3))
-                                            .addGap(66, 66, 66)
-                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addComponent(jTextPrecio)
-                                                .addComponent(jTextNombre))))
-                                    .addComponent(jLabel11)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel10)
-                                        .addGap(41, 41, 41)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(jCheckBoxCompletaActualizar)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jCheckBoxMediaActualizar)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jLabel12)
-                                                .addGap(18, 18, 18)
-                                                .addComponent(jCheckBoxUnidadActualizar))))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel8)
-                                            .addComponent(jLabel9))
-                                        .addGap(66, 66, 66)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jTextPrecioActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jTextNombreActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jTextFieldID, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                .addGap(0, 0, Short.MAX_VALUE)))
-                        .addContainerGap())
+                                        .addComponent(jTextFieldID, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jTextNombreActualizar, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
+                                        .addComponent(jTextPrecioActualizar)))))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel13)
                         .addGap(0, 0, Short.MAX_VALUE))))
@@ -388,28 +442,46 @@ public class Entrantes extends javax.swing.JDialog {
                     .addComponent(jLabel9))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jCheckBoxMediaActualizar)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel10)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel11)
                             .addComponent(jCheckBoxCompletaActualizar)))
+                    .addComponent(jCheckBoxMediaActualizar)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addComponent(jLabel12)
                         .addComponent(jCheckBoxUnidadActualizar)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(12, 12, 12)
                 .addComponent(jButtonActualizar)
                 .addContainerGap())
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGuardarActionPerformed
-        // TODO add your handling code here:
-        insertarPlatoEntrante();
-        cargarPlatos();
+        try {
+            // TODO add your handling code here:
+            insertarPlatoEntrante(connection());
+            cargarPlatos(connection());
+        } catch (SQLException ex) {
+            Logger.getLogger(Entrantes.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        // Agregar el elemento predeterminado al JComboBox al principio
+        jComboBoxActualizar.insertItemAt("< Selecciona un plato >", 0);
+        // Establecer el elemento predeterminado como seleccionado
+        jComboBoxActualizar.setSelectedIndex(0);
+
+        // Configurar el ActionListener para el JComboBox
+        jComboBoxActualizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBoxActualizarActionPerformed(evt);
+            }
+        });
+
     }//GEN-LAST:event_jButtonGuardarActionPerformed
 
     private void jCheckBoxMediaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMediaActionPerformed
@@ -438,29 +510,25 @@ public class Entrantes extends javax.swing.JDialog {
 
     private void jComboBoxActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxActualizarActionPerformed
         // TODO add your handling code here:
-        jComboBoxActualizar.setSelectedItem("<Selecciona un plato>");
         String seleccion = (String) jComboBoxActualizar.getSelectedItem();
         if (seleccion != null && !seleccion.equals("< Selecciona un plato >")) {
             String[] parts = seleccion.split(": ");
             if (parts.length != 2) {
-                System.out.println("Error al obtener el nombre del plato.");
+                JOptionPane.showMessageDialog(this, "Error al obtener el nombre del plato.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             int idPlato;
             try {
                 idPlato = Integer.parseInt(parts[0].trim());
             } catch (NumberFormatException ex) {
-                System.out.println("Error al obtener el ID del plato.");
+                JOptionPane.showMessageDialog(this, "Error al obtener el ID del plato.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            String url = "jdbc:postgresql://localhost:5432/Bar_ElEscobar";
-            String usuario = "bar_Admin";
-            String contraseña = "Admin123456";
-
-            try (Connection con = DriverManager.getConnection(url, usuario, contraseña)) {
+            try {
+                Connection connection = Principal.connection();
                 String sql = "SELECT id, nombre, precio, racion_completa, media_racion, precio_unidad FROM entrantes WHERE id = ?";
-                try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+                try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                     pstmt.setInt(1, idPlato);// Usar el ID del plato obtenido correctamente
                     try (ResultSet rs = pstmt.executeQuery()) {
                         if (rs.next()) {
@@ -477,7 +545,7 @@ public class Entrantes extends javax.swing.JDialog {
             } catch (SQLException ex) {
                 ex.printStackTrace();
                 // Manejo del error, por ejemplo, mostrar un mensaje al usuario
-                System.out.println("Error al obtener los datos del plato.");
+                JOptionPane.showMessageDialog(this, "Error al obtener los nuevos valores.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } else {
             // Vaciar los campos
@@ -520,15 +588,15 @@ public class Entrantes extends javax.swing.JDialog {
 
         // Obtener el ID del plato seleccionado
         String[] parts = selectedPlato.split(" - ");
-        if (parts.length != 2) {
-            System.out.println("Error al obtener el nombre del plato.");
+        if (parts.length != 3) {
+            JOptionPane.showMessageDialog(this, "Error al obtener el nombre del plato.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         int idPlato;
         try {
             idPlato = Integer.parseInt(jTextFieldID.getText().trim());
         } catch (NumberFormatException ex) {
-            System.out.println("Error al obtener el ID del plato.");
+            JOptionPane.showMessageDialog(this, "Error al obtener el ID del plato.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -545,19 +613,16 @@ public class Entrantes extends javax.swing.JDialog {
             mediaRacion = jCheckBoxMediaActualizar.isSelected();
             precioUnidad = jCheckBoxUnidadActualizar.isSelected();
         } catch (NumberFormatException ex) {
-            System.out.println("Error al obtener los nuevos valores.");
+            JOptionPane.showMessageDialog(this, "Error al actualizar el plato.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         // Establecer la conexión a la base de datos
-        String url = "jdbc:postgresql://localhost:5432/Bar_ElEscobar";
-        String usuario = "bar_Admin";
-        String contraseña = "Admin123456";
-
-        try (Connection con = DriverManager.getConnection(url, usuario, contraseña)) {
+        try {
+            Connection connection = Principal.connection();
             // Actualizar el plato en la base de datos
             String sqlUpdate = "UPDATE entrantes SET nombre = ?, precio = ?, racion_completa = ?, media_racion = ?, precio_unidad = ? WHERE id = ?";
-            try (PreparedStatement pstmtUpdate = con.prepareStatement(sqlUpdate)) {
+            try (PreparedStatement pstmtUpdate = connection.prepareStatement(sqlUpdate)) {
                 pstmtUpdate.setString(1, nuevoNombre);
                 pstmtUpdate.setBigDecimal(2, nuevoPrecio);
                 pstmtUpdate.setBoolean(3, racionCompleta);
@@ -566,17 +631,35 @@ public class Entrantes extends javax.swing.JDialog {
                 pstmtUpdate.setInt(6, idPlato);
                 int rowsUpdated = pstmtUpdate.executeUpdate();
                 if (rowsUpdated > 0) {
-                    System.out.println("El plato se ha actualizado correctamente.");
-                    cargarPlatos(); // Recargar los datos del JComboBox
+                    JOptionPane.showMessageDialog(this, "Plato del menu de entrantes, actualizado correctamente");
+                    cargarPlatos(connection()); // Recargar los datos del JComboBox
                 } else {
-                    System.out.println("No se encontró el plato a actualizar.");
+                    JOptionPane.showMessageDialog(this, "No se encontró el plato a actualizar.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
-            System.out.println("Error al actualizar el plato.");
+            JOptionPane.showMessageDialog(this, "Error al actualizar el plato.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButtonActualizarActionPerformed
+
+
+    private void jMenuEnsaladaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuEnsaladaActionPerformed
+        // TODO add your handling code here:
+        Ensaladas ensalada = null;
+        try {
+            ensalada = new Ensaladas(new javax.swing.JDialog(), true);
+        } catch (SQLException ex) {
+            Logger.getLogger(Entrantes.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        ensalada.setVisible(true);
+    }//GEN-LAST:event_jMenuEnsaladaActionPerformed
+
+    private void jMenuItemSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSalirActionPerformed
+        // TODO add your handling code here:
+        dispose();
+    }//GEN-LAST:event_jMenuItemSalirActionPerformed
+
 
     /**
      * @param args the command line arguments
@@ -616,7 +699,12 @@ public class Entrantes extends javax.swing.JDialog {
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                Entrantes dialog = new Entrantes(new javax.swing.JFrame(), true);
+                Entrantes dialog = null;
+                try {
+                    dialog = new Entrantes(new javax.swing.JDialog(), true);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Entrantes.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -651,11 +739,15 @@ public class Entrantes extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuEnsalada;
+    private javax.swing.JMenu jMenuEnsaladas;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItemSalir;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTextField jTextFieldID;
     private javax.swing.JTextField jTextNombre;

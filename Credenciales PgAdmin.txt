@@ -1,7 +1,8 @@
+Server: PostgreSQL 6
+contraseña: 12345
+
 BBDD: Bar_ElEscobar
 
-Server: PostgresSQL
-contraseña: 12345
 
 user: 		bar_Admin
 contraseña:	Admin123456
