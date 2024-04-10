@@ -34,7 +34,7 @@ import javax.swing.JFrame;
  */
 public class Principal extends javax.swing.JFrame {
 
-    private static final String URL = "jdbc:postgresql://localhost:5432/Bar_ElEscobar";
+    private static final String URL = "jdbc:postgresql://192.168.1.138:5432/Bar_ElEscobar"; //En su defecto localhost, para trabajar en local
     private static final String USUARIO = "bar_Admin";
     private static final String CONTRASEÑA = "Admin123456";
 
@@ -49,7 +49,6 @@ public class Principal extends javax.swing.JFrame {
 // Método para crear las tablas en la base de datos al iniciar la aplicación
     private static void crearTablas(Connection connection) throws SQLException {
         try (Statement stmt = connection.createStatement()) {
-        try (Connection con = DriverManager.getConnection(url, "bar_Admin", "Admin123456"); java.sql.Statement stmt = con.createStatement()) {
             // Crear tabla de platos del menú
             String crearTablaEntrantes = "CREATE TABLE IF NOT EXISTS entrantes ("
                     + "id SERIAL PRIMARY KEY,"
@@ -557,9 +556,9 @@ public class Principal extends javax.swing.JFrame {
     }
 
     // Método para mostrar el JDialog "Entrantes"
-    public void mostrarDialogoEntrantes() {
+    public void mostrarDialogoEntrantes() throws SQLException {
         // Mostrar el diálogo Entrantes
-        Entrantes dialogo = new Entrantes(this, true); // Pasar un nuevo JFrame como propietario del diálogo
+        Entrantes dialogo = new Entrantes(new javax.swing.JDialog(), true); // Pasar un nuevo JFrame como propietario del diálogo
         dialogo.setVisible(true);
     }
 
