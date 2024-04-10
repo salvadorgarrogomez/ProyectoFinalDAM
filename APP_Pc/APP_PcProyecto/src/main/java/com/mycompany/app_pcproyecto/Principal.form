@@ -46,6 +46,12 @@
     <Menu class="javax.swing.JMenuBar" name="jMenuBar1">
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="jMenuInicial">
+        <Menu class="javax.swing.JMenu" name="jMenuMesas">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Mesas"/>
+          </Properties>
+        </Menu>
+        <Menu class="javax.swing.JMenu" name="jMenuPlatos">
           <Properties>
             <Property name="text" type="java.lang.String" value="Inicio"/>
           </Properties>

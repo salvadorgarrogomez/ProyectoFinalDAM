@@ -14,6 +14,11 @@ import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -318,6 +323,7 @@ public class Entrantes extends javax.swing.JDialog {
         jMenuEnsaladas.add(jMenuEnsalada);
 
         jMenuBar1.add(jMenuEnsaladas);
+
         jMenu2.setText("Ensaladas");
         jMenuBar1.add(jMenu2);
 
@@ -636,6 +642,7 @@ public class Entrantes extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(this, "Error al actualizar el plato.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButtonActualizarActionPerformed
+
 
     private void jMenuEnsaladaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuEnsaladaActionPerformed
         // TODO add your handling code here:

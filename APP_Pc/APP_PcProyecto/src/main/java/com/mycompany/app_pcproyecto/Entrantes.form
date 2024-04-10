@@ -35,6 +35,7 @@
           </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="jMenuEnsaladas">
+        <Menu class="javax.swing.JMenu" name="jMenu2">
           <Properties>
             <Property name="text" type="java.lang.String" value="Ensaladas"/>
           </Properties>

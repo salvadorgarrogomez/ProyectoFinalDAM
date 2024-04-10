@@ -49,6 +49,7 @@ public class Principal extends javax.swing.JFrame {
 // Método para crear las tablas en la base de datos al iniciar la aplicación
     private static void crearTablas(Connection connection) throws SQLException {
         try (Statement stmt = connection.createStatement()) {
+        try (Connection con = DriverManager.getConnection(url, "bar_Admin", "Admin123456"); java.sql.Statement stmt = con.createStatement()) {
             // Crear tabla de platos del menú
             String crearTablaEntrantes = "CREATE TABLE IF NOT EXISTS entrantes ("
                     + "id SERIAL PRIMARY KEY,"
@@ -148,6 +149,21 @@ public class Principal extends javax.swing.JFrame {
             stmt.executeUpdate(crearTablaFideua);
             stmt.executeUpdate(crearTablaPostres);
             stmt.executeUpdate(crearTablaMesas);
+
+
+            stmt.executeUpdate(crearTablasCartaEntrantes);
+            stmt.executeUpdate(crearTablasCartaEnsaladas);
+            stmt.executeUpdate(crearTablasCartaCombinados);
+            stmt.executeUpdate(crearTablasCartaCaldos);
+            stmt.executeUpdate(crearTablasCartaBebidas);
+            stmt.executeUpdate(crearTablasCartaPasta);
+            stmt.executeUpdate(crearTablasCartaCarnes);
+            stmt.executeUpdate(crearTablasCartaPescados);
+            stmt.executeUpdate(crearTablasCartaArroces);
+            stmt.executeUpdate(crearTablasCartaFideua);
+            stmt.executeUpdate(crearTablasCartaPostres);
+            stmt.executeUpdate(crearTablasCartaMesas);
+
 
             // Otras tablas pueden ser creadas de manera similar
             // Crear tabla de órdenes, tabla de asociación entre platos y órdenes, etc.
@@ -552,6 +568,14 @@ public class Principal extends javax.swing.JFrame {
             // Manejo del error, por ejemplo, mostrar un mensaje al usuario
             JOptionPane.showMessageDialog(this, "Error al cargar las bebidas.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+
+    }
+
+    // Método para mostrar el JDialog "Entrantes"
+    public void mostrarDialogoEntrantes() {
+        // Mostrar el diálogo Entrantes
+        Entrantes dialogo = new Entrantes(this, true); // Pasar un nuevo JFrame como propietario del diálogo
+        dialogo.setVisible(true);
     }
 
     private void configurarComboBox(JComboBox comboBox, String textoPredeterminado) {
@@ -698,6 +722,7 @@ public class Principal extends javax.swing.JFrame {
         jTextAreaMesa9 = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenuInicial = new javax.swing.JMenu();
+        jMenuMesas = new javax.swing.JMenu();
         jMenuPlatos = new javax.swing.JMenu();
         jMenuItemEntrantes = new javax.swing.JMenuItem();
         jMenuItemCombi = new javax.swing.JMenuItem();
@@ -1021,7 +1046,11 @@ public class Principal extends javax.swing.JFrame {
                                 .addGap(0, 0, Short.MAX_VALUE))))))
         );
 
+
         jMenuInicial.setText("Inicio");
+
+        jMenuMesas.setText("Mesas");
+        jMenuBar1.add(jMenuMesas);
 
         jMenuPlatos.setText("Añadir Plato");
 
@@ -1189,6 +1218,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void jMenuItemEntrantesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemEntrantesActionPerformed
         // TODO add your handling code here:
+
         Entrantes entrantes = null;
         try {
             entrantes = new Entrantes(new javax.swing.JDialog(), true);
@@ -1196,6 +1226,7 @@ public class Principal extends javax.swing.JFrame {
             Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
         }
         entrantes.setVisible(true);
+
     }//GEN-LAST:event_jMenuItemEntrantesActionPerformed
 
     private void jMenuItemCarnesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCarnesActionPerformed
