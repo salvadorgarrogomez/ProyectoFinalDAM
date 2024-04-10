@@ -42,8 +42,13 @@ public class Principal extends javax.swing.JFrame {
      *
      * @return @throws SQLException
      */
-    public static Connection connection() throws SQLException {
-        return DriverManager.getConnection(URL, USUARIO, CONTRASEÑA);
+    public static Connection connection() {
+        try {
+            return DriverManager.getConnection(URL, USUARIO, CONTRASEÑA);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Error de conexión: " + ex.getMessage() + "\nEquipo servidor, ¿apagado o encendido? \nRevisar.", "Error", JOptionPane.ERROR_MESSAGE);
+            return null; // Devuelve null si hay un error de conexión
+        }
     }
 
 // Método para crear las tablas en la base de datos al iniciar la aplicación
