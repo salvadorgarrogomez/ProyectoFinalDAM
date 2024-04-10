@@ -7,7 +7,6 @@ package com.mycompany.app_pcproyecto;
 import static com.mycompany.app_pcproyecto.Principal.connection;
 import java.math.BigDecimal;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;

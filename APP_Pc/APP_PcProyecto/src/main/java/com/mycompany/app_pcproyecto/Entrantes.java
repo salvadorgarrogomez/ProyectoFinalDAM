@@ -5,19 +5,15 @@
 package com.mycompany.app_pcproyecto;
 
 import static com.mycompany.app_pcproyecto.Principal.connection;
-import java.awt.Frame;
 import java.math.BigDecimal;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 /**
  *
@@ -203,6 +199,7 @@ public class Entrantes extends javax.swing.JDialog {
         jMenuItemSalir = new javax.swing.JMenuItem();
         jMenuEnsaladas = new javax.swing.JMenu();
         jMenuEnsalada = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
 
         jMenuItem1.setText("jMenuItem1");
 
@@ -264,7 +261,7 @@ public class Entrantes extends javax.swing.JDialog {
             }
         });
 
-        jSeparator1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jSeparator1.setBorder(javax.swing.BorderFactory.createLineBorder(null));
 
         jLabel8.setText("Nombre:");
 
@@ -321,6 +318,8 @@ public class Entrantes extends javax.swing.JDialog {
         jMenuEnsaladas.add(jMenuEnsalada);
 
         jMenuBar1.add(jMenuEnsaladas);
+        jMenu2.setText("Ensaladas");
+        jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
 
@@ -654,6 +653,7 @@ public class Entrantes extends javax.swing.JDialog {
         dispose();
     }//GEN-LAST:event_jMenuItemSalirActionPerformed
 
+
     /**
      * @param args the command line arguments
      */
@@ -668,16 +668,24 @@ public class Entrantes extends javax.swing.JDialog {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Entrantes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Entrantes.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Entrantes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Entrantes.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Entrantes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Entrantes.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Entrantes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Entrantes.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
@@ -725,6 +733,7 @@ public class Entrantes extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuEnsalada;
     private javax.swing.JMenu jMenuEnsaladas;

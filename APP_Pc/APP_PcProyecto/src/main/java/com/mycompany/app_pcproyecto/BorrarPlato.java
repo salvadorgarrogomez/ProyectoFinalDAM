@@ -8,8 +8,6 @@ import static com.mycompany.app_pcproyecto.Principal.connection;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -50,100 +48,100 @@ public class BorrarPlato extends javax.swing.JDialog {
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
                     String selectedTableName = jListMenus.getSelectedValue();
-                    cargarFilasDeTablaSeleccionada(selectedTableName);
+//                    cargarFilasDeTablaSeleccionada(selectedTableName);
                 }
             }
         });
     }
 
-    private void cargarFilasDeTablaSeleccionada(String nombreTabla) {
-        DefaultListModel<String> listModel = new DefaultListModel<>();
-        try (Connection connection = connection()) {
-            try (Statement stmt = connection.createStatement()) {
-                String sql = "SELECT id, nombre, precio";
-                ResultSetMetaData metaData = stmt.getMetaData();
-
-                // Verificar si la columna 'racion_completa' existe en la tabla
-                if (columnExists(metaData, "racion_completa")) {
-                    sql += ", racion_completa";
-                }
-                // Verificar si la columna 'media_racion' existe en la tabla
-                if (columnExists(metaData, "media_racion")) {
-                    sql += ", media_racion";
-                }
-                // Verificar si la columna 'precio_unidad' existe en la tabla
-                if (columnExists(metaData, "precio_unidad")) {
-                    sql += ", precio_unidad";
-                }
-                // Verificar si la columna 'tipo_refresco' existe en la tabla
-                if (columnExists(metaData, "tipo_refresco")) {
-                    sql += ", tipo_refresco";
-                }
-                // Verificar si la columna 'tipo_alcohol' existe en la tabla
-                if (columnExists(metaData, "tipo_alcohol")) {
-                    sql += ", tipo_alcohol";
-                }
-                // Verificar si la columna 'tipo_copa' existe en la tabla
-                if (columnExists(metaData, "tipo_copa")) {
-                    sql += ", tipo_copa";
-                }
-                // Verificar si la columna 'tipo_tanque' existe en la tabla
-                if (columnExists(metaData, "tipo_tanque")) {
-                    sql += ", tipo_tanque";
-                }
-                // Verificar si la columna 'tipo_cubata' existe en la tabla
-                if (columnExists(metaData, "tipo_cubata")) {
-                    sql += ", tipo_cubata";
-                }
-
-                // Agregar el resto de la consulta SQL
-                sql += " FROM " + nombreTabla;
-
-                try (ResultSet rs = stmt.executeQuery(sql)) {
-                    metaData = rs.getMetaData();
-                    int columnCount = metaData.getColumnCount();
-                    while (rs.next()) {
-                        int id = rs.getInt("id");
-                        String nombre = rs.getString("nombre");
-                        BigDecimal precio = rs.getBigDecimal("precio");
-
-                        // Determinar el tipo de plato
-                        String tipoPlato = "No especificado";
-                        for (int i = 4; i <= columnCount; i++) {
-                            String columnName = metaData.getColumnName(i);
-                            boolean columnValue = rs.getBoolean(i);
-                            if (columnExists(metaData, columnName) && columnValue) {
-                                if (columnName.equals("racion_completa")) {
-                                    tipoPlato = "Ración Completa";
-                                } else if (columnName.equals("media_racion")) {
-                                    tipoPlato = "Media Ración";
-                                } else if (columnName.equals("precio_unidad")) {
-                                    tipoPlato = "Precio por Unidad";
-                                } else if (columnName.equals("tipo_refresco")) {
-                                    tipoPlato = "Refresco";
-                                } else if (columnName.equals("tipo_alcohol")) {
-                                    tipoPlato = "Alcohol";
-                                } else if (columnName.equals("tipo_copa")) {
-                                    tipoPlato = "Copa";
-                                } else if (columnName.equals("tipo_tanque")) {
-                                    tipoPlato = "Tanque";
-                                } else if (columnName.equals("tipo_cubata")) {
-                                    tipoPlato = "Cubata";
-                                }
-                            }
-                        }
-
-                        // Agregar la fila al modelo de lista
-                        listModel.addElement("ID: " + id + ", Nombre: " + nombre + ", Precio: " + precio + ", Tipo: " + tipoPlato);
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error al cargar las filas de la tabla.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-        jListPlatos.setModel(listModel);
-    }
+//    private void cargarFilasDeTablaSeleccionada(String nombreTabla) {
+//        DefaultListModel<String> listModel = new DefaultListModel<>();
+//        try (Connection connection = connection()) {
+//            try (Statement stmt = connection.createStatement()) {
+//                String sql = "SELECT id, nombre, precio";
+//                ResultSetMetaData metaData = stmt.getMetaData();
+//
+//                // Verificar si la columna 'racion_completa' existe en la tabla
+//                if (columnExists(metaData, "racion_completa")) {
+//                    sql += ", racion_completa";
+//                }
+//                // Verificar si la columna 'media_racion' existe en la tabla
+//                if (columnExists(metaData, "media_racion")) {
+//                    sql += ", media_racion";
+//                }
+//                // Verificar si la columna 'precio_unidad' existe en la tabla
+//                if (columnExists(metaData, "precio_unidad")) {
+//                    sql += ", precio_unidad";
+//                }
+//                // Verificar si la columna 'tipo_refresco' existe en la tabla
+//                if (columnExists(metaData, "tipo_refresco")) {
+//                    sql += ", tipo_refresco";
+//                }
+//                // Verificar si la columna 'tipo_alcohol' existe en la tabla
+//                if (columnExists(metaData, "tipo_alcohol")) {
+//                    sql += ", tipo_alcohol";
+//                }
+//                // Verificar si la columna 'tipo_copa' existe en la tabla
+//                if (columnExists(metaData, "tipo_copa")) {
+//                    sql += ", tipo_copa";
+//                }
+//                // Verificar si la columna 'tipo_tanque' existe en la tabla
+//                if (columnExists(metaData, "tipo_tanque")) {
+//                    sql += ", tipo_tanque";
+//                }
+//                // Verificar si la columna 'tipo_cubata' existe en la tabla
+//                if (columnExists(metaData, "tipo_cubata")) {
+//                    sql += ", tipo_cubata";
+//                }
+//
+//                // Agregar el resto de la consulta SQL
+//                sql += " FROM " + nombreTabla;
+//
+//                try (ResultSet rs = stmt.executeQuery(sql)) {
+//                    metaData = rs.getMetaData();
+//                    int columnCount = metaData.getColumnCount();
+//                    while (rs.next()) {
+//                        int id = rs.getInt("id");
+//                        String nombre = rs.getString("nombre");
+//                        BigDecimal precio = rs.getBigDecimal("precio");
+//
+//                        // Determinar el tipo de plato
+//                        String tipoPlato = "No especificado";
+//                        for (int i = 4; i <= columnCount; i++) {
+//                            String columnName = metaData.getColumnName(i);
+//                            boolean columnValue = rs.getBoolean(i);
+//                            if (columnExists(metaData, columnName) && columnValue) {
+//                                if (columnName.equals("racion_completa")) {
+//                                    tipoPlato = "Ración Completa";
+//                                } else if (columnName.equals("media_racion")) {
+//                                    tipoPlato = "Media Ración";
+//                                } else if (columnName.equals("precio_unidad")) {
+//                                    tipoPlato = "Precio por Unidad";
+//                                } else if (columnName.equals("tipo_refresco")) {
+//                                    tipoPlato = "Refresco";
+//                                } else if (columnName.equals("tipo_alcohol")) {
+//                                    tipoPlato = "Alcohol";
+//                                } else if (columnName.equals("tipo_copa")) {
+//                                    tipoPlato = "Copa";
+//                                } else if (columnName.equals("tipo_tanque")) {
+//                                    tipoPlato = "Tanque";
+//                                } else if (columnName.equals("tipo_cubata")) {
+//                                    tipoPlato = "Cubata";
+//                                }
+//                            }
+//                        }
+//
+//                        // Agregar la fila al modelo de lista
+//                        listModel.addElement("ID: " + id + ", Nombre: " + nombre + ", Precio: " + precio + ", Tipo: " + tipoPlato);
+//                    }
+//                }
+//            }
+//        } catch (SQLException ex) {
+//            ex.printStackTrace();
+//            JOptionPane.showMessageDialog(this, "Error al cargar las filas de la tabla.", "Error", JOptionPane.ERROR_MESSAGE);
+//        }
+//        jListPlatos.setModel(listModel);
+//    }
 
     private boolean columnExists(ResultSetMetaData metaData, String columnName) throws SQLException {
         for (int i = 1; i <= metaData.getColumnCount(); i++) {

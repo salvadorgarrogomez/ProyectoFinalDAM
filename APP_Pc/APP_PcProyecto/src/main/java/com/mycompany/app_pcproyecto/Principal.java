@@ -7,7 +7,6 @@ package com.mycompany.app_pcproyecto;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
-import java.awt.GridLayout;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -22,6 +21,12 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JFrame;
 
 /**
  *
@@ -147,6 +152,7 @@ public class Principal extends javax.swing.JFrame {
             // Otras tablas pueden ser creadas de manera similar
             // Crear tabla de órdenes, tabla de asociación entre platos y órdenes, etc.
         }
+
     }
 
     private void cargarPlatosArroz(Connection connection) throws SQLException {
@@ -691,7 +697,7 @@ public class Principal extends javax.swing.JFrame {
         jScrollPane10 = new javax.swing.JScrollPane();
         jTextAreaMesa9 = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenuInicio = new javax.swing.JMenu();
+        jMenuInicial = new javax.swing.JMenu();
         jMenuPlatos = new javax.swing.JMenu();
         jMenuItemEntrantes = new javax.swing.JMenuItem();
         jMenuItemCombi = new javax.swing.JMenuItem();
@@ -1015,7 +1021,7 @@ public class Principal extends javax.swing.JFrame {
                                 .addGap(0, 0, Short.MAX_VALUE))))))
         );
 
-        jMenuInicio.setText("Inicio");
+        jMenuInicial.setText("Inicio");
 
         jMenuPlatos.setText("Añadir Plato");
 
@@ -1094,14 +1100,14 @@ public class Principal extends javax.swing.JFrame {
         jMenuItem5.setText("Menu diario");
         jMenuPlatos.add(jMenuItem5);
 
-        jMenuInicio.add(jMenuPlatos);
+        jMenuInicial.add(jMenuPlatos);
 
         jMenuMesas.setText("Añadir Mesa");
 
         jMenuItem4.setText("Mesa");
         jMenuMesas.add(jMenuItem4);
 
-        jMenuInicio.add(jMenuMesas);
+        jMenuInicial.add(jMenuMesas);
 
         jMenu1.setText("Borrar Plato");
 
@@ -1113,7 +1119,7 @@ public class Principal extends javax.swing.JFrame {
         });
         jMenu1.add(jMenuItemBorrar);
 
-        jMenuInicio.add(jMenu1);
+        jMenuInicial.add(jMenu1);
 
         jMenuSalir.setText("Salir");
         jMenuSalir.addActionListener(new java.awt.event.ActionListener() {
@@ -1121,9 +1127,9 @@ public class Principal extends javax.swing.JFrame {
                 jMenuSalirActionPerformed(evt);
             }
         });
-        jMenuInicio.add(jMenuSalir);
+        jMenuInicial.add(jMenuSalir);
 
-        jMenuBar1.add(jMenuInicio);
+        jMenuBar1.add(jMenuInicial);
 
         jMenuActualizar.setText("Actualizar Menus");
 
@@ -1389,7 +1395,7 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenuActualizar;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenu jMenuInicio;
+    private javax.swing.JMenu jMenuInicial;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
