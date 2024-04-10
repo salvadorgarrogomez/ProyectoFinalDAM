@@ -150,21 +150,6 @@ public class Principal extends javax.swing.JFrame {
             stmt.executeUpdate(crearTablaPostres);
             stmt.executeUpdate(crearTablaMesas);
 
-
-            stmt.executeUpdate(crearTablasCartaEntrantes);
-            stmt.executeUpdate(crearTablasCartaEnsaladas);
-            stmt.executeUpdate(crearTablasCartaCombinados);
-            stmt.executeUpdate(crearTablasCartaCaldos);
-            stmt.executeUpdate(crearTablasCartaBebidas);
-            stmt.executeUpdate(crearTablasCartaPasta);
-            stmt.executeUpdate(crearTablasCartaCarnes);
-            stmt.executeUpdate(crearTablasCartaPescados);
-            stmt.executeUpdate(crearTablasCartaArroces);
-            stmt.executeUpdate(crearTablasCartaFideua);
-            stmt.executeUpdate(crearTablasCartaPostres);
-            stmt.executeUpdate(crearTablasCartaMesas);
-
-
             // Otras tablas pueden ser creadas de manera similar
             // Crear tabla de órdenes, tabla de asociación entre platos y órdenes, etc.
         }
