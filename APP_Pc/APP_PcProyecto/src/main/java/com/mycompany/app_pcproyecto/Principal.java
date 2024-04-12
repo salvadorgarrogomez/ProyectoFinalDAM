@@ -4,6 +4,7 @@
  */
 package com.mycompany.app_pcproyecto;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
@@ -21,12 +22,8 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 /**
  *
@@ -34,9 +31,9 @@ import javax.swing.JFrame;
  */
 public class Principal extends javax.swing.JFrame {
 
-    private static final String URL = "jdbc:postgresql://192.168.1.138:5432/Bar_ElEscobar"; //En su defecto localhost, para trabajar en local
-    private static final String USUARIO = "bar_Admin";
-    private static final String CONTRASEÑA = "Admin123456";
+    private static final String URL = "jdbc:postgresql://192.168.1.138:5432/Bar_El_Escobar"; //En su defecto localhost, para trabajar en local
+    private static final String USUARIO = "postgres";
+    private static final String CONTRASEÑA = "12345";
 
     /**
      *
@@ -138,7 +135,14 @@ public class Principal extends javax.swing.JFrame {
 
             String crearTablaMesas = "CREATE TABLE IF NOT EXISTS mesas ("
                     + "id SERIAL PRIMARY KEY,"
-                    + "nombre VARCHAR(50))";
+                    + "numero DECIMAL(10))";
+
+            String crearTablaMenuBocadillos = "CREATE TABLE IF NOT EXISTS menu_bocadillos ("
+                    + "id SERIAL PRIMARY KEY,"
+                    + "nombre VARCHAR(50),"
+                    + "precio DECIMAL(10, 2),"
+                    + "menu BOOLEAN,"
+                    + "bocadillo BOOLEAN)";
 
             // Ejecutar los comandos SQL
             stmt.executeUpdate(crearTablaEntrantes);
@@ -153,11 +157,23 @@ public class Principal extends javax.swing.JFrame {
             stmt.executeUpdate(crearTablaFideua);
             stmt.executeUpdate(crearTablaPostres);
             stmt.executeUpdate(crearTablaMesas);
+            stmt.executeUpdate(crearTablaMenuBocadillos);
 
             // Otras tablas pueden ser creadas de manera similar
             // Crear tabla de órdenes, tabla de asociación entre platos y órdenes, etc.
         }
+    }
 
+    private static void insertarDatosSerieMesas(Connection connection) throws SQLException {
+        // Insertar datos de serie en la tabla 'mesas'
+        String insertarDatosSerie = "INSERT INTO mesas (numero) VALUES (?)";
+        try (PreparedStatement pstmt = connection.prepareStatement(insertarDatosSerie)) {
+            for (int i = 1; i <= 9; i++) {
+                pstmt.setInt(1, i);
+                pstmt.addBatch();
+            }
+            pstmt.executeBatch();
+        }
     }
 
     private void cargarPlatosArroz(Connection connection) throws SQLException {
@@ -191,7 +207,7 @@ public class Principal extends javax.swing.JFrame {
         } catch (SQLException ex) {
             ex.printStackTrace();
             // Manejo del error, por ejemplo, mostrar un mensaje al usuario
-            JOptionPane.showMessageDialog(this, "Error al cargar los platos.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al cargar los arroces.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -226,7 +242,7 @@ public class Principal extends javax.swing.JFrame {
         } catch (SQLException ex) {
             ex.printStackTrace();
             // Manejo del error, por ejemplo, mostrar un mensaje al usuario
-            JOptionPane.showMessageDialog(this, "Error al cargar los platos.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al cargar los caldos.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -261,7 +277,7 @@ public class Principal extends javax.swing.JFrame {
         } catch (SQLException ex) {
             ex.printStackTrace();
             // Manejo del error, por ejemplo, mostrar un mensaje al usuario
-            JOptionPane.showMessageDialog(this, "Error al cargar los platos.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al cargar las carnes.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -296,7 +312,7 @@ public class Principal extends javax.swing.JFrame {
         } catch (SQLException ex) {
             ex.printStackTrace();
             // Manejo del error, por ejemplo, mostrar un mensaje al usuario
-            JOptionPane.showMessageDialog(this, "Error al cargar los platos.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al cargar los combinados.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -331,7 +347,7 @@ public class Principal extends javax.swing.JFrame {
         } catch (SQLException ex) {
             ex.printStackTrace();
             // Manejo del error, por ejemplo, mostrar un mensaje al usuario
-            JOptionPane.showMessageDialog(this, "Error al cargar los platos.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al cargar las ensaladas.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -369,7 +385,7 @@ public class Principal extends javax.swing.JFrame {
         } catch (SQLException ex) {
             ex.printStackTrace();
             // Manejo del error, por ejemplo, mostrar un mensaje al usuario
-            JOptionPane.showMessageDialog(this, "Error al cargar los platos.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al cargar los entrantes.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -404,7 +420,7 @@ public class Principal extends javax.swing.JFrame {
         } catch (SQLException ex) {
             ex.printStackTrace();
             // Manejo del error, por ejemplo, mostrar un mensaje al usuario
-            JOptionPane.showMessageDialog(this, "Error al cargar los platos.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al cargar las fideua.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -439,7 +455,7 @@ public class Principal extends javax.swing.JFrame {
         } catch (SQLException ex) {
             ex.printStackTrace();
             // Manejo del error, por ejemplo, mostrar un mensaje al usuario
-            JOptionPane.showMessageDialog(this, "Error al cargar los platos.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al cargar las pastas.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -474,7 +490,7 @@ public class Principal extends javax.swing.JFrame {
         } catch (SQLException ex) {
             ex.printStackTrace();
             // Manejo del error, por ejemplo, mostrar un mensaje al usuario
-            JOptionPane.showMessageDialog(this, "Error al cargar los platos.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al cargar los pescados.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -509,7 +525,7 @@ public class Principal extends javax.swing.JFrame {
         } catch (SQLException ex) {
             ex.printStackTrace();
             // Manejo del error, por ejemplo, mostrar un mensaje al usuario
-            JOptionPane.showMessageDialog(this, "Error al cargar los platos.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al cargar los postres.", "Error", JOptionPane.ERROR_MESSAGE);
         }
 
     }
@@ -560,6 +576,41 @@ public class Principal extends javax.swing.JFrame {
 
     }
 
+    private void cargarMenuOBocadillos(Connection connection) throws SQLException {
+        try (Statement stmt = connection.createStatement()) {
+            String sql = "SELECT id, nombre, precio, menu, bocadillo FROM menu_bocadillos ORDER BY id";
+            try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    jComboDiario.removeAllItems(); // Eliminar todos los elementos existentes
+                    while (rs.next()) {
+                        Integer id = rs.getInt("id");
+                        String nombre = rs.getString("nombre");
+                        BigDecimal precio = rs.getBigDecimal("precio");
+                        boolean menu = rs.getBoolean("menu");
+                        boolean bocadillo = rs.getBoolean("bocadillo");
+
+                        // Construir el texto del item del JComboBox con el tipo de plato
+                        String tipoPlato;
+                        if (menu) {
+                            tipoPlato = "Menu";
+                        } else if (bocadillo) {
+                            tipoPlato = "Bocadillo";
+                        } else {
+                            tipoPlato = "No especificado";
+                        }
+
+                        String item = id + ": " + nombre + " - " + tipoPlato + " - " + precio.toString();
+                        jComboDiario.addItem(item);
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            // Manejo del error, por ejemplo, mostrar un mensaje al usuario
+            JOptionPane.showMessageDialog(this, "Error al cargar los platos.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     // Método para mostrar el JDialog "Entrantes"
     public void mostrarDialogoEntrantes() throws SQLException {
         // Mostrar el diálogo Entrantes
@@ -600,9 +651,29 @@ public class Principal extends javax.swing.JFrame {
         comboBox.setPreferredSize(new Dimension(anchoMaximo, comboBox.getPreferredSize().height));
     }
 
+    private void cargarMesas(Connection connection) throws SQLException {
+        try {
+            String sql = "SELECT id, numero FROM mesas ORDER BY id"; // Consulta para obtener los números de las mesas
+            try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    jComboMesas.removeAllItems(); // Eliminar todos los elementos existentes del JComboBox
+                    while (rs.next()) {
+                        int numeroMesa = rs.getInt("numero");
+                        jComboMesas.addItem(String.valueOf(numeroMesa)); // Agregar cada número de mesa al JComboBox
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al cargar las mesas: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     public Principal() throws SQLException {
         // Crear las tablas en la base de datos
         crearTablas(connection());
+        insertarDatosSerieMesas(connection());
+        cargarMesas(connection());
         initComponents(); // Inicializar los componentes de la interfaz gráfica
 
         // Configurar la ventana para que se maximice al abrirse
@@ -620,6 +691,7 @@ public class Principal extends javax.swing.JFrame {
         cargarPlatosPescados(connection());
         cargarPlatosPostres(connection());
         cargarBebidas(connection());
+        cargarMenuOBocadillos(connection());
 
         // Configurar los JComboBox
         configurarComboBox(jComboPostres, "< Selecciona un plato >");
@@ -633,6 +705,8 @@ public class Principal extends javax.swing.JFrame {
         configurarComboBox(jComboCaldo, "< Selecciona un plato >");
         configurarComboBox(jComboArroces, "< Selecciona un plato >");
         configurarComboBox(jComboBebidas, "< Selecciona una bebida >");
+        configurarComboBox(jComboDiario, "< Selecciona un dato >");
+        configurarComboBox(jComboMesas, "< Selecciona un dato >");
     }
 
     /**
@@ -662,7 +736,7 @@ public class Principal extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
-        jComboMesa = new javax.swing.JComboBox<>();
+        jComboMesas = new javax.swing.JComboBox<>();
         jComboEntrantes = new javax.swing.JComboBox<>();
         jComboCombinados = new javax.swing.JComboBox<>();
         jComboCaldo = new javax.swing.JComboBox<>();
@@ -711,8 +785,8 @@ public class Principal extends javax.swing.JFrame {
         jTextAreaMesa9 = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenuInicial = new javax.swing.JMenu();
-        jMenuMesas = new javax.swing.JMenu();
         jMenuPlatos = new javax.swing.JMenu();
+        jMenuPlatos1 = new javax.swing.JMenu();
         jMenuItemEntrantes = new javax.swing.JMenuItem();
         jMenuItemCombi = new javax.swing.JMenuItem();
         jMenuItemCarnes = new javax.swing.JMenuItem();
@@ -722,9 +796,7 @@ public class Principal extends javax.swing.JFrame {
         jMenuItemPasta = new javax.swing.JMenuItem();
         jMenuItemBebidas = new javax.swing.JMenuItem();
         jMenuItemPostres = new javax.swing.JMenuItem();
-        jMenuItem5 = new javax.swing.JMenuItem();
-        jMenuMesas = new javax.swing.JMenu();
-        jMenuItem4 = new javax.swing.JMenuItem();
+        jMenuDiario = new javax.swing.JMenuItem();
         jMenu1 = new javax.swing.JMenu();
         jMenuItemBorrar = new javax.swing.JMenuItem();
         jMenuSalir = new javax.swing.JMenuItem();
@@ -889,7 +961,7 @@ public class Principal extends javax.swing.JFrame {
                     .addComponent(jComboCaldo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jComboPostres, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jComboBebidas, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jComboMesa, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jComboMesas, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -944,7 +1016,7 @@ public class Principal extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
-                            .addComponent(jComboMesa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jComboMesas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(15, 15, 15)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel13)
@@ -1035,13 +1107,11 @@ public class Principal extends javax.swing.JFrame {
                                 .addGap(0, 0, Short.MAX_VALUE))))))
         );
 
+        jMenuBar1.add(jMenuInicial);
 
-        jMenuInicial.setText("Inicio");
+        jMenuPlatos.setText("Inicio");
 
-        jMenuMesas.setText("Mesas");
-        jMenuBar1.add(jMenuMesas);
-
-        jMenuPlatos.setText("Añadir Plato");
+        jMenuPlatos1.setText("Añadir Plato");
 
         jMenuItemEntrantes.setText("Entrantes y Ensaladas");
         jMenuItemEntrantes.addActionListener(new java.awt.event.ActionListener() {
@@ -1049,7 +1119,7 @@ public class Principal extends javax.swing.JFrame {
                 jMenuItemEntrantesActionPerformed(evt);
             }
         });
-        jMenuPlatos.add(jMenuItemEntrantes);
+        jMenuPlatos1.add(jMenuItemEntrantes);
 
         jMenuItemCombi.setText("Combinados y Caldos");
         jMenuItemCombi.addActionListener(new java.awt.event.ActionListener() {
@@ -1057,7 +1127,7 @@ public class Principal extends javax.swing.JFrame {
                 jMenuItemCombiActionPerformed(evt);
             }
         });
-        jMenuPlatos.add(jMenuItemCombi);
+        jMenuPlatos1.add(jMenuItemCombi);
 
         jMenuItemCarnes.setText("Carnes");
         jMenuItemCarnes.addActionListener(new java.awt.event.ActionListener() {
@@ -1065,7 +1135,7 @@ public class Principal extends javax.swing.JFrame {
                 jMenuItemCarnesActionPerformed(evt);
             }
         });
-        jMenuPlatos.add(jMenuItemCarnes);
+        jMenuPlatos1.add(jMenuItemCarnes);
 
         jMenuItemPescados.setText("Pescados");
         jMenuItemPescados.addActionListener(new java.awt.event.ActionListener() {
@@ -1073,7 +1143,7 @@ public class Principal extends javax.swing.JFrame {
                 jMenuItemPescadosActionPerformed(evt);
             }
         });
-        jMenuPlatos.add(jMenuItemPescados);
+        jMenuPlatos1.add(jMenuItemPescados);
 
         jMenuItemArroz.setText("Arroces");
         jMenuItemArroz.addActionListener(new java.awt.event.ActionListener() {
@@ -1081,7 +1151,7 @@ public class Principal extends javax.swing.JFrame {
                 jMenuItemArrozActionPerformed(evt);
             }
         });
-        jMenuPlatos.add(jMenuItemArroz);
+        jMenuPlatos1.add(jMenuItemArroz);
 
         jMenuItemFideua.setText("Fideua");
         jMenuItemFideua.addActionListener(new java.awt.event.ActionListener() {
@@ -1089,7 +1159,7 @@ public class Principal extends javax.swing.JFrame {
                 jMenuItemFideuaActionPerformed(evt);
             }
         });
-        jMenuPlatos.add(jMenuItemFideua);
+        jMenuPlatos1.add(jMenuItemFideua);
 
         jMenuItemPasta.setText("Pasta");
         jMenuItemPasta.addActionListener(new java.awt.event.ActionListener() {
@@ -1097,7 +1167,7 @@ public class Principal extends javax.swing.JFrame {
                 jMenuItemPastaActionPerformed(evt);
             }
         });
-        jMenuPlatos.add(jMenuItemPasta);
+        jMenuPlatos1.add(jMenuItemPasta);
 
         jMenuItemBebidas.setText("Bebidas");
         jMenuItemBebidas.addActionListener(new java.awt.event.ActionListener() {
@@ -1105,7 +1175,7 @@ public class Principal extends javax.swing.JFrame {
                 jMenuItemBebidasActionPerformed(evt);
             }
         });
-        jMenuPlatos.add(jMenuItemBebidas);
+        jMenuPlatos1.add(jMenuItemBebidas);
 
         jMenuItemPostres.setText("Postres");
         jMenuItemPostres.addActionListener(new java.awt.event.ActionListener() {
@@ -1113,19 +1183,17 @@ public class Principal extends javax.swing.JFrame {
                 jMenuItemPostresActionPerformed(evt);
             }
         });
-        jMenuPlatos.add(jMenuItemPostres);
+        jMenuPlatos1.add(jMenuItemPostres);
 
-        jMenuItem5.setText("Menu diario");
-        jMenuPlatos.add(jMenuItem5);
+        jMenuDiario.setText("Menu diario");
+        jMenuDiario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuDiarioActionPerformed(evt);
+            }
+        });
+        jMenuPlatos1.add(jMenuDiario);
 
-        jMenuInicial.add(jMenuPlatos);
-
-        jMenuMesas.setText("Añadir Mesa");
-
-        jMenuItem4.setText("Mesa");
-        jMenuMesas.add(jMenuItem4);
-
-        jMenuInicial.add(jMenuMesas);
+        jMenuPlatos.add(jMenuPlatos1);
 
         jMenu1.setText("Borrar Plato");
 
@@ -1137,7 +1205,7 @@ public class Principal extends javax.swing.JFrame {
         });
         jMenu1.add(jMenuItemBorrar);
 
-        jMenuInicial.add(jMenu1);
+        jMenuPlatos.add(jMenu1);
 
         jMenuSalir.setText("Salir");
         jMenuSalir.addActionListener(new java.awt.event.ActionListener() {
@@ -1145,9 +1213,9 @@ public class Principal extends javax.swing.JFrame {
                 jMenuSalirActionPerformed(evt);
             }
         });
-        jMenuInicial.add(jMenuSalir);
+        jMenuPlatos.add(jMenuSalir);
 
-        jMenuBar1.add(jMenuInicial);
+        jMenuBar1.add(jMenuPlatos);
 
         jMenuActualizar.setText("Actualizar Menus");
 
@@ -1188,8 +1256,10 @@ public class Principal extends javax.swing.JFrame {
         Combinados combinados = null;
         try {
             combinados = new Combinados(new javax.swing.JDialog(), true);
+
         } catch (SQLException ex) {
-            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Principal.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         combinados.setVisible(true);
     }//GEN-LAST:event_jMenuItemCombiActionPerformed
@@ -1199,8 +1269,10 @@ public class Principal extends javax.swing.JFrame {
         Pasta pasta = null;
         try {
             pasta = new Pasta(this, true);
+
         } catch (SQLException ex) {
-            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Principal.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         pasta.setVisible(true);
     }//GEN-LAST:event_jMenuItemPastaActionPerformed
@@ -1211,8 +1283,10 @@ public class Principal extends javax.swing.JFrame {
         Entrantes entrantes = null;
         try {
             entrantes = new Entrantes(new javax.swing.JDialog(), true);
+
         } catch (SQLException ex) {
-            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Principal.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         entrantes.setVisible(true);
 
@@ -1223,8 +1297,10 @@ public class Principal extends javax.swing.JFrame {
         Carnes carne = null;
         try {
             carne = new Carnes(this, true);
+
         } catch (SQLException ex) {
-            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Principal.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         carne.setVisible(true);
     }//GEN-LAST:event_jMenuItemCarnesActionPerformed
@@ -1234,8 +1310,10 @@ public class Principal extends javax.swing.JFrame {
         Pescados pescado = null;
         try {
             pescado = new Pescados(this, true);
+
         } catch (SQLException ex) {
-            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Principal.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         pescado.setVisible(true);
     }//GEN-LAST:event_jMenuItemPescadosActionPerformed
@@ -1245,8 +1323,10 @@ public class Principal extends javax.swing.JFrame {
         Arroces arroz = null;
         try {
             arroz = new Arroces(this, true);
+
         } catch (SQLException ex) {
-            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Principal.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         arroz.setVisible(true);
     }//GEN-LAST:event_jMenuItemArrozActionPerformed
@@ -1256,8 +1336,10 @@ public class Principal extends javax.swing.JFrame {
         Fideua fideua = null;
         try {
             fideua = new Fideua(this, true);
+
         } catch (SQLException ex) {
-            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Principal.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         fideua.setVisible(true);
     }//GEN-LAST:event_jMenuItemFideuaActionPerformed
@@ -1267,8 +1349,10 @@ public class Principal extends javax.swing.JFrame {
         Bebidas bebidas = null;
         try {
             bebidas = new Bebidas(this, true);
+
         } catch (SQLException ex) {
-            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Principal.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         bebidas.setVisible(true);
     }//GEN-LAST:event_jMenuItemBebidasActionPerformed
@@ -1278,8 +1362,10 @@ public class Principal extends javax.swing.JFrame {
         Postres postres = null;
         try {
             postres = new Postres(this, true);
+
         } catch (SQLException ex) {
-            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Principal.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         postres.setVisible(true);
     }//GEN-LAST:event_jMenuItemPostresActionPerformed
@@ -1303,9 +1389,11 @@ public class Principal extends javax.swing.JFrame {
             cargarPlatosPescados(connection());
             cargarPlatosPostres(connection());
             cargarBebidas(connection());
+            cargarMenuOBocadillos(connection());
 
         } catch (SQLException ex) {
-            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Principal.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
 
         // Configurar los JComboBox
@@ -1320,6 +1408,8 @@ public class Principal extends javax.swing.JFrame {
         configurarComboBox(jComboCaldo, "< Selecciona un plato >");
         configurarComboBox(jComboArroces, "< Selecciona un plato >");
         configurarComboBox(jComboBebidas, "< Selecciona una bebida >");
+        configurarComboBox(jComboDiario, "< Selecciona un dato >");
+        configurarComboBox(jComboMesas, "< Selecciona un dato >");
     }//GEN-LAST:event_jMenuItemActualizarActionPerformed
 
     private void jMenuItemBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemBorrarActionPerformed
@@ -1327,11 +1417,26 @@ public class Principal extends javax.swing.JFrame {
         BorrarPlato borrar = null;
         try {
             borrar = new BorrarPlato(this, true);
+
         } catch (SQLException ex) {
-            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Principal.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         borrar.setVisible(true);
     }//GEN-LAST:event_jMenuItemBorrarActionPerformed
+
+    private void jMenuDiarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuDiarioActionPerformed
+        // TODO add your handling code here:
+        MenuYBocadillos mb = null;
+        try {
+            mb = new MenuYBocadillos(this, true);
+
+        } catch (SQLException ex) {
+            Logger.getLogger(Principal.class
+                .getName()).log(Level.SEVERE, null, ex);
+        }
+        mb.setVisible(true);
+    }//GEN-LAST:event_jMenuDiarioActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1395,7 +1500,7 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> jComboEnsaladas;
     private javax.swing.JComboBox<String> jComboEntrantes;
     private javax.swing.JComboBox<String> jComboFideua;
-    private javax.swing.JComboBox<String> jComboMesa;
+    private javax.swing.JComboBox<String> jComboMesas;
     private javax.swing.JComboBox<String> jComboPastas;
     private javax.swing.JComboBox<String> jComboPescados;
     private javax.swing.JComboBox<String> jComboPostres;
@@ -1415,12 +1520,11 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenuActualizar;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuDiario;
     private javax.swing.JMenu jMenuInicial;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
-    private javax.swing.JMenuItem jMenuItem4;
-    private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItemActualizar;
     private javax.swing.JMenuItem jMenuItemArroz;
@@ -1433,8 +1537,8 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItemPasta;
     private javax.swing.JMenuItem jMenuItemPescados;
     private javax.swing.JMenuItem jMenuItemPostres;
-    private javax.swing.JMenu jMenuMesas;
     private javax.swing.JMenu jMenuPlatos;
+    private javax.swing.JMenu jMenuPlatos1;
     private javax.swing.JMenuItem jMenuSalir;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;

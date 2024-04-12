@@ -3,14 +3,8 @@ body {
     margin: 0;
     padding: 0;
     background-image: url('fondo_crema.jpg');
+    overflow-x: hidden;
     
-}
-
-#google_translate_element {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    z-index: 100;
 }
 
 h1 {
@@ -24,6 +18,14 @@ h1 {
 }
 
 .plato {
+    width: 300px;
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid black;
+    text-align: center;
+}
+
+.bebidas {
     width: 300px;
     margin: 10px;
     padding: 10px;
@@ -93,4 +95,39 @@ h3 {
     background-color: #333;
     color: #fff;
 }
+
+#google_translate_element {
+    position: fixed;
+    top: 50px;
+    right: 10px;
+    z-index: 1000;
+}
+
+.goog-te-gadget {
+    font-size: 14px; /* Tamaño de fuente */
+    border-color: #ccc; /* Color del borde */
+    border-radius: 5px; /* Borde redondeado */
+}
+
+.goog-te-gadget .goog-te-combo {
+    padding: 3px; /* Espacio interno */
+    background-color: #fff; /* Color de fondo */
+    border-radius: 5px; /* Borde redondeado */
+}
+
+.goog-te-gadget img {
+    display: none; /* Ocultar la imagen de la bandera */
+}
+
+.goog-te-gadget-simple {
+    background-color: #fff; /* Color de fondo */
+    border: 1px solid #ccc; /* Borde */
+    border-radius: 5px; /* Borde redondeado */
+}
+
+.goog-te-gadget-simple .goog-te-menu-value {
+    padding: 3px; /* Espacio interno */
+    color: #333; /* Color del texto */
+}
+
 

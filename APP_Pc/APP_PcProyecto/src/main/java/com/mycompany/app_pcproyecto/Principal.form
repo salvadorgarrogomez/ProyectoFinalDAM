@@ -45,18 +45,14 @@
     </Component>
     <Menu class="javax.swing.JMenuBar" name="jMenuBar1">
       <SubComponents>
-        <Menu class="javax.swing.JMenu" name="jMenuInicial"/>
-        <Menu class="javax.swing.JMenu" name="jMenuMesas">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Mesas"/>
-          </Properties>
+        <Menu class="javax.swing.JMenu" name="jMenuInicial">
         </Menu>
         <Menu class="javax.swing.JMenu" name="jMenuPlatos">
           <Properties>
             <Property name="text" type="java.lang.String" value="Inicio"/>
           </Properties>
           <SubComponents>
-            <Menu class="javax.swing.JMenu" name="jMenuPlatos">
+            <Menu class="javax.swing.JMenu" name="jMenuPlatos1">
               <Properties>
                 <Property name="text" type="java.lang.String" value="A&#xf1;adir Plato"/>
               </Properties>
@@ -133,22 +129,13 @@
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemPostresActionPerformed"/>
                   </Events>
                 </MenuItem>
-                <MenuItem class="javax.swing.JMenuItem" name="jMenuItem5">
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuDiario">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Menu diario"/>
                   </Properties>
-                </MenuItem>
-              </SubComponents>
-            </Menu>
-            <Menu class="javax.swing.JMenu" name="jMenuMesas">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="A&#xf1;adir Mesa"/>
-              </Properties>
-              <SubComponents>
-                <MenuItem class="javax.swing.JMenuItem" name="jMenuItem4">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="Mesa"/>
-                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuDiarioActionPerformed"/>
+                  </Events>
                 </MenuItem>
               </SubComponents>
             </Menu>
@@ -271,7 +258,7 @@
                       <Component id="jComboCaldo" max="32767" attributes="0"/>
                       <Component id="jComboPostres" alignment="0" max="32767" attributes="0"/>
                       <Component id="jComboBebidas" max="32767" attributes="0"/>
-                      <Component id="jComboMesa" alignment="0" max="32767" attributes="0"/>
+                      <Component id="jComboMesas" alignment="0" max="32767" attributes="0"/>
                   </Group>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
@@ -344,7 +331,7 @@
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jComboMesa" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jComboMesas" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
@@ -514,7 +501,7 @@
             <Property name="text" type="java.lang.String" value="Postres:"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JComboBox" name="jComboMesa">
+        <Component class="javax.swing.JComboBox" name="jComboMesas">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
               <StringArray count="0"/>
