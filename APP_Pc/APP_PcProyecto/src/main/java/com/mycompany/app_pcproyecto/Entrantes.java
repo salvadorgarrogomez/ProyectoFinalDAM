@@ -10,15 +10,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 /**
  *
@@ -33,7 +27,7 @@ public class Entrantes extends javax.swing.JDialog {
         boolean mediaRacion = jCheckBoxMedia.isSelected();
         boolean precioUnidad = jCheckBoxUnidad.isSelected();
 
-        try (Statement stmt = connection.createStatement()) {
+        try {
             // Verificar si el plato ya existe
             boolean platoNoExiste = true;
             if (mediaRacion) {
@@ -66,11 +60,20 @@ public class Entrantes extends javax.swing.JDialog {
             ex.printStackTrace();
             // Manejo del error, por ejemplo, mostrar un mensaje al usuario
             JOptionPane.showMessageDialog(this, "El plato no se ha guardado correctamente, volver a intentar.", "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            // Cerrar la conexión al finalizar
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
     }
 
     private void cargarPlatos(Connection connection) throws SQLException {
-        try (Statement stmt = connection.createStatement()) {
+        try {
             String sql = "SELECT id, nombre, precio, racion_completa, media_racion, precio_unidad FROM entrantes ORDER BY id";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 try (ResultSet rs = pstmt.executeQuery()) {
@@ -104,6 +107,15 @@ public class Entrantes extends javax.swing.JDialog {
             ex.printStackTrace();
             // Manejo del error, por ejemplo, mostrar un mensaje al usuario
             JOptionPane.showMessageDialog(this, "Error al cargar los platos.", "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            // Cerrar la conexión al finalizar
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
     }
 
@@ -202,9 +214,8 @@ public class Entrantes extends javax.swing.JDialog {
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItemSalir = new javax.swing.JMenuItem();
-        jMenuEnsaladas = new javax.swing.JMenu();
-        jMenuEnsalada = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
+        jMenuEnsalada = new javax.swing.JMenuItem();
 
         jMenuItem1.setText("jMenuItem1");
 
@@ -266,7 +277,7 @@ public class Entrantes extends javax.swing.JDialog {
             }
         });
 
-        jSeparator1.setBorder(javax.swing.BorderFactory.createLineBorder(null));
+        jSeparator1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         jLabel8.setText("Nombre:");
 
@@ -312,7 +323,7 @@ public class Entrantes extends javax.swing.JDialog {
 
         jMenuBar1.add(jMenu1);
 
-        jMenuEnsaladas.setText("Ensaladas");
+        jMenu2.setText("Ensaladas");
 
         jMenuEnsalada.setText("Añadir plato a las Ensaladas");
         jMenuEnsalada.addActionListener(new java.awt.event.ActionListener() {
@@ -320,11 +331,8 @@ public class Entrantes extends javax.swing.JDialog {
                 jMenuEnsaladaActionPerformed(evt);
             }
         });
-        jMenuEnsaladas.add(jMenuEnsalada);
+        jMenu2.add(jMenuEnsalada);
 
-        jMenuBar1.add(jMenuEnsaladas);
-
-        jMenu2.setText("Ensaladas");
         jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
@@ -338,34 +346,10 @@ public class Entrantes extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jSeparator1)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel5)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addGap(41, 41, 41)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jCheckBoxMedia)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel6)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jCheckBoxUnidad))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jCheckBoxCompleta)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 138, Short.MAX_VALUE)
-                                        .addComponent(jButtonGuardar)
-                                        .addGap(11, 11, 11))))
                             .addComponent(jLabel7)
                             .addComponent(jComboBoxActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel3))
-                                .addGap(66, 66, 66)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jTextNombre, javax.swing.GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE)
-                                    .addComponent(jTextPrecio)))
                             .addComponent(jLabel11)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel10)
@@ -388,7 +372,32 @@ public class Entrantes extends javax.swing.JDialog {
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                         .addComponent(jTextFieldID, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(jTextNombreActualizar, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
-                                        .addComponent(jTextPrecioActualizar)))))
+                                        .addComponent(jTextPrecioActualizar))))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel5)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addComponent(jLabel4)
+                                            .addGap(41, 41, 41)
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addGroup(layout.createSequentialGroup()
+                                                    .addComponent(jCheckBoxMedia)
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                    .addComponent(jLabel6)
+                                                    .addGap(18, 18, 18)
+                                                    .addComponent(jCheckBoxUnidad))
+                                                .addComponent(jCheckBoxCompleta))))
+                                    .addGap(24, 24, 24)
+                                    .addComponent(jButtonGuardar))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel2)
+                                        .addComponent(jLabel3))
+                                    .addGap(66, 66, 66)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(jTextNombre, javax.swing.GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE)
+                                        .addComponent(jTextPrecio)))))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel13)
@@ -524,9 +533,9 @@ public class Entrantes extends javax.swing.JDialog {
                 JOptionPane.showMessageDialog(this, "Error al obtener el ID del plato.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-
+            Connection connection = null;
             try {
-                Connection connection = Principal.connection();
+                connection = Principal.connection();
                 String sql = "SELECT id, nombre, precio, racion_completa, media_racion, precio_unidad FROM entrantes WHERE id = ?";
                 try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                     pstmt.setInt(1, idPlato);// Usar el ID del plato obtenido correctamente
@@ -546,6 +555,15 @@ public class Entrantes extends javax.swing.JDialog {
                 ex.printStackTrace();
                 // Manejo del error, por ejemplo, mostrar un mensaje al usuario
                 JOptionPane.showMessageDialog(this, "Error al obtener los nuevos valores.", "Error", JOptionPane.ERROR_MESSAGE);
+            } finally {
+                // Cerrar la conexión al finalizar
+                if (connection != null) {
+                    try {
+                        connection.close();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                }
             }
         } else {
             // Vaciar los campos
@@ -618,8 +636,9 @@ public class Entrantes extends javax.swing.JDialog {
         }
 
         // Establecer la conexión a la base de datos
+        Connection connection = null;
         try {
-            Connection connection = Principal.connection();
+            connection = Principal.connection();
             // Actualizar el plato en la base de datos
             String sqlUpdate = "UPDATE entrantes SET nombre = ?, precio = ?, racion_completa = ?, media_racion = ?, precio_unidad = ? WHERE id = ?";
             try (PreparedStatement pstmtUpdate = connection.prepareStatement(sqlUpdate)) {
@@ -640,6 +659,15 @@ public class Entrantes extends javax.swing.JDialog {
         } catch (SQLException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error al actualizar el plato.", "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            // Cerrar la conexión al finalizar
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
     }//GEN-LAST:event_jButtonActualizarActionPerformed
 
@@ -659,7 +687,6 @@ public class Entrantes extends javax.swing.JDialog {
         // TODO add your handling code here:
         dispose();
     }//GEN-LAST:event_jMenuItemSalirActionPerformed
-
 
     /**
      * @param args the command line arguments
@@ -743,7 +770,6 @@ public class Entrantes extends javax.swing.JDialog {
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuEnsalada;
-    private javax.swing.JMenu jMenuEnsaladas;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;

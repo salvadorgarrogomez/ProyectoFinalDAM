@@ -27,7 +27,7 @@ public class Postres extends javax.swing.JDialog {
         boolean racionCompleta = jCheckBoxCompleta.isSelected();
         boolean mediaRacion = jCheckBoxMedia.isSelected();
 
-        try (Statement stmt = connection.createStatement()) {
+        try {
             // Verificar si el plato ya existe
             boolean platoNoExiste = true;
             if (mediaRacion) {
@@ -56,11 +56,20 @@ public class Postres extends javax.swing.JDialog {
             ex.printStackTrace();
             // Manejo del error, por ejemplo, mostrar un mensaje al usuario
             JOptionPane.showMessageDialog(this, "El plato no se ha guardado correctamente, volver a intentar.", "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            // Cerrar la conexión al finalizar
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
     }
 
     private void cargarPlatos(Connection connection) throws SQLException {
-        try (Statement stmt = connection.createStatement()) {
+        try {
             String sql = "SELECT id, nombre, precio, racion_completa, media_racion FROM postres ORDER BY id";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 try (ResultSet rs = pstmt.executeQuery()) {
@@ -91,6 +100,15 @@ public class Postres extends javax.swing.JDialog {
             ex.printStackTrace();
             // Manejo del error, por ejemplo, mostrar un mensaje al usuario
             JOptionPane.showMessageDialog(this, "Error al cargar los platos.", "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            // Cerrar la conexión al finalizar
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
     }
 
@@ -403,8 +421,9 @@ public class Postres extends javax.swing.JDialog {
 
             }
 
+            Connection connection = null;
             try {
-                Connection connection = Principal.connection();
+                connection = Principal.connection();
                 String sql = "SELECT id, nombre, precio, racion_completa, media_racion FROM postres WHERE id = ?";
                 try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                     pstmt.setInt(1, idPlato);// Usar el ID del plato obtenido correctamente
@@ -423,6 +442,15 @@ public class Postres extends javax.swing.JDialog {
                 ex.printStackTrace();
                 // Manejo del error, por ejemplo, mostrar un mensaje al usuario
                 JOptionPane.showMessageDialog(this, "Error al obtener los datos del plato.", "Error", JOptionPane.ERROR_MESSAGE);
+            } finally {
+                // Cerrar la conexión al finalizar
+                if (connection != null) {
+                    try {
+                        connection.close();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                }
             }
         } else {
             // Vaciar los campos
@@ -496,8 +524,9 @@ public class Postres extends javax.swing.JDialog {
             return;
         }
 
+        Connection connection = null;
         try {
-            Connection connection = Principal.connection();
+            connection = Principal.connection();
             // Actualizar el plato en la base de datos
             String sqlUpdate = "UPDATE postres SET nombre = ?, precio = ?, racion_completa = ?, media_racion = ? WHERE id = ?";
             try (PreparedStatement pstmtUpdate = connection.prepareStatement(sqlUpdate)) {
@@ -517,6 +546,15 @@ public class Postres extends javax.swing.JDialog {
         } catch (SQLException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error al actualizar el plato.", "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            // Cerrar la conexión al finalizar
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
     }//GEN-LAST:event_jButtonActualizarActionPerformed
 

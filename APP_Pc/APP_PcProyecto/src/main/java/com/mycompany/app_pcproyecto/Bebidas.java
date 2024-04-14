@@ -46,7 +46,7 @@ public class Bebidas extends javax.swing.JDialog {
 
             if (bebidaNoExiste) {
                 String sql = "INSERT INTO bebidas (nombre, precio, tipo_refresco, tipo_alcohol, tipo_copa, tipo_tanque, tipo_cubata)"
-                        + "VALUES (?, ?, ?, ?, ?, ?)";
+                        + "VALUES (?, ?, ?, ?, ?, ?, ?)";
                 try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                     pstmt.setString(1, nombre);
                     pstmt.setBigDecimal(2, precio);
@@ -68,6 +68,15 @@ public class Bebidas extends javax.swing.JDialog {
             ex.printStackTrace();
             // Manejo del error, por ejemplo, mostrar un mensaje al usuario
             JOptionPane.showMessageDialog(this, "La bebida no se ha guardado correctamente, volver a intentar.", "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            // Cerrar la conexión al finalizar
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
     }
 
@@ -113,6 +122,15 @@ public class Bebidas extends javax.swing.JDialog {
             ex.printStackTrace();
             // Manejo del error, por ejemplo, mostrar un mensaje al usuario
             JOptionPane.showMessageDialog(this, "Error al cargar las bebidas.", "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            // Cerrar la conexión al finalizar
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
     }
 
@@ -238,7 +256,7 @@ public class Bebidas extends javax.swing.JDialog {
             }
         });
 
-        jLabel11.setText("Alcohol");
+        jLabel11.setText("Cerveza");
 
         jLabel10.setText("Refresco");
 
@@ -246,7 +264,7 @@ public class Bebidas extends javax.swing.JDialog {
 
         jLabel2.setText("Nombre:");
 
-        jLabel5.setText("Alcohol");
+        jLabel5.setText("Cerveza");
 
         jTextFieldID.setEditable(false);
 
@@ -363,82 +381,85 @@ public class Bebidas extends javax.swing.JDialog {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 351, Short.MAX_VALUE)
+            .addComponent(jSeparator1)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jLabel1)
-                        .addComponent(jLabel13)
-                        .addComponent(jLabel9)
-                        .addComponent(jLabel7)
-                        .addComponent(jComboBoxActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(layout.createSequentialGroup()
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel10)
-                                .addComponent(jLabel11))
-                            .addGap(18, 18, 18)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jCheckBoxAlcoholActualizar)
-                                .addComponent(jCheckBoxRefrescoActualizar))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel15)
-                                .addComponent(jLabel16))
-                            .addGap(18, 18, 18)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jCheckBoxTanqueActualizar)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jCheckBoxCopaActualizar)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(jLabel17)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(jCheckBoxCubataActualizar))))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jButtonActualizar)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel13, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jComboBoxActualizar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel10)
+                            .addComponent(jLabel11))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jCheckBoxAlcoholActualizar)
+                            .addComponent(jCheckBoxRefrescoActualizar))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel15)
+                            .addComponent(jLabel16))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jCheckBoxTanqueActualizar)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel8)
-                                .addGap(52, 52, 52)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jTextFieldID, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(186, 186, 186))
-                                    .addComponent(jTextNombreActualizar)
-                                    .addComponent(jTextPrecioActualizar))))
-                        .addComponent(jButtonGuardar, javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jCheckBoxCopaActualizar)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel17)
+                                .addGap(18, 18, 18)
+                                .addComponent(jCheckBoxCubataActualizar))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jButtonActualizar)
                         .addGroup(layout.createSequentialGroup()
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel5)
+                            .addComponent(jLabel8)
+                            .addGap(52, 52, 52)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel4)
-                                    .addGap(41, 41, 41)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jCheckBoxAlcohol)
-                                        .addComponent(jCheckBoxRefresco))))
-                            .addGap(18, 18, 18)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel12)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel6)
-                                    .addGap(41, 41, 41)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jCheckBoxTanque)
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addComponent(jCheckBoxCopa)
-                                            .addGap(18, 18, 18)
-                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addComponent(jLabel14)
-                                                .addGroup(layout.createSequentialGroup()
-                                                    .addGap(69, 69, 69)
-                                                    .addComponent(jCheckBoxCubata)))))))))
+                                    .addComponent(jTextFieldID, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(186, 186, 186))
+                                .addComponent(jTextNombreActualizar)
+                                .addComponent(jTextPrecioActualizar))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel5)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel4)
+                                .addGap(41, 41, 41)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jCheckBoxAlcohol)
+                                    .addComponent(jCheckBoxRefresco))))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel12)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel6)
+                                .addGap(41, 41, 41)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jCheckBoxTanque)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jCheckBoxCopa)
+                                        .addGap(18, 18, 18)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel14)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addGap(69, 69, 69)
+                                                .addComponent(jCheckBoxCubata))))))))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addComponent(jLabel3))
                         .addGap(58, 58, 58)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jTextNombre, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
-                            .addComponent(jTextPrecio)))))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTextPrecio, javax.swing.GroupLayout.DEFAULT_SIZE, 234, Short.MAX_VALUE)
+                            .addComponent(jTextNombre))
+                        .addContainerGap())))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButtonGuardar)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -569,8 +590,9 @@ public class Bebidas extends javax.swing.JDialog {
         }
 
         // Establecer la conexión a la base de datos
+        Connection connection = null;
         try {
-            Connection connection = Principal.connection();
+            connection = Principal.connection();
             // Actualizar el plato en la base de datos
             String sqlUpdate = "UPDATE bebidas SET nombre = ?, precio = ?, tipo_refresco = ?, tipo_alcohol = ?, tipo_copa = ?, tipo_tanque = ?, tipo_cubata = ? WHERE id = ?";
             try (PreparedStatement pstmtUpdate = connection.prepareStatement(sqlUpdate)) {
@@ -592,6 +614,15 @@ public class Bebidas extends javax.swing.JDialog {
         } catch (SQLException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error al actualizar el plato.", "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            // Cerrar la conexión al finalizar
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
     }//GEN-LAST:event_jButtonActualizarActionPerformed
 
@@ -616,14 +647,15 @@ public class Bebidas extends javax.swing.JDialog {
             }
             int idPlato;
             try {
-                idPlato = Integer.parseInt(jTextFieldID.getText().trim());
+                idPlato = Integer.parseInt(parts[0].trim());
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Error al obtener el ID de la bebida.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
+            Connection connection = null;
             try {
-                Connection connection = Principal.connection();
+                connection = Principal.connection();
                 String sql = "SELECT id, nombre, precio, tipo_refresco, tipo_alcohol, tipo_copa, tipo_tanque, tipo_cubata FROM bebidas WHERE id = ?";
                 try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                     pstmt.setInt(1, idPlato);// Usar el ID del plato obtenido correctamente
@@ -646,6 +678,15 @@ public class Bebidas extends javax.swing.JDialog {
                 ex.printStackTrace();
                 // Manejo del error, por ejemplo, mostrar un mensaje al usuario
                 JOptionPane.showMessageDialog(this, "Error al obtener los nuevos valores.", "Error", JOptionPane.ERROR_MESSAGE);
+            } finally {
+                // Cerrar la conexión al finalizar
+                if (connection != null) {
+                    try {
+                        connection.close();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                }
             }
         } else {
             // Vaciar los campos

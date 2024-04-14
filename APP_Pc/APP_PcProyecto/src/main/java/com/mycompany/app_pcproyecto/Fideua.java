@@ -27,7 +27,7 @@ public class Fideua extends javax.swing.JDialog {
         boolean racionCompleta = jCheckBoxCompleta.isSelected();
         boolean mediaRacion = jCheckBoxMedia.isSelected();
 
-        try (Statement stmt = connection.createStatement()) {
+        try {
             // Verificar si el plato ya existe
             boolean platoNoExiste = true;
             if (mediaRacion) {
@@ -57,12 +57,21 @@ public class Fideua extends javax.swing.JDialog {
             ex.printStackTrace();
             // Manejo del error, por ejemplo, mostrar un mensaje al usuario
             JOptionPane.showMessageDialog(this, "El plato no se ha guardado correctamente, volver a intentar.", "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            // Cerrar la conexión al finalizar
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
     }
 
     private void cargarPlatos(Connection connection) throws SQLException {
 
-        try (Statement stmt = connection.createStatement()) {
+        try {
             String sql = "SELECT id, nombre, precio, racion_completa, media_racion FROM fideua ORDER BY id";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 try (ResultSet rs = pstmt.executeQuery()) {
@@ -93,6 +102,15 @@ public class Fideua extends javax.swing.JDialog {
             ex.printStackTrace();
             // Manejo del error, por ejemplo, mostrar un mensaje al usuario
             JOptionPane.showMessageDialog(this, "Error al cargar los platos.", "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            // Cerrar la conexión al finalizar
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
     }
 
@@ -276,8 +294,16 @@ public class Fideua extends javax.swing.JDialog {
             .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 364, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel3))
+                        .addGap(58, 58, 58)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jTextPrecio, javax.swing.GroupLayout.DEFAULT_SIZE, 234, Short.MAX_VALUE)
+                            .addComponent(jTextNombre)))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(jLabel5)
                         .addComponent(jLabel1)
                         .addGroup(layout.createSequentialGroup()
@@ -307,15 +333,8 @@ public class Fideua extends javax.swing.JDialog {
                                     .addComponent(jTextFieldID, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jTextNombreActualizar, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
                                     .addComponent(jTextPrecioActualizar))))
-                        .addComponent(jButtonGuardar, javax.swing.GroupLayout.Alignment.TRAILING))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3))
-                        .addGap(58, 58, 58)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jTextNombre, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
-                            .addComponent(jTextPrecio)))))
+                        .addComponent(jButtonGuardar, javax.swing.GroupLayout.Alignment.TRAILING)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -432,8 +451,9 @@ public class Fideua extends javax.swing.JDialog {
                     return;
                 }
 
+                Connection connection = null;
                 try {
-                    Connection connection = Principal.connection();
+                    connection = Principal.connection();
                     String sql = "SELECT id, nombre, precio, racion_completa, media_racion FROM fideua WHERE id = ?";
                     try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                         pstmt.setInt(1, idPlato);// Usar el ID del plato obtenido correctamente
@@ -453,6 +473,15 @@ public class Fideua extends javax.swing.JDialog {
                     // Manejo del error, por ejemplo, mostrar un mensaje al usuario
                     JOptionPane.showMessageDialog(this, "Error al obtener los datos del plato.", "Error", JOptionPane.ERROR_MESSAGE);
 
+                } finally {
+                    // Cerrar la conexión al finalizar
+                    if (connection != null) {
+                        try {
+                            connection.close();
+                        } catch (SQLException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
                 }
             } else {
                 // Vaciar los campos
@@ -505,8 +534,9 @@ public class Fideua extends javax.swing.JDialog {
             return;
         }
 
+        Connection connection = null;
         try {
-            Connection connection = Principal.connection();
+            connection = Principal.connection();
             // Actualizar el plato en la base de datos
             String sqlUpdate = "UPDATE fideua SET nombre = ?, precio = ?, racion_completa = ?, media_racion = ? WHERE id = ?";
             try (PreparedStatement pstmtUpdate = connection.prepareStatement(sqlUpdate)) {
@@ -526,6 +556,15 @@ public class Fideua extends javax.swing.JDialog {
         } catch (SQLException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error al actualizar el plato.", "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            // Cerrar la conexión al finalizar
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
     }//GEN-LAST:event_jButtonActualizarActionPerformed
 

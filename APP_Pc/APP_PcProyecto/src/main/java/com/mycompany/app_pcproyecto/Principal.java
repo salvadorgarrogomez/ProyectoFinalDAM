@@ -4,10 +4,11 @@
  */
 package com.mycompany.app_pcproyecto;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,6 +16,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListCellRenderer;
@@ -22,8 +25,8 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 /**
  *
@@ -34,6 +37,9 @@ public class Principal extends javax.swing.JFrame {
     private static final String URL = "jdbc:postgresql://192.168.1.138:5432/Bar_El_Escobar"; //En su defecto localhost, para trabajar en local
     private static final String USUARIO = "postgres";
     private static final String CONTRASEÑA = "12345";
+
+    private Map<String, JTextArea> mesasTextArea = new HashMap<>();
+    private Map<JTextArea, JTextField> mapaPrecios = new HashMap<>();
 
     /**
      *
@@ -46,6 +52,7 @@ public class Principal extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Error de conexión: " + ex.getMessage() + "\nEquipo servidor, ¿apagado o encendido? \nRevisar.", "Error", JOptionPane.ERROR_MESSAGE);
             return null; // Devuelve null si hay un error de conexión
         }
+
     }
 
 // Método para crear las tablas en la base de datos al iniciar la aplicación
@@ -164,20 +171,25 @@ public class Principal extends javax.swing.JFrame {
         }
     }
 
-    private static void insertarDatosSerieMesas(Connection connection) throws SQLException {
-        // Insertar datos de serie en la tabla 'mesas'
-        String insertarDatosSerie = "INSERT INTO mesas (numero) VALUES (?)";
+    private void insertarDatosSerieMesas(Connection connection) throws SQLException {
+        // Insertar datos de serie en la tabla 'mesas' solo si no existen
+        String insertarDatosSerie = "INSERT INTO mesas (numero) SELECT * FROM (SELECT ?) AS tmp WHERE NOT EXISTS (SELECT numero FROM mesas WHERE numero = ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(insertarDatosSerie)) {
             for (int i = 1; i <= 9; i++) {
                 pstmt.setInt(1, i);
+                pstmt.setInt(2, i);
                 pstmt.addBatch();
             }
             pstmt.executeBatch();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            // Manejo del error, por ejemplo, mostrar un mensaje al usuario
+            JOptionPane.showMessageDialog(this, "Error al cargar las mesas.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void cargarPlatosArroz(Connection connection) throws SQLException {
-        try (Statement stmt = connection.createStatement()) {
+    private void cargarPlatosArroz(Connection connection) {
+        try {
             String sql = "SELECT id, nombre, precio, racion_completa, media_racion FROM arroces ORDER BY id";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 try (ResultSet rs = pstmt.executeQuery()) {
@@ -212,7 +224,7 @@ public class Principal extends javax.swing.JFrame {
     }
 
     private void cargarPlatosCaldos(Connection connection) throws SQLException {
-        try (Statement stmt = connection.createStatement()) {
+        try {
             String sql = "SELECT id, nombre, precio, racion_completa, media_racion FROM caldos ORDER BY id";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 try (ResultSet rs = pstmt.executeQuery()) {
@@ -247,7 +259,7 @@ public class Principal extends javax.swing.JFrame {
     }
 
     private void cargarPlatosCarnes(Connection connection) throws SQLException {
-        try (Statement stmt = connection.createStatement()) {
+        try {
             String sql = "SELECT id, nombre, precio, racion_completa, media_racion FROM carnes ORDER BY id";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 try (ResultSet rs = pstmt.executeQuery()) {
@@ -282,7 +294,7 @@ public class Principal extends javax.swing.JFrame {
     }
 
     private void cargarPlatosCombinados(Connection connection) throws SQLException {
-        try (Statement stmt = connection.createStatement()) {
+        try {
             String sql = "SELECT id, nombre, precio, racion_completa, media_racion FROM combinados ORDER BY id";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 try (ResultSet rs = pstmt.executeQuery()) {
@@ -317,7 +329,7 @@ public class Principal extends javax.swing.JFrame {
     }
 
     private void cargarPlatosEnsaladas(Connection connection) throws SQLException {
-        try (Statement stmt = connection.createStatement()) {
+        try {
             String sql = "SELECT id, nombre, precio, racion_completa, media_racion FROM ensaladas ORDER BY id";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 try (ResultSet rs = pstmt.executeQuery()) {
@@ -352,7 +364,7 @@ public class Principal extends javax.swing.JFrame {
     }
 
     private void cargarPlatosEntrantes(Connection connection) throws SQLException {
-        try (Statement stmt = connection.createStatement()) {
+        try {
             String sql = "SELECT id, nombre, precio, racion_completa, media_racion, precio_unidad FROM entrantes ORDER BY id";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 try (ResultSet rs = pstmt.executeQuery()) {
@@ -390,7 +402,7 @@ public class Principal extends javax.swing.JFrame {
     }
 
     private void cargarPlatosFideua(Connection connection) throws SQLException {
-        try (Statement stmt = connection.createStatement()) {
+        try {
             String sql = "SELECT id, nombre, precio, racion_completa, media_racion FROM fideua ORDER BY id";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 try (ResultSet rs = pstmt.executeQuery()) {
@@ -425,7 +437,7 @@ public class Principal extends javax.swing.JFrame {
     }
 
     private void cargarPlatosPasta(Connection connection) throws SQLException {
-        try (Statement stmt = connection.createStatement()) {
+        try {
             String sql = "SELECT id, nombre, precio, racion_completa, media_racion FROM pasta ORDER BY id";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 try (ResultSet rs = pstmt.executeQuery()) {
@@ -460,7 +472,7 @@ public class Principal extends javax.swing.JFrame {
     }
 
     private void cargarPlatosPescados(Connection connection) throws SQLException {
-        try (Statement stmt = connection.createStatement()) {
+        try {
             String sql = "SELECT id, nombre, precio, racion_completa, media_racion FROM pescados ORDER BY id";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 try (ResultSet rs = pstmt.executeQuery()) {
@@ -495,7 +507,7 @@ public class Principal extends javax.swing.JFrame {
     }
 
     private void cargarPlatosPostres(Connection connection) throws SQLException {
-        try (Statement stmt = connection.createStatement()) {
+        try {
             String sql = "SELECT id, nombre, precio, racion_completa, media_racion FROM postres ORDER BY id";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 try (ResultSet rs = pstmt.executeQuery()) {
@@ -531,8 +543,7 @@ public class Principal extends javax.swing.JFrame {
     }
 
     private void cargarBebidas(Connection connection) throws SQLException {
-
-        try (Statement stmt = connection.createStatement()) {
+        try {
             String sql = "SELECT id, nombre, precio, tipo_refresco, tipo_alcohol, tipo_copa, tipo_tanque, tipo_cubata FROM bebidas ORDER BY id";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 try (ResultSet rs = pstmt.executeQuery()) {
@@ -577,7 +588,7 @@ public class Principal extends javax.swing.JFrame {
     }
 
     private void cargarMenuOBocadillos(Connection connection) throws SQLException {
-        try (Statement stmt = connection.createStatement()) {
+        try {
             String sql = "SELECT id, nombre, precio, menu, bocadillo FROM menu_bocadillos ORDER BY id";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 try (ResultSet rs = pstmt.executeQuery()) {
@@ -608,6 +619,24 @@ public class Principal extends javax.swing.JFrame {
             ex.printStackTrace();
             // Manejo del error, por ejemplo, mostrar un mensaje al usuario
             JOptionPane.showMessageDialog(this, "Error al cargar los platos.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void cargarMesas(Connection connection) throws SQLException {
+        try {
+            String sql = "SELECT id, numero FROM mesas ORDER BY id"; // Consulta para obtener los números de las mesas
+            try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    jComboMesas.removeAllItems(); // Eliminar todos los elementos existentes del JComboBox
+                    while (rs.next()) {
+                        int numeroMesa = rs.getInt("numero");
+                        jComboMesas.addItem(String.valueOf(numeroMesa)); // Agregar cada número de mesa al JComboBox
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al cargar las mesas: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -651,62 +680,211 @@ public class Principal extends javax.swing.JFrame {
         comboBox.setPreferredSize(new Dimension(anchoMaximo, comboBox.getPreferredSize().height));
     }
 
-    private void cargarMesas(Connection connection) throws SQLException {
-        try {
-            String sql = "SELECT id, numero FROM mesas ORDER BY id"; // Consulta para obtener los números de las mesas
-            try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-                try (ResultSet rs = pstmt.executeQuery()) {
-                    jComboMesas.removeAllItems(); // Eliminar todos los elementos existentes del JComboBox
-                    while (rs.next()) {
-                        int numeroMesa = rs.getInt("numero");
-                        jComboMesas.addItem(String.valueOf(numeroMesa)); // Agregar cada número de mesa al JComboBox
-                    }
+    private void limpiarCampos() {
+        jTextFieldMesa.setText("");
+        jTextAreaElementosMenu.setText("");
+    }
+
+    private BigDecimal calcularSumatorioPrecios(String datos) {
+        // Dividir los datos en líneas
+        String[] lineas = datos.split("\\n");
+
+        BigDecimal total = BigDecimal.ZERO;
+
+        // Recorrer cada línea para extraer y sumar los precios
+        for (String linea : lineas) {
+            // Dividir la línea en campos usando el guion como delimitador
+            String[] campos = linea.split(" - ");
+            if (campos.length >= 2) {
+                try {
+                    // Obtener el precio de la línea y convertirlo a BigDecimal
+                    String precioString = campos[campos.length - 1].trim();
+                    // Eliminar el símbolo de moneda si lo hay
+                    precioString = precioString.replaceAll("[^0-9.]", "");
+                    BigDecimal precio = new BigDecimal(precioString);
+                    // Sumar el precio al total
+                    total = total.add(precio);
+                } catch (NumberFormatException e) {
+                    // Si hay un error al convertir el precio, simplemente ignora esta línea
                 }
+            }
+        }
+
+        return total;
+    }
+
+    private void calcularYActualizarTotal(JTextArea jTextArea, JTextField jTextField) {
+        String datos = jTextArea.getText();
+        BigDecimal total = calcularSumatorioPrecios(datos);
+        jTextField.setText(total.toString());
+    }
+
+    public Principal() {
+        try {
+            initComponents(); // Inicializar los componentes de la interfaz gráfica
+
+            // Configurar la ventana para que se maximice al abrirse
+            // this.setExtendedState(this.MAXIMIZED_BOTH);
+            this.setSize(1400, 700);
+            setLocationRelativeTo(null);
+
+            // Crear las tablas en la base de datos
+            Connection connection = connection();
+            if (connection != null) {
+                crearTablas(connection);
+                insertarDatosSerieMesas(connection);
+
+                // Cargar los platos de cada categoría
+                cargarPlatosArroz(connection);
+                cargarPlatosCaldos(connection);
+                cargarPlatosCarnes(connection);
+                cargarPlatosCombinados(connection);
+                cargarPlatosEnsaladas(connection);
+                cargarPlatosEntrantes(connection);
+                cargarPlatosFideua(connection);
+                cargarPlatosPasta(connection);
+                cargarPlatosPescados(connection);
+                cargarPlatosPostres(connection);
+                cargarBebidas(connection);
+                cargarMenuOBocadillos(connection);
+                cargarMesas(connection);
+
+                // Configurar los JComboBox
+                configurarComboBox(jComboPostres, "< Selecciona un plato >");
+                configurarComboBox(jComboPescados, "< Selecciona un plato >");
+                configurarComboBox(jComboPastas, "< Selecciona un plato >");
+                configurarComboBox(jComboFideua, "< Selecciona un plato >");
+                configurarComboBox(jComboEntrantes, "< Selecciona un plato >");
+                configurarComboBox(jComboEnsaladas, "< Selecciona un plato >");
+                configurarComboBox(jComboCombinados, "< Selecciona un plato >");
+                configurarComboBox(jComboCarnes, "< Selecciona un plato >");
+                configurarComboBox(jComboCaldo, "< Selecciona un plato >");
+                configurarComboBox(jComboArroces, "< Selecciona un plato >");
+                configurarComboBox(jComboBebidas, "< Selecciona una bebida >");
+                configurarComboBox(jComboDiario, "< Selecciona un dato >");
+                configurarComboBox(jComboMesas, "< Selecciona una mesa >");
+
+                mesasTextArea.put("Mesa: 1", jTextAreaMesa1);
+                mesasTextArea.put("Mesa: 2", jTextAreaMesa2);
+                mesasTextArea.put("Mesa: 3", jTextAreaMesa3);
+                mesasTextArea.put("Mesa: 4", jTextAreaMesa4);
+                mesasTextArea.put("Mesa: 5", jTextAreaMesa5);
+                mesasTextArea.put("Mesa: 6", jTextAreaMesa6);
+                mesasTextArea.put("Mesa: 7", jTextAreaMesa7);
+                mesasTextArea.put("Mesa: 8", jTextAreaMesa8);
+                mesasTextArea.put("Mesa: 9", jTextAreaMesa9);
+
+                mapaPrecios.put(jTextAreaMesa1, jTextPagoMesa1);
+                mapaPrecios.put(jTextAreaMesa2, jTextPagoMesa2);
+                mapaPrecios.put(jTextAreaMesa3, jTextPagoMesa3);
+                mapaPrecios.put(jTextAreaMesa4, jTextPagoMesa4);
+                mapaPrecios.put(jTextAreaMesa5, jTextPagoMesa5);
+                mapaPrecios.put(jTextAreaMesa6, jTextPagoMesa6);
+                mapaPrecios.put(jTextAreaMesa7, jTextPagoMesa7);
+                mapaPrecios.put(jTextAreaMesa8, jTextPagoMesa8);
+                mapaPrecios.put(jTextAreaMesa9, jTextPagoMesa9);
+
+                // Agregar ActionListener a cada JComboBox para actualizar el JTextArea
+                jComboEntrantes.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        actualizarComandas(jComboEntrantes.getSelectedItem());
+                    }
+                });
+
+                jComboBebidas.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        actualizarComandas(jComboBebidas.getSelectedItem());
+                    }
+                });
+
+                jComboCarnes.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        actualizarComandas(jComboCarnes.getSelectedItem());
+                    }
+                });
+
+                jComboCaldo.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        actualizarComandas(jComboCaldo.getSelectedItem());
+                    }
+                });
+
+                jComboArroces.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        actualizarComandas(jComboArroces.getSelectedItem());
+                    }
+                });
+
+                jComboPostres.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        actualizarComandas(jComboPostres.getSelectedItem());
+                    }
+                });
+
+                jComboPescados.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        actualizarComandas(jComboPescados.getSelectedItem());
+                    }
+                });
+
+                jComboPastas.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        actualizarComandas(jComboPastas.getSelectedItem());
+                    }
+                });
+
+                jComboFideua.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        actualizarComandas(jComboFideua.getSelectedItem());
+                    }
+                });
+
+                jComboEnsaladas.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        actualizarComandas(jComboEnsaladas.getSelectedItem());
+                    }
+                });
+
+                jComboCombinados.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        actualizarComandas(jComboCombinados.getSelectedItem());
+                    }
+                });
+
+                jComboDiario.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        actualizarComandas(jComboDiario.getSelectedItem());
+                    }
+                });
+
+                jComboMesas.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        actualizarMesa(jComboMesas.getSelectedItem());
+                    }
+                });
+
+                // Repetir para los demás JComboBox
+            } else {
+                JOptionPane.showMessageDialog(this, "No se pudo establecer la conexión a la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al cargar las mesas: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al inicializar la aplicación: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    public Principal() throws SQLException {
-        // Crear las tablas en la base de datos
-        crearTablas(connection());
-        insertarDatosSerieMesas(connection());
-        cargarMesas(connection());
-        initComponents(); // Inicializar los componentes de la interfaz gráfica
+    private void actualizarComandas(Object selectedItem) {
+        if (selectedItem != null) {
+            // Agregar el elemento seleccionado al JTextArea
+            jTextAreaElementosMenu.append(selectedItem.toString() + "\n");
+        }
+    }
 
-        // Configurar la ventana para que se maximice al abrirse
-        this.setExtendedState(this.MAXIMIZED_BOTH);
-
-        // Cargar los platos de cada categoría
-        cargarPlatosArroz(connection());
-        cargarPlatosCaldos(connection());
-        cargarPlatosCarnes(connection());
-        cargarPlatosCombinados(connection());
-        cargarPlatosEnsaladas(connection());
-        cargarPlatosEntrantes(connection());
-        cargarPlatosFideua(connection());
-        cargarPlatosPasta(connection());
-        cargarPlatosPescados(connection());
-        cargarPlatosPostres(connection());
-        cargarBebidas(connection());
-        cargarMenuOBocadillos(connection());
-
-        // Configurar los JComboBox
-        configurarComboBox(jComboPostres, "< Selecciona un plato >");
-        configurarComboBox(jComboPescados, "< Selecciona un plato >");
-        configurarComboBox(jComboPastas, "< Selecciona un plato >");
-        configurarComboBox(jComboFideua, "< Selecciona un plato >");
-        configurarComboBox(jComboEntrantes, "< Selecciona un plato >");
-        configurarComboBox(jComboEnsaladas, "< Selecciona un plato >");
-        configurarComboBox(jComboCombinados, "< Selecciona un plato >");
-        configurarComboBox(jComboCarnes, "< Selecciona un plato >");
-        configurarComboBox(jComboCaldo, "< Selecciona un plato >");
-        configurarComboBox(jComboArroces, "< Selecciona un plato >");
-        configurarComboBox(jComboBebidas, "< Selecciona una bebida >");
-        configurarComboBox(jComboDiario, "< Selecciona un dato >");
-        configurarComboBox(jComboMesas, "< Selecciona un dato >");
+    private void actualizarMesa(Object selectedItem) {
+        if (selectedItem != null) {
+            // Establecer el elemento seleccionado en el JTextField
+            jTextFieldMesa.setText("Mesa: " + selectedItem.toString());
+        }
     }
 
     /**
@@ -736,7 +914,6 @@ public class Principal extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
-        jComboMesas = new javax.swing.JComboBox<>();
         jComboEntrantes = new javax.swing.JComboBox<>();
         jComboCombinados = new javax.swing.JComboBox<>();
         jComboCaldo = new javax.swing.JComboBox<>();
@@ -753,7 +930,7 @@ public class Principal extends javax.swing.JFrame {
         jTextFieldMesa = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextAreaElementosMenu = new javax.swing.JTextArea();
-        jButton1 = new javax.swing.JButton();
+        jButtonGuardarMesa = new javax.swing.JButton();
         jLabel13 = new javax.swing.JLabel();
         jComboDiario = new javax.swing.JComboBox<>();
         jTextField1 = new javax.swing.JTextField();
@@ -783,6 +960,36 @@ public class Principal extends javax.swing.JFrame {
         jTextAreaMesa7 = new javax.swing.JTextArea();
         jScrollPane10 = new javax.swing.JScrollPane();
         jTextAreaMesa9 = new javax.swing.JTextArea();
+        jComboMesas = new javax.swing.JComboBox<>();
+        jTextPagoMesa1 = new javax.swing.JTextField();
+        jTextPagoMesa2 = new javax.swing.JTextField();
+        jTextPagoMesa3 = new javax.swing.JTextField();
+        jTextPagoMesa4 = new javax.swing.JTextField();
+        jTextPagoMesa5 = new javax.swing.JTextField();
+        jTextPagoMesa6 = new javax.swing.JTextField();
+        jTextPagoMesa7 = new javax.swing.JTextField();
+        jTextPagoMesa8 = new javax.swing.JTextField();
+        jTextPagoMesa9 = new javax.swing.JTextField();
+        jLabel14 = new javax.swing.JLabel();
+        jButtonConfirmar = new javax.swing.JButton();
+        jCheckBox1 = new javax.swing.JCheckBox();
+        jLabel15 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
+        jLabel20 = new javax.swing.JLabel();
+        jLabel21 = new javax.swing.JLabel();
+        jLabel22 = new javax.swing.JLabel();
+        jLabel23 = new javax.swing.JLabel();
+        jCheckBox2 = new javax.swing.JCheckBox();
+        jCheckBox3 = new javax.swing.JCheckBox();
+        jCheckBox4 = new javax.swing.JCheckBox();
+        jCheckBox5 = new javax.swing.JCheckBox();
+        jCheckBox6 = new javax.swing.JCheckBox();
+        jCheckBox7 = new javax.swing.JCheckBox();
+        jCheckBox8 = new javax.swing.JCheckBox();
+        jCheckBox9 = new javax.swing.JCheckBox();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenuInicial = new javax.swing.JMenu();
         jMenuPlatos = new javax.swing.JMenu();
@@ -848,7 +1055,12 @@ public class Principal extends javax.swing.JFrame {
         jTextAreaElementosMenu.setRows(5);
         jScrollPane2.setViewportView(jTextAreaElementosMenu);
 
-        jButton1.setText("Guardar Mesa");
+        jButtonGuardarMesa.setText("Guardar Mesa");
+        jButtonGuardarMesa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonGuardarMesaActionPerformed(evt);
+            }
+        });
 
         jLabel13.setText("Menu diario y bocadillos:");
 
@@ -927,6 +1139,102 @@ public class Principal extends javax.swing.JFrame {
         jTextAreaMesa9.setRows(5);
         jScrollPane10.setViewportView(jTextAreaMesa9);
 
+        jComboMesas.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+
+        jTextPagoMesa1.setEditable(false);
+
+        jTextPagoMesa2.setEditable(false);
+
+        jTextPagoMesa3.setEditable(false);
+
+        jTextPagoMesa4.setEditable(false);
+
+        jTextPagoMesa5.setEditable(false);
+
+        jTextPagoMesa6.setEditable(false);
+
+        jTextPagoMesa7.setEditable(false);
+
+        jTextPagoMesa8.setEditable(false);
+
+        jTextPagoMesa9.setEditable(false);
+
+        jLabel14.setText("Pendiente de pago:");
+
+        jButtonConfirmar.setText("Confirmar el pago");
+
+        jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBox1ActionPerformed(evt);
+            }
+        });
+
+        jLabel15.setText("Mesa 1:");
+
+        jLabel16.setText("Mesa 3:");
+
+        jLabel17.setText("Mesa 4:");
+
+        jLabel18.setText("Mesa 5:");
+
+        jLabel19.setText("Mesa 6:");
+
+        jLabel20.setText("Mesa 2:");
+
+        jLabel21.setText("Mesa 7:");
+
+        jLabel22.setText("Mesa 8:");
+
+        jLabel23.setText("Mesa 9:");
+
+        jCheckBox2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBox2ActionPerformed(evt);
+            }
+        });
+
+        jCheckBox3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBox3ActionPerformed(evt);
+            }
+        });
+
+        jCheckBox4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBox4ActionPerformed(evt);
+            }
+        });
+
+        jCheckBox5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBox5ActionPerformed(evt);
+            }
+        });
+
+        jCheckBox6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBox6ActionPerformed(evt);
+            }
+        });
+
+        jCheckBox7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBox7ActionPerformed(evt);
+            }
+        });
+
+        jCheckBox8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBox8ActionPerformed(evt);
+            }
+        });
+
+        jCheckBox9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBox9ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -961,17 +1269,83 @@ public class Principal extends javax.swing.JFrame {
                     .addComponent(jComboCaldo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jComboPostres, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jComboBebidas, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jComboMesas, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jComboMesas, javax.swing.GroupLayout.Alignment.TRAILING, 0, 125, Short.MAX_VALUE))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
+                                    .addComponent(jTextFieldMesa)))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(88, 88, 88)
+                                .addComponent(jButtonGuardarMesa)))
+                        .addGap(7, 7, 7))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
-                            .addComponent(jTextFieldMesa)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(88, 88, 88)
-                        .addComponent(jButton1)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel15)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jCheckBox1))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel21)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jCheckBox7))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel23)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jCheckBox9))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel18)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jCheckBox5))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel16)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jCheckBox3)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jTextPagoMesa9, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                            .addComponent(jTextPagoMesa5, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGap(18, 18, 18)
+                                            .addComponent(jLabel19)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(jCheckBox6))
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                            .addComponent(jTextPagoMesa7, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGap(18, 18, 18)
+                                            .addComponent(jLabel22)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(jCheckBox8))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                            .addComponent(jTextPagoMesa1, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGap(18, 18, 18)
+                                            .addComponent(jLabel20)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(jCheckBox2))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                            .addComponent(jTextPagoMesa3, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGap(18, 18, 18)
+                                            .addComponent(jLabel17)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(jCheckBox4))))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jTextPagoMesa2, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jTextPagoMesa4, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jTextPagoMesa6, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jTextPagoMesa8, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel14)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButtonConfirmar)))
+                        .addGap(80, 80, 80)))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jScrollPane11, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1006,17 +1380,17 @@ public class Principal extends javax.swing.JFrame {
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                                     .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(29, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(15, 15, 15)
+                .addGap(12, 12, 12)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
-                            .addComponent(jComboMesas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jComboMesas))
                         .addGap(15, 15, 15)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel13)
@@ -1074,11 +1448,6 @@ public class Principal extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jButton1)
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1104,7 +1473,81 @@ public class Principal extends javax.swing.JFrame {
                                     .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jScrollPane11, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 0, Short.MAX_VALUE))))))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jButtonGuardarMesa)
+                                .addGap(23, 23, 23)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel14)
+                                    .addComponent(jButtonConfirmar))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGap(16, 16, 16)
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                        .addComponent(jTextPagoMesa1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(jLabel20))
+                                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(jLabel15)
+                                                        .addComponent(jCheckBox1))
+                                                    .addComponent(jCheckBox2))
+                                                .addGap(18, 18, 18)
+                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                    .addComponent(jCheckBox4)
+                                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                            .addComponent(jTextPagoMesa3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                            .addComponent(jLabel17))
+                                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                            .addComponent(jLabel16)
+                                                            .addComponent(jCheckBox3)))))
+                                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addGap(3, 3, 3)
+                                                .addComponent(jTextPagoMesa2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGap(50, 50, 50)
+                                        .addComponent(jTextPagoMesa4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGap(15, 15, 15)
+                                        .addComponent(jCheckBox6))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addGap(15, 15, 15)
+                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                        .addComponent(jTextPagoMesa5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(jLabel19))
+                                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(jLabel18)
+                                                        .addComponent(jCheckBox5)))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
+                                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(jTextPagoMesa6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(15, 15, 15)))
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                    .addComponent(jTextPagoMesa7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                    .addComponent(jLabel22)
+                                                    .addComponent(jTextPagoMesa8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                    .addComponent(jLabel21)
+                                                    .addComponent(jCheckBox7)))
+                                            .addComponent(jCheckBox8))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jTextPagoMesa9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                .addComponent(jLabel23)
+                                                .addComponent(jCheckBox9)))))
+                                .addContainerGap())))))
         );
 
         jMenuBar1.add(jMenuInicial);
@@ -1373,23 +1816,25 @@ public class Principal extends javax.swing.JFrame {
     private void jMenuSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuSalirActionPerformed
         // TODO add your handling code here:
         dispose();
+        System.exit(0);
     }//GEN-LAST:event_jMenuSalirActionPerformed
 
     private void jMenuItemActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemActualizarActionPerformed
-        try {
+        try (Connection connection = connection()) {
             // TODO add your handling code here:
-            cargarPlatosArroz(connection());
-            cargarPlatosCaldos(connection());
-            cargarPlatosCarnes(connection());
-            cargarPlatosCombinados(connection());
-            cargarPlatosEnsaladas(connection());
-            cargarPlatosEntrantes(connection());
-            cargarPlatosFideua(connection());
-            cargarPlatosPasta(connection());
-            cargarPlatosPescados(connection());
-            cargarPlatosPostres(connection());
-            cargarBebidas(connection());
-            cargarMenuOBocadillos(connection());
+            cargarPlatosArroz(connection);
+            cargarPlatosCaldos(connection);
+            cargarPlatosCarnes(connection);
+            cargarPlatosCombinados(connection);
+            cargarPlatosEnsaladas(connection);
+            cargarPlatosEntrantes(connection);
+            cargarPlatosFideua(connection);
+            cargarPlatosPasta(connection);
+            cargarPlatosPescados(connection);
+            cargarPlatosPostres(connection);
+            cargarBebidas(connection);
+            cargarMenuOBocadillos(connection);
+            cargarMesas(connection);
 
         } catch (SQLException ex) {
             Logger.getLogger(Principal.class
@@ -1409,7 +1854,9 @@ public class Principal extends javax.swing.JFrame {
         configurarComboBox(jComboArroces, "< Selecciona un plato >");
         configurarComboBox(jComboBebidas, "< Selecciona una bebida >");
         configurarComboBox(jComboDiario, "< Selecciona un dato >");
-        configurarComboBox(jComboMesas, "< Selecciona un dato >");
+        configurarComboBox(jComboMesas, "< Selecciona una mesa >");
+
+        limpiarCampos();
     }//GEN-LAST:event_jMenuItemActualizarActionPerformed
 
     private void jMenuItemBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemBorrarActionPerformed
@@ -1433,10 +1880,167 @@ public class Principal extends javax.swing.JFrame {
 
         } catch (SQLException ex) {
             Logger.getLogger(Principal.class
-                .getName()).log(Level.SEVERE, null, ex);
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         mb.setVisible(true);
     }//GEN-LAST:event_jMenuDiarioActionPerformed
+
+    private void jButtonGuardarMesaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGuardarMesaActionPerformed
+        // TODO add your handling code here:
+        String mesaSeleccionada = jTextFieldMesa.getText();
+        String datos = jTextAreaElementosMenu.getText();
+        // Verificar si la mesa seleccionada existe en el Map
+        if (mesasTextArea.containsKey(mesaSeleccionada)) {
+            // Obtener el jTextArea correspondiente a la mesa seleccionada
+            JTextArea jTextAreaMesa = mesasTextArea.get(mesaSeleccionada);
+            jTextAreaMesa.append(datos);
+
+        } else {
+            // Si la mesa seleccionada no está en el Map, muestra un mensaje de error
+            JOptionPane.showMessageDialog(this, "La mesa seleccionada no existe.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        configurarComboBox(jComboPostres, "< Selecciona un plato >");
+        configurarComboBox(jComboPescados, "< Selecciona un plato >");
+        configurarComboBox(jComboPastas, "< Selecciona un plato >");
+        configurarComboBox(jComboFideua, "< Selecciona un plato >");
+        configurarComboBox(jComboEntrantes, "< Selecciona un plato >");
+        configurarComboBox(jComboEnsaladas, "< Selecciona un plato >");
+        configurarComboBox(jComboCombinados, "< Selecciona un plato >");
+        configurarComboBox(jComboCarnes, "< Selecciona un plato >");
+        configurarComboBox(jComboCaldo, "< Selecciona un plato >");
+        configurarComboBox(jComboArroces, "< Selecciona un plato >");
+        configurarComboBox(jComboBebidas, "< Selecciona una bebida >");
+        configurarComboBox(jComboDiario, "< Selecciona un dato >");
+        configurarComboBox(jComboMesas, "< Selecciona una mesa >");
+
+        limpiarCampos();
+    }//GEN-LAST:event_jButtonGuardarMesaActionPerformed
+
+    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
+        // TODO add your handling code here:
+        if (jCheckBox1.isSelected()) {
+            jCheckBox2.setSelected(false);
+            jCheckBox3.setSelected(false);
+            jCheckBox4.setSelected(false);
+            jCheckBox5.setSelected(false);
+            jCheckBox6.setSelected(false);
+            jCheckBox7.setSelected(false);
+            jCheckBox8.setSelected(false);
+            jCheckBox9.setSelected(false);
+        }
+    }//GEN-LAST:event_jCheckBox1ActionPerformed
+
+    private void jCheckBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox2ActionPerformed
+        // TODO add your handling code here:
+        if (jCheckBox2.isSelected()) {
+            jCheckBox1.setSelected(false);
+            jCheckBox3.setSelected(false);
+            jCheckBox4.setSelected(false);
+            jCheckBox5.setSelected(false);
+            jCheckBox6.setSelected(false);
+            jCheckBox7.setSelected(false);
+            jCheckBox8.setSelected(false);
+            jCheckBox9.setSelected(false);
+        }
+    }//GEN-LAST:event_jCheckBox2ActionPerformed
+
+    private void jCheckBox3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox3ActionPerformed
+        // TODO add your handling code here:
+        if (jCheckBox3.isSelected()) {
+            jCheckBox2.setSelected(false);
+            jCheckBox1.setSelected(false);
+            jCheckBox4.setSelected(false);
+            jCheckBox5.setSelected(false);
+            jCheckBox6.setSelected(false);
+            jCheckBox7.setSelected(false);
+            jCheckBox8.setSelected(false);
+            jCheckBox9.setSelected(false);
+        }
+    }//GEN-LAST:event_jCheckBox3ActionPerformed
+
+    private void jCheckBox4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox4ActionPerformed
+        // TODO add your handling code here:
+        if (jCheckBox4.isSelected()) {
+            jCheckBox2.setSelected(false);
+            jCheckBox3.setSelected(false);
+            jCheckBox1.setSelected(false);
+            jCheckBox5.setSelected(false);
+            jCheckBox6.setSelected(false);
+            jCheckBox7.setSelected(false);
+            jCheckBox8.setSelected(false);
+            jCheckBox9.setSelected(false);
+        }
+    }//GEN-LAST:event_jCheckBox4ActionPerformed
+
+    private void jCheckBox5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox5ActionPerformed
+        // TODO add your handling code here:
+        if (jCheckBox5.isSelected()) {
+            jCheckBox2.setSelected(false);
+            jCheckBox3.setSelected(false);
+            jCheckBox4.setSelected(false);
+            jCheckBox1.setSelected(false);
+            jCheckBox6.setSelected(false);
+            jCheckBox7.setSelected(false);
+            jCheckBox8.setSelected(false);
+            jCheckBox9.setSelected(false);
+        }
+    }//GEN-LAST:event_jCheckBox5ActionPerformed
+
+    private void jCheckBox6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox6ActionPerformed
+        // TODO add your handling code here:
+        if (jCheckBox6.isSelected()) {
+            jCheckBox2.setSelected(false);
+            jCheckBox3.setSelected(false);
+            jCheckBox4.setSelected(false);
+            jCheckBox5.setSelected(false);
+            jCheckBox1.setSelected(false);
+            jCheckBox7.setSelected(false);
+            jCheckBox8.setSelected(false);
+            jCheckBox9.setSelected(false);
+        }
+    }//GEN-LAST:event_jCheckBox6ActionPerformed
+
+    private void jCheckBox7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox7ActionPerformed
+        // TODO add your handling code here:
+        if (jCheckBox7.isSelected()) {
+            jCheckBox2.setSelected(false);
+            jCheckBox3.setSelected(false);
+            jCheckBox4.setSelected(false);
+            jCheckBox5.setSelected(false);
+            jCheckBox6.setSelected(false);
+            jCheckBox7.setSelected(false);
+            jCheckBox8.setSelected(false);
+            jCheckBox9.setSelected(false);
+        }
+    }//GEN-LAST:event_jCheckBox7ActionPerformed
+
+    private void jCheckBox8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox8ActionPerformed
+        // TODO add your handling code here:
+        if (jCheckBox8.isSelected()) {
+            jCheckBox2.setSelected(false);
+            jCheckBox3.setSelected(false);
+            jCheckBox4.setSelected(false);
+            jCheckBox5.setSelected(false);
+            jCheckBox6.setSelected(false);
+            jCheckBox7.setSelected(false);
+            jCheckBox1.setSelected(false);
+            jCheckBox9.setSelected(false);
+        }
+    }//GEN-LAST:event_jCheckBox8ActionPerformed
+
+    private void jCheckBox9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox9ActionPerformed
+        // TODO add your handling code here:
+        if (jCheckBox9.isSelected()) {
+            jCheckBox2.setSelected(false);
+            jCheckBox3.setSelected(false);
+            jCheckBox4.setSelected(false);
+            jCheckBox5.setSelected(false);
+            jCheckBox6.setSelected(false);
+            jCheckBox7.setSelected(false);
+            jCheckBox8.setSelected(false);
+            jCheckBox9.setSelected(false);
+        }
+    }//GEN-LAST:event_jCheckBox9ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1477,19 +2081,23 @@ public class Principal extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                try {
-                    new Principal().setVisible(true);
-
-                } catch (SQLException ex) {
-                    Logger.getLogger(Principal.class
-                            .getName()).log(Level.SEVERE, null, ex);
-                }
+                new Principal().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButtonConfirmar;
+    private javax.swing.JButton jButtonGuardarMesa;
+    private javax.swing.JCheckBox jCheckBox1;
+    private javax.swing.JCheckBox jCheckBox2;
+    private javax.swing.JCheckBox jCheckBox3;
+    private javax.swing.JCheckBox jCheckBox4;
+    private javax.swing.JCheckBox jCheckBox5;
+    private javax.swing.JCheckBox jCheckBox6;
+    private javax.swing.JCheckBox jCheckBox7;
+    private javax.swing.JCheckBox jCheckBox8;
+    private javax.swing.JCheckBox jCheckBox9;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
     private javax.swing.JComboBox<String> jComboArroces;
     private javax.swing.JComboBox<String> jComboBebidas;
@@ -1509,7 +2117,17 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -1573,5 +2191,14 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField8;
     private javax.swing.JTextField jTextField9;
     private javax.swing.JTextField jTextFieldMesa;
+    private javax.swing.JTextField jTextPagoMesa1;
+    private javax.swing.JTextField jTextPagoMesa2;
+    private javax.swing.JTextField jTextPagoMesa3;
+    private javax.swing.JTextField jTextPagoMesa4;
+    private javax.swing.JTextField jTextPagoMesa5;
+    private javax.swing.JTextField jTextPagoMesa6;
+    private javax.swing.JTextField jTextPagoMesa7;
+    private javax.swing.JTextField jTextPagoMesa8;
+    private javax.swing.JTextField jTextPagoMesa9;
     // End of variables declaration//GEN-END:variables
 }

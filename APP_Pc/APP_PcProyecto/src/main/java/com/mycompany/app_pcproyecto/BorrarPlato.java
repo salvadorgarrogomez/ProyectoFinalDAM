@@ -5,9 +5,9 @@
 package com.mycompany.app_pcproyecto;
 
 import static com.mycompany.app_pcproyecto.Principal.connection;
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -48,108 +48,61 @@ public class BorrarPlato extends javax.swing.JDialog {
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
                     String selectedTableName = jListMenus.getSelectedValue();
-//                    cargarFilasDeTablaSeleccionada(selectedTableName);
+                    cargarFilasDeTablaSeleccionada(connection, selectedTableName);
                 }
             }
         });
     }
 
-//    private void cargarFilasDeTablaSeleccionada(String nombreTabla) {
-//        DefaultListModel<String> listModel = new DefaultListModel<>();
-//        try (Connection connection = connection()) {
-//            try (Statement stmt = connection.createStatement()) {
-//                String sql = "SELECT id, nombre, precio";
-//                ResultSetMetaData metaData = stmt.getMetaData();
-//
-//                // Verificar si la columna 'racion_completa' existe en la tabla
-//                if (columnExists(metaData, "racion_completa")) {
-//                    sql += ", racion_completa";
-//                }
-//                // Verificar si la columna 'media_racion' existe en la tabla
-//                if (columnExists(metaData, "media_racion")) {
-//                    sql += ", media_racion";
-//                }
-//                // Verificar si la columna 'precio_unidad' existe en la tabla
-//                if (columnExists(metaData, "precio_unidad")) {
-//                    sql += ", precio_unidad";
-//                }
-//                // Verificar si la columna 'tipo_refresco' existe en la tabla
-//                if (columnExists(metaData, "tipo_refresco")) {
-//                    sql += ", tipo_refresco";
-//                }
-//                // Verificar si la columna 'tipo_alcohol' existe en la tabla
-//                if (columnExists(metaData, "tipo_alcohol")) {
-//                    sql += ", tipo_alcohol";
-//                }
-//                // Verificar si la columna 'tipo_copa' existe en la tabla
-//                if (columnExists(metaData, "tipo_copa")) {
-//                    sql += ", tipo_copa";
-//                }
-//                // Verificar si la columna 'tipo_tanque' existe en la tabla
-//                if (columnExists(metaData, "tipo_tanque")) {
-//                    sql += ", tipo_tanque";
-//                }
-//                // Verificar si la columna 'tipo_cubata' existe en la tabla
-//                if (columnExists(metaData, "tipo_cubata")) {
-//                    sql += ", tipo_cubata";
-//                }
-//
-//                // Agregar el resto de la consulta SQL
-//                sql += " FROM " + nombreTabla;
-//
-//                try (ResultSet rs = stmt.executeQuery(sql)) {
-//                    metaData = rs.getMetaData();
-//                    int columnCount = metaData.getColumnCount();
-//                    while (rs.next()) {
-//                        int id = rs.getInt("id");
-//                        String nombre = rs.getString("nombre");
-//                        BigDecimal precio = rs.getBigDecimal("precio");
-//
-//                        // Determinar el tipo de plato
-//                        String tipoPlato = "No especificado";
-//                        for (int i = 4; i <= columnCount; i++) {
-//                            String columnName = metaData.getColumnName(i);
-//                            boolean columnValue = rs.getBoolean(i);
-//                            if (columnExists(metaData, columnName) && columnValue) {
-//                                if (columnName.equals("racion_completa")) {
-//                                    tipoPlato = "Ración Completa";
-//                                } else if (columnName.equals("media_racion")) {
-//                                    tipoPlato = "Media Ración";
-//                                } else if (columnName.equals("precio_unidad")) {
-//                                    tipoPlato = "Precio por Unidad";
-//                                } else if (columnName.equals("tipo_refresco")) {
-//                                    tipoPlato = "Refresco";
-//                                } else if (columnName.equals("tipo_alcohol")) {
-//                                    tipoPlato = "Alcohol";
-//                                } else if (columnName.equals("tipo_copa")) {
-//                                    tipoPlato = "Copa";
-//                                } else if (columnName.equals("tipo_tanque")) {
-//                                    tipoPlato = "Tanque";
-//                                } else if (columnName.equals("tipo_cubata")) {
-//                                    tipoPlato = "Cubata";
-//                                }
-//                            }
-//                        }
-//
-//                        // Agregar la fila al modelo de lista
-//                        listModel.addElement("ID: " + id + ", Nombre: " + nombre + ", Precio: " + precio + ", Tipo: " + tipoPlato);
-//                    }
-//                }
-//            }
-//        } catch (SQLException ex) {
-//            ex.printStackTrace();
-//            JOptionPane.showMessageDialog(this, "Error al cargar las filas de la tabla.", "Error", JOptionPane.ERROR_MESSAGE);
-//        }
-//        jListPlatos.setModel(listModel);
-//    }
-
-    private boolean columnExists(ResultSetMetaData metaData, String columnName) throws SQLException {
-        for (int i = 1; i <= metaData.getColumnCount(); i++) {
-            if (columnName.equalsIgnoreCase(metaData.getColumnName(i))) {
-                return true;
+    private void cargarFilasDeTablaSeleccionada(Connection connection, String nombreTabla) {
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        try (Statement stmt = connection.createStatement()) {
+            String sql = "SELECT * FROM " + nombreTabla;
+            try (ResultSet rs = stmt.executeQuery(sql)) {
+                ResultSetMetaData metaData = rs.getMetaData();
+                int maxColumnCount = metaData.getColumnCount();
+                // Iterar sobre las filas del ResultSet
+                while (rs.next()) {
+                    StringBuilder row = new StringBuilder();
+                    // Iterar sobre las columnas de cada fila
+                    for (int i = 1; i <= maxColumnCount; i++) {
+                        // Obtener el nombre de la columna
+                        String columnName = metaData.getColumnName(i);
+                        // Obtener el valor de la columna
+                        Object value = rs.getObject(i);
+                        // Verificar si el valor es booleano y true
+                        if (value instanceof Boolean && (Boolean) value) {
+                            // Agregar solo el nombre de la columna al StringBuilder
+                            row.append(columnName).append(", ");
+                        } else if (!(value instanceof Boolean)) {
+                            row.append(value).append(", ");
+                        }
+                    }
+                    // Agregar la fila al modelo de lista
+                    listModel.addElement(row.toString());
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al cargar las filas de la tabla.", "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            // Cerrar la conexión al finalizar
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
             }
         }
-        return false;
+        jListPlatos.setModel(listModel);
+    }
+
+    private boolean tablaExiste(Connection connection, String nombreTabla) throws SQLException {
+        DatabaseMetaData meta = connection.getMetaData();
+        try (ResultSet rs = meta.getTables(null, null, nombreTabla, null)) {
+            return rs.next();
+        }
     }
 
     /**
@@ -243,16 +196,12 @@ public class BorrarPlato extends javax.swing.JDialog {
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jScrollPane2))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(160, 160, 160)
-                        .addComponent(jButtonBorrar)
-                        .addContainerGap())))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jScrollPane2))
+                    .addComponent(jButtonBorrar))
+                .addContainerGap(12, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -277,14 +226,74 @@ public class BorrarPlato extends javax.swing.JDialog {
 
     private void jListMenusAncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_jListMenusAncestorAdded
 
+        String selectedTableName = jListMenus.getSelectedValue();
+        if (selectedTableName != null) {
+            cargarFilasDeTablaSeleccionada(connection(), selectedTableName);
+        }
     }//GEN-LAST:event_jListMenusAncestorAdded
 
     private void jListPlatosAncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_jListPlatosAncestorAdded
         // TODO add your handling code here:
+        jListPlatos.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    // Obtener el índice del elemento seleccionado
+                    int selectedIndex = jListPlatos.getSelectedIndex();
+                    // Obtener el valor del elemento seleccionado
+                    String selectedValue = jListPlatos.getSelectedValue();
+                    // Si el índice y el valor son válidos
+                    if (selectedIndex != -1 && selectedValue != null) {
+                        // Permitir que el botón de borrar esté habilitado
+                        jButtonBorrar.setEnabled(true);
+                    }
+                }
+            }
+        });
     }//GEN-LAST:event_jListPlatosAncestorAdded
 
     private void jButtonBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBorrarActionPerformed
-        // TODO add your handling code here:
+        // Obtener el nombre de la tabla seleccionada en jListMenus
+        String selectedTableName = jListMenus.getSelectedValue();
+        if (selectedTableName != null) {
+            DefaultListModel<String> listModel = (DefaultListModel<String>) jListPlatos.getModel();
+            int selectedIndex = jListPlatos.getSelectedIndex();
+            if (selectedIndex != -1) {
+                // Obtener el valor del elemento seleccionado
+                String selectedItem = listModel.getElementAt(selectedIndex);
+                String[] parts = selectedItem.split(", ");
+                String idPlato = parts[0];
+                Connection connection = null;
+                try {
+                    connection = Principal.connection();
+                    String sql = "DELETE FROM " + selectedTableName + " WHERE id = ?";
+                    try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+                        pstmt.setInt(1, Integer.parseInt(idPlato));
+                        pstmt.executeUpdate();
+                    }
+
+                    // Eliminar el elemento seleccionado del modelo del jListPlatos
+                    listModel.remove(selectedIndex);
+                    JOptionPane.showMessageDialog(this, "Plato borrado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "Error al borrar el plato.", "Error", JOptionPane.ERROR_MESSAGE);
+                } finally {
+                    // Cerrar la conexión al finalizar
+                    if (connection != null) {
+                        try {
+                            connection.close();
+                        } catch (SQLException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Por favor, seleccione un plato para borrar.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Por favor, seleccione una tabla.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jButtonBorrarActionPerformed
 
     private void jMenuItemSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSalirActionPerformed
