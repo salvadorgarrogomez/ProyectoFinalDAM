@@ -25,6 +25,12 @@ import javax.swing.event.ListSelectionListener;
  */
 public class BorrarPlato extends javax.swing.JDialog {
 
+    private Connection connection;
+
+    public BorrarPlato(Connection connection) {
+        this.connection = connection;
+    }
+
     private void cargarNombreTablas(Connection connection) {
         DefaultListModel<String> listModel = new DefaultListModel<>();
         try {
@@ -33,7 +39,10 @@ public class BorrarPlato extends javax.swing.JDialog {
 
             while (tables.next()) {
                 String tableName = tables.getString("TABLE_NAME");
-                listModel.addElement(tableName);
+                // Verificar si el nombre de la tabla no es "mesa"
+                if (!tableName.equalsIgnoreCase("mesas")) {
+                    listModel.addElement(tableName);
+                }
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -85,16 +94,8 @@ public class BorrarPlato extends javax.swing.JDialog {
         } catch (SQLException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error al cargar las filas de la tabla.", "Error", JOptionPane.ERROR_MESSAGE);
-        } finally {
-            // Cerrar la conexión al finalizar
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
-            }
         }
+
         jListPlatos.setModel(listModel);
     }
 
@@ -102,6 +103,18 @@ public class BorrarPlato extends javax.swing.JDialog {
         DatabaseMetaData meta = connection.getMetaData();
         try (ResultSet rs = meta.getTables(null, null, nombreTabla, null)) {
             return rs.next();
+        }
+    }
+
+    private void cerrarConexiones() {
+        // Cierra la conexión principal
+        if (connection != null) {
+            try {
+                connection.close();
+
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
@@ -115,6 +128,7 @@ public class BorrarPlato extends javax.swing.JDialog {
 
         //        this.setSize(anchoPredeterminado, altoPredeterminado);
         this.setSize(600, 600);
+
     }
 
     /**
@@ -297,7 +311,9 @@ public class BorrarPlato extends javax.swing.JDialog {
     }//GEN-LAST:event_jButtonBorrarActionPerformed
 
     private void jMenuItemSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSalirActionPerformed
-        // TODO add your handling code here:
+        // Cerrar todas las conexiones abiertas
+        cerrarConexiones();
+        // Salir de la aplicación
         dispose();
     }//GEN-LAST:event_jMenuItemSalirActionPerformed
 
