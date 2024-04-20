@@ -9,6 +9,10 @@ import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -16,6 +20,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -40,6 +46,7 @@ public class Principal extends javax.swing.JFrame {
 
     private Map<String, JTextArea> mesasTextArea = new HashMap<>();
     private Map<JTextArea, JTextField> mapaPrecios = new HashMap<>();
+    private Map<Object, Integer> cantidadElementos = new HashMap<>();
 
     /**
      *
@@ -211,7 +218,7 @@ public class Principal extends javax.swing.JFrame {
                             tipoPlato = "No especificado";
                         }
 
-                        String item = id + ": " + nombre + " - " + tipoPlato + " - " + precio.toString();
+                        String item = nombre + " - " + tipoPlato + " - " + precio.toString();
                         jComboArroces.addItem(item);
                     }
                 }
@@ -246,7 +253,7 @@ public class Principal extends javax.swing.JFrame {
                             tipoPlato = "No especificado";
                         }
 
-                        String item = id + ": " + nombre + " - " + tipoPlato + " - " + precio.toString();
+                        String item = nombre + " - " + tipoPlato + " - " + precio.toString();
                         jComboCaldo.addItem(item);
                     }
                 }
@@ -281,7 +288,7 @@ public class Principal extends javax.swing.JFrame {
                             tipoPlato = "No especificado";
                         }
 
-                        String item = id + ": " + nombre + " - " + tipoPlato + " - " + precio.toString();
+                        String item = nombre + " - " + tipoPlato + " - " + precio.toString();
                         jComboCarnes.addItem(item);
                     }
                 }
@@ -316,7 +323,7 @@ public class Principal extends javax.swing.JFrame {
                             tipoPlato = "No especificado";
                         }
 
-                        String item = id + ": " + nombre + " - " + tipoPlato + " - " + precio.toString();
+                        String item = nombre + " - " + tipoPlato + " - " + precio.toString();
                         jComboCombinados.addItem(item);
                     }
                 }
@@ -351,7 +358,7 @@ public class Principal extends javax.swing.JFrame {
                             tipoPlato = "No especificado";
                         }
 
-                        String item = id + ": " + nombre + " - " + tipoPlato + " - " + precio.toString();
+                        String item = nombre + " - " + tipoPlato + " - " + precio.toString();
                         jComboEnsaladas.addItem(item);
                     }
                 }
@@ -389,7 +396,7 @@ public class Principal extends javax.swing.JFrame {
                             tipoPlato = "No especificado";
                         }
 
-                        String item = id + ": " + nombre + " - " + tipoPlato + " - " + precio.toString();
+                        String item = nombre + " - " + tipoPlato + " - " + precio.toString();
                         jComboEntrantes.addItem(item);
                     }
                 }
@@ -424,7 +431,7 @@ public class Principal extends javax.swing.JFrame {
                             tipoPlato = "No especificado";
                         }
 
-                        String item = id + ": " + nombre + " - " + tipoPlato + " - " + precio.toString();
+                        String item = nombre + " - " + tipoPlato + " - " + precio.toString();
                         jComboFideua.addItem(item);
                     }
                 }
@@ -459,7 +466,7 @@ public class Principal extends javax.swing.JFrame {
                             tipoPlato = "No especificado";
                         }
 
-                        String item = id + ": " + nombre + " - " + tipoPlato + " - " + precio.toString();
+                        String item = nombre + " - " + tipoPlato + " - " + precio.toString();
                         jComboPastas.addItem(item);
                     }
                 }
@@ -494,7 +501,7 @@ public class Principal extends javax.swing.JFrame {
                             tipoPlato = "No especificado";
                         }
 
-                        String item = id + ": " + nombre + " - " + tipoPlato + " - " + precio.toString();
+                        String item = nombre + " - " + tipoPlato + " - " + precio.toString();
                         jComboPescados.addItem(item);
                     }
                 }
@@ -529,7 +536,7 @@ public class Principal extends javax.swing.JFrame {
                             tipoPlato = "No especificado";
                         }
 
-                        String item = id + ": " + nombre + " - " + tipoPlato + " - " + precio.toString();
+                        String item = nombre + " - " + tipoPlato + " - " + precio.toString();
                         jComboPostres.addItem(item);
                     }
                 }
@@ -574,7 +581,7 @@ public class Principal extends javax.swing.JFrame {
                             tipoBebida = "No especificado";
                         }
 
-                        String item = id + ": " + nombre + " - " + tipoBebida + " - " + precio.toString();
+                        String item = nombre + " - " + tipoBebida + " - " + precio.toString();
                         jComboBebidas.addItem(item);
                     }
                 }
@@ -610,7 +617,7 @@ public class Principal extends javax.swing.JFrame {
                             tipoPlato = "No especificado";
                         }
 
-                        String item = id + ": " + nombre + " - " + tipoPlato + " - " + precio.toString();
+                        String item = nombre + " - " + tipoPlato + " - " + precio.toString();
                         jComboDiario.addItem(item);
                     }
                 }
@@ -624,7 +631,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void cargarMesas(Connection connection) throws SQLException {
         try {
-            String sql = "SELECT id, numero FROM mesas ORDER BY id"; // Consulta para obtener los números de las mesas
+            String sql = "SELECT numero FROM mesas ORDER BY id"; // Consulta para obtener los números de las mesas
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 try (ResultSet rs = pstmt.executeQuery()) {
                     jComboMesas.removeAllItems(); // Eliminar todos los elementos existentes del JComboBox
@@ -685,38 +692,189 @@ public class Principal extends javax.swing.JFrame {
         jTextAreaElementosMenu.setText("");
     }
 
-    private BigDecimal calcularSumatorioPrecios(String datos) {
-        // Dividir los datos en líneas
-        String[] lineas = datos.split("\\n");
+    private void actualizarComandas(Object selectedItem) {
+        if (selectedItem != null) {
+            String selectedItemString = selectedItem.toString();
 
-        BigDecimal total = BigDecimal.ZERO;
-
-        // Recorrer cada línea para extraer y sumar los precios
-        for (String linea : lineas) {
-            // Dividir la línea en campos usando el guion como delimitador
-            String[] campos = linea.split(" - ");
-            if (campos.length >= 2) {
-                try {
-                    // Obtener el precio de la línea y convertirlo a BigDecimal
-                    String precioString = campos[campos.length - 1].trim();
-                    // Eliminar el símbolo de moneda si lo hay
-                    precioString = precioString.replaceAll("[^0-9.]", "");
-                    BigDecimal precio = new BigDecimal(precioString);
-                    // Sumar el precio al total
-                    total = total.add(precio);
-                } catch (NumberFormatException e) {
-                    // Si hay un error al convertir el precio, simplemente ignora esta línea
-                }
+            // Verificar si el artículo ya existe en el JTextArea
+            if (jTextAreaElementosMenu.getText().contains(selectedItemString)) {
+                // El artículo ya existe, actualizamos su cantidad
+                int cantidad = cantidadElementos.getOrDefault(selectedItemString, 0) + 1;
+                cantidadElementos.put(selectedItemString, cantidad);
+                String textoActual = jTextAreaElementosMenu.getText();
+                String textoActualizado = reemplazarCantidad(textoActual, selectedItemString, cantidad);
+                jTextAreaElementosMenu.setText(textoActualizado);
+            } else {
+                // El artículo no existe, lo agregamos como nuevo
+                cantidadElementos.put(selectedItemString, 1);
+                jTextAreaElementosMenu.append("Cantidad 1: - " + selectedItemString + "\n");
             }
         }
-
-        return total;
     }
 
-    private void calcularYActualizarTotal(JTextArea jTextArea, JTextField jTextField) {
-        String datos = jTextArea.getText();
-        BigDecimal total = calcularSumatorioPrecios(datos);
-        jTextField.setText(total.toString());
+    private String reemplazarCantidad(String texto, String item, int cantidad) {
+        StringBuilder textoActualizado = new StringBuilder();
+        String[] lineas = texto.split("\n");
+        boolean encontrado = false;
+        for (int i = 0; i < lineas.length; i++) {
+            if (lineas[i].contains(item)) {
+                lineas[i] = "Cantidad " + cantidad + ": - " + item;
+                encontrado = true;
+            }
+            textoActualizado.append(lineas[i]).append("\n");
+        }
+        if (!encontrado) {
+            textoActualizado.append("Cantidad " + cantidad + ": - " + item).append("\n");
+        }
+        return textoActualizado.toString();
+    }
+
+    private void cargarDatosMesa(String mesaSeleccionada) {
+        // Verificar si la mesa seleccionada existe en el Map
+        if (mesasTextArea.containsKey(mesaSeleccionada)) {
+            JTextArea jTextAreaMesa = mesasTextArea.get(mesaSeleccionada);
+            String textoMesa = jTextAreaMesa.getText();
+            jTextAreaElementosMenu.setText(textoMesa);
+        } else {
+            JOptionPane.showMessageDialog(this, "La mesa seleccionada no existe o no has seleccionado ninguna.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void calcularImporteTotal(javax.swing.JTextArea jTextAreaMesa, javax.swing.JTextField jTextPagoMesa) {
+        String textoMesa = jTextAreaMesa.getText();
+        String[] lineas = textoMesa.split("\n");
+        double importeTotalMesa = 0.0;
+        for (String linea : lineas) {
+            String[] partes = linea.split(" - ");
+            if (partes.length >= 3) {
+                String cantidadString = partes[0].replaceAll("[^\\d]", ""); // Extraer solo los dígitos
+                int cantidad = Integer.parseInt(cantidadString);
+                String precioString = partes[partes.length - 1]; // El precio está al final
+                double precio = Double.parseDouble(precioString);
+
+                double importeArticulo = cantidad * precio;
+                importeTotalMesa += importeArticulo;
+            }
+        }
+        jTextPagoMesa.setText(String.format("%.2f", importeTotalMesa));
+    }
+
+    private void actualizarMesa(Object selectedItem) {
+        if (selectedItem != null) {
+            // Establecer el elemento seleccionado en el JTextField
+            jTextFieldMesa.setText("Mesa: " + selectedItem.toString());
+        }
+    }
+
+    private void guardarDatosMesa(File archivo, String text) throws IOException {
+        // Verificar si el archivo ya existe, si no, crearlo
+        if (!archivo.exists()) {
+            archivo.createNewFile();
+        }
+
+        // Escribir los datos en el archivo
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(archivo, true))) {
+            writer.write(text);
+            writer.newLine(); // Saltar a la siguiente línea para el próximo conjunto de datos
+        }
+    }
+
+    private void guardarDatosMesaSeleccionada(int numeroMesa) {
+        // Obtener la fecha y hora actual
+        LocalDateTime ahora = LocalDateTime.now();
+
+        // Definir el directorio y el nombre del archivo con la fecha actual
+        String directorio = "C:\\Comandas TPV";
+        String nombreArchivo = "Registro de comandas dia_" + ahora.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + ".txt";
+        File archivo = new File(directorio, nombreArchivo);
+
+        // Guardar los datos de la mesa seleccionada en el archivo
+        JTextArea jTextAreaMesa = obtenerJTextAreaMesa(numeroMesa);
+        JTextField jTextFieldPagoMesa = obtenerJTextFieldPagoMesa(numeroMesa);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(archivo, true))) {
+            // Obtener el texto de la mesa y el pago
+            String textoMesa = jTextAreaMesa.getText();
+            String textoPago = jTextFieldPagoMesa.getText();
+
+            // Verificar si hay texto en la mesa y/o el pago
+            if (!textoMesa.isEmpty() || !textoPago.isEmpty()) {
+                // Formar la cadena con la hora, el número de mesa, la comanda y el pago
+                String datosMesa = ahora.format(DateTimeFormatter.ofPattern("HH:mm:ss")) + " - Mesa " + numeroMesa + ":\n";
+                if (!textoMesa.isEmpty()) {
+                    datosMesa += textoMesa + "\n";
+                }
+                if (!textoPago.isEmpty()) {
+                    datosMesa += textoPago + "€\n";
+                }
+
+                // Guardar los datos en el archivo
+                writer.write(datosMesa);
+                writer.newLine();
+
+                // Mostrar mensaje de confirmación
+                JOptionPane.showMessageDialog(this, "Pago de la mesa " + numeroMesa + " confirmado. ¡Gracias!", "Confirmación", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                // Mostrar un mensaje indicando que no hay datos para guardar
+                JOptionPane.showMessageDialog(this, "No hay comandas para la mesa " + numeroMesa + ".", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+            // Limpiar los campos del JTextArea y JTextField de la mesa seleccionada
+            jTextAreaMesa.setText("");
+            jTextFieldPagoMesa.setText("0.0");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            // Manejar la excepción adecuadamente
+        }
+    }
+
+    private JTextArea obtenerJTextAreaMesa(int numeroMesa) {
+        switch (numeroMesa) {
+            case 1:
+                return jTextAreaMesa1;
+            case 2:
+                return jTextAreaMesa2;
+            case 3:
+                return jTextAreaMesa3;
+            case 4:
+                return jTextAreaMesa4;
+            case 5:
+                return jTextAreaMesa5;
+            case 6:
+                return jTextAreaMesa6;
+            case 7:
+                return jTextAreaMesa7;
+            case 8:
+                return jTextAreaMesa8;
+            case 9:
+                return jTextAreaMesa9;
+            default:
+                return null;
+        }
+    }
+
+    private JTextField obtenerJTextFieldPagoMesa(int numeroMesa) {
+        switch (numeroMesa) {
+            case 1:
+                return jTextPagoMesa1;
+            case 2:
+                return jTextPagoMesa2;
+            case 3:
+                return jTextPagoMesa3;
+            case 4:
+                return jTextPagoMesa4;
+            case 5:
+                return jTextPagoMesa5;
+            case 6:
+                return jTextPagoMesa6;
+            case 7:
+                return jTextPagoMesa7;
+            case 8:
+                return jTextPagoMesa8;
+            case 9:
+                return jTextPagoMesa9;
+            default:
+                return null;
+        }
     }
 
     public Principal() {
@@ -725,7 +883,7 @@ public class Principal extends javax.swing.JFrame {
 
             // Configurar la ventana para que se maximice al abrirse
             // this.setExtendedState(this.MAXIMIZED_BOTH);
-            this.setSize(1400, 700);
+            this.setSize(1450, 700);
             setLocationRelativeTo(null);
 
             // Crear las tablas en la base de datos
@@ -788,78 +946,160 @@ public class Principal extends javax.swing.JFrame {
                 jComboEntrantes.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         actualizarComandas(jComboEntrantes.getSelectedItem());
+
+                        try (Connection connection = connection()) {
+                            cargarPlatosEntrantes(connection);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        configurarComboBox(jComboEntrantes, "< Selecciona un plato >");
                     }
                 });
 
                 jComboBebidas.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         actualizarComandas(jComboBebidas.getSelectedItem());
+                        try (Connection connection = connection()) {
+                            cargarBebidas(connection);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        configurarComboBox(jComboBebidas, "< Selecciona una bebida >");
                     }
                 });
 
                 jComboCarnes.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         actualizarComandas(jComboCarnes.getSelectedItem());
+                        try (Connection connection = connection()) {
+                            cargarPlatosCarnes(connection);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        configurarComboBox(jComboCarnes, "< Selecciona un plato >");
                     }
                 });
 
                 jComboCaldo.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         actualizarComandas(jComboCaldo.getSelectedItem());
+                        try (Connection connection = connection()) {
+                            cargarPlatosCaldos(connection);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        configurarComboBox(jComboCaldo, "< Selecciona un plato >");
                     }
                 });
 
                 jComboArroces.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         actualizarComandas(jComboArroces.getSelectedItem());
+                        try (Connection connection = connection()) {
+                            cargarPlatosArroz(connection);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        configurarComboBox(jComboArroces, "< Selecciona un plato >");
                     }
                 });
 
                 jComboPostres.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         actualizarComandas(jComboPostres.getSelectedItem());
+                        try (Connection connection = connection()) {
+                            cargarPlatosPostres(connection);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        configurarComboBox(jComboPostres, "< Selecciona un plato >");
                     }
                 });
 
                 jComboPescados.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         actualizarComandas(jComboPescados.getSelectedItem());
+                        try (Connection connection = connection()) {
+                            cargarPlatosPescados(connection);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        configurarComboBox(jComboPescados, "< Selecciona un plato >");
                     }
                 });
 
                 jComboPastas.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         actualizarComandas(jComboPastas.getSelectedItem());
+                        try (Connection connection = connection()) {
+                            cargarPlatosPasta(connection);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        configurarComboBox(jComboPastas, "< Selecciona un plato >");
                     }
                 });
 
                 jComboFideua.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         actualizarComandas(jComboFideua.getSelectedItem());
+                        try (Connection connection = connection()) {
+                            cargarPlatosFideua(connection);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        configurarComboBox(jComboFideua, "< Selecciona un plato >");
                     }
                 });
 
                 jComboEnsaladas.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         actualizarComandas(jComboEnsaladas.getSelectedItem());
+                        try (Connection connection = connection()) {
+                            cargarPlatosEnsaladas(connection);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        configurarComboBox(jComboEnsaladas, "< Selecciona un plato >");
                     }
                 });
 
                 jComboCombinados.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         actualizarComandas(jComboCombinados.getSelectedItem());
+                        try (Connection connection = connection()) {
+                            cargarPlatosCombinados(connection);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        configurarComboBox(jComboCombinados, "< Selecciona un plato >");
                     }
                 });
 
                 jComboDiario.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         actualizarComandas(jComboDiario.getSelectedItem());
+                        try (Connection connection = connection()) {
+                            cargarMenuOBocadillos(connection);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        configurarComboBox(jComboDiario, "< Selecciona un dato >");
                     }
                 });
 
                 jComboMesas.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        actualizarMesa(jComboMesas.getSelectedItem());
+                        // Actualizar la mesa cuando se selecciona una nueva opción en el JComboBox
+                        Object selectedMesa = jComboMesas.getSelectedItem();
+                        actualizarMesa(selectedMesa); // Actualiza la mesa seleccionada
+                        cargarDatosMesa("Mesa: " + selectedMesa); // Carga los datos preexistentes del JTextArea de los menús
+                        try (Connection connection = connection()) {
+                            cargarMesas(connection);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        configurarComboBox(jComboMesas, "< Selecciona una mesa >");
                     }
                 });
 
@@ -870,20 +1110,6 @@ public class Principal extends javax.swing.JFrame {
         } catch (SQLException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error al inicializar la aplicación: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private void actualizarComandas(Object selectedItem) {
-        if (selectedItem != null) {
-            // Agregar el elemento seleccionado al JTextArea
-            jTextAreaElementosMenu.append(selectedItem.toString() + "\n");
-        }
-    }
-
-    private void actualizarMesa(Object selectedItem) {
-        if (selectedItem != null) {
-            // Establecer el elemento seleccionado en el JTextField
-            jTextFieldMesa.setText("Mesa: " + selectedItem.toString());
         }
     }
 
@@ -1162,6 +1388,11 @@ public class Principal extends javax.swing.JFrame {
         jLabel14.setText("Pendiente de pago:");
 
         jButtonConfirmar.setText("Confirmar el pago");
+        jButtonConfirmar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonConfirmarActionPerformed(evt);
+            }
+        });
 
         jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1286,7 +1517,7 @@ public class Principal extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addComponent(jLabel15)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1299,9 +1530,9 @@ public class Principal extends javax.swing.JFrame {
                                         .addComponent(jLabel23)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jCheckBox9))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addComponent(jLabel18)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jCheckBox5))
                                     .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addComponent(jLabel16)
@@ -1310,12 +1541,12 @@ public class Principal extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jTextPagoMesa9, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                                             .addComponent(jTextPagoMesa5, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addGap(18, 18, 18)
                                             .addComponent(jLabel19)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                             .addComponent(jCheckBox6))
                                         .addGroup(jPanel1Layout.createSequentialGroup()
                                             .addComponent(jTextPagoMesa7, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1486,67 +1717,54 @@ public class Principal extends javax.swing.JFrame {
                                     .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addGap(16, 16, 16)
                                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                        .addComponent(jTextPagoMesa1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(jLabel20))
-                                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(jLabel15)
-                                                        .addComponent(jCheckBox1))
-                                                    .addComponent(jCheckBox2))
-                                                .addGap(18, 18, 18)
-                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                    .addComponent(jCheckBox4)
-                                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                            .addComponent(jTextPagoMesa3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                            .addComponent(jLabel17))
-                                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                            .addComponent(jLabel16)
-                                                            .addComponent(jCheckBox3)))))
-                                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                                .addGap(3, 3, 3)
-                                                .addComponent(jTextPagoMesa2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                            .addComponent(jCheckBox1)
+                                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                .addComponent(jTextPagoMesa1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(jLabel20))
+                                            .addComponent(jLabel15)))
                                     .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addGap(50, 50, 50)
-                                        .addComponent(jTextPagoMesa4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addGap(13, 13, 13)
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jCheckBox2)
+                                            .addComponent(jTextPagoMesa2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGap(18, 18, 18)
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                .addComponent(jTextPagoMesa3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(jLabel17))
+                                            .addComponent(jTextPagoMesa4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jCheckBox3)
+                                            .addComponent(jLabel16)
+                                            .addComponent(jCheckBox4))))
+                                .addGap(9, 9, 9)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addGap(15, 15, 15)
-                                        .addComponent(jCheckBox6))
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                                .addGap(15, 15, 15)
-                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                        .addComponent(jTextPagoMesa5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(jLabel19))
-                                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(jLabel18)
-                                                        .addComponent(jCheckBox5)))
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
-                                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addComponent(jTextPagoMesa6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(15, 15, 15)))
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jTextPagoMesa6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jCheckBox6))
+                                        .addGap(9, 9, 9)
                                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                    .addComponent(jTextPagoMesa7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                    .addComponent(jLabel22)
-                                                    .addComponent(jTextPagoMesa8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addComponent(jLabel22)
                                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                                     .addComponent(jLabel21)
                                                     .addComponent(jCheckBox7)))
-                                            .addComponent(jCheckBox8))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(jCheckBox8)
+                                            .addComponent(jTextPagoMesa8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jTextPagoMesa9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                                .addComponent(jLabel23)
-                                                .addComponent(jCheckBox9)))))
+                                            .addComponent(jCheckBox5)
+                                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                .addComponent(jLabel19)
+                                                .addComponent(jTextPagoMesa5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addComponent(jLabel18))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(jTextPagoMesa7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jTextPagoMesa9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jCheckBox9)
+                                    .addComponent(jLabel23))
                                 .addContainerGap())))))
         );
 
@@ -1855,8 +2073,6 @@ public class Principal extends javax.swing.JFrame {
         configurarComboBox(jComboBebidas, "< Selecciona una bebida >");
         configurarComboBox(jComboDiario, "< Selecciona un dato >");
         configurarComboBox(jComboMesas, "< Selecciona una mesa >");
-
-        limpiarCampos();
     }//GEN-LAST:event_jMenuItemActualizarActionPerformed
 
     private void jMenuItemBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemBorrarActionPerformed
@@ -1893,27 +2109,24 @@ public class Principal extends javax.swing.JFrame {
         if (mesasTextArea.containsKey(mesaSeleccionada)) {
             // Obtener el jTextArea correspondiente a la mesa seleccionada
             JTextArea jTextAreaMesa = mesasTextArea.get(mesaSeleccionada);
-            jTextAreaMesa.append(datos);
+            jTextAreaMesa.setText(datos);
 
         } else {
             // Si la mesa seleccionada no está en el Map, muestra un mensaje de error
-            JOptionPane.showMessageDialog(this, "La mesa seleccionada no existe.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "La mesa seleccionada no existe o no has seleccionado ninguna.", "Error", JOptionPane.ERROR_MESSAGE);
         }
-        configurarComboBox(jComboPostres, "< Selecciona un plato >");
-        configurarComboBox(jComboPescados, "< Selecciona un plato >");
-        configurarComboBox(jComboPastas, "< Selecciona un plato >");
-        configurarComboBox(jComboFideua, "< Selecciona un plato >");
-        configurarComboBox(jComboEntrantes, "< Selecciona un plato >");
-        configurarComboBox(jComboEnsaladas, "< Selecciona un plato >");
-        configurarComboBox(jComboCombinados, "< Selecciona un plato >");
-        configurarComboBox(jComboCarnes, "< Selecciona un plato >");
-        configurarComboBox(jComboCaldo, "< Selecciona un plato >");
-        configurarComboBox(jComboArroces, "< Selecciona un plato >");
-        configurarComboBox(jComboBebidas, "< Selecciona una bebida >");
-        configurarComboBox(jComboDiario, "< Selecciona un dato >");
-        configurarComboBox(jComboMesas, "< Selecciona una mesa >");
 
         limpiarCampos();
+
+        calcularImporteTotal(jTextAreaMesa1, jTextPagoMesa1);
+        calcularImporteTotal(jTextAreaMesa2, jTextPagoMesa2);
+        calcularImporteTotal(jTextAreaMesa3, jTextPagoMesa3);
+        calcularImporteTotal(jTextAreaMesa4, jTextPagoMesa4);
+        calcularImporteTotal(jTextAreaMesa5, jTextPagoMesa5);
+        calcularImporteTotal(jTextAreaMesa6, jTextPagoMesa6);
+        calcularImporteTotal(jTextAreaMesa7, jTextPagoMesa7);
+        calcularImporteTotal(jTextAreaMesa8, jTextPagoMesa8);
+        calcularImporteTotal(jTextAreaMesa9, jTextPagoMesa9);
     }//GEN-LAST:event_jButtonGuardarMesaActionPerformed
 
     private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
@@ -2041,6 +2254,34 @@ public class Principal extends javax.swing.JFrame {
             jCheckBox9.setSelected(false);
         }
     }//GEN-LAST:event_jCheckBox9ActionPerformed
+
+    private void jButtonConfirmarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonConfirmarActionPerformed
+        // TODO add your handling code here:
+        // Verificar qué checkbox está seleccionado
+        if (jCheckBox1.isSelected()) {
+            guardarDatosMesaSeleccionada(1);
+        } else if (jCheckBox2.isSelected()) {
+            guardarDatosMesaSeleccionada(2);
+        } else if (jCheckBox3.isSelected()) {
+            guardarDatosMesaSeleccionada(3);
+        } else if (jCheckBox4.isSelected()) {
+            guardarDatosMesaSeleccionada(4);
+        } else if (jCheckBox5.isSelected()) {
+            guardarDatosMesaSeleccionada(5);
+        } else if (jCheckBox6.isSelected()) {
+            guardarDatosMesaSeleccionada(6);
+        } else if (jCheckBox7.isSelected()) {
+            guardarDatosMesaSeleccionada(7);
+        } else if (jCheckBox8.isSelected()) {
+            guardarDatosMesaSeleccionada(8);
+        } else if (jCheckBox9.isSelected()) {
+            guardarDatosMesaSeleccionada(9);
+        } else {
+            // Mostrar un mensaje de error si no se ha seleccionado ninguna mesa
+            JOptionPane.showMessageDialog(this, "Debes seleccionar una mesa para confirmar el pago.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+    }//GEN-LAST:event_jButtonConfirmarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -2201,4 +2442,5 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JTextField jTextPagoMesa8;
     private javax.swing.JTextField jTextPagoMesa9;
     // End of variables declaration//GEN-END:variables
+
 }
