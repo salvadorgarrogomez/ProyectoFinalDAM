@@ -735,9 +735,7 @@ public class Principal extends javax.swing.JFrame {
             JTextArea jTextAreaMesa = mesasTextArea.get(mesaSeleccionada);
             String textoMesa = jTextAreaMesa.getText();
             jTextAreaElementosMenu.setText(textoMesa);
-        } else {
-            JOptionPane.showMessageDialog(this, "La mesa seleccionada no existe o no has seleccionado ninguna.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        } 
     }
 
     private void calcularImporteTotal(javax.swing.JTextArea jTextAreaMesa, javax.swing.JTextField jTextPagoMesa) {
@@ -820,7 +818,7 @@ public class Principal extends javax.swing.JFrame {
 
             // Limpiar los campos del JTextArea y JTextField de la mesa seleccionada
             jTextAreaMesa.setText("");
-            jTextFieldPagoMesa.setText("0.0");
+            jTextFieldPagoMesa.setText("0,00");
         } catch (IOException ex) {
             ex.printStackTrace();
             // Manejar la excepción adecuadamente
@@ -2052,13 +2050,14 @@ public class Principal extends javax.swing.JFrame {
             cargarPlatosPostres(connection);
             cargarBebidas(connection);
             cargarMenuOBocadillos(connection);
-            cargarMesas(connection);
+//            cargarMesas(connection);
 
         } catch (SQLException ex) {
             Logger.getLogger(Principal.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
-
+        
+        
         // Configurar los JComboBox
         configurarComboBox(jComboPostres, "< Selecciona un plato >");
         configurarComboBox(jComboPescados, "< Selecciona un plato >");
@@ -2073,6 +2072,8 @@ public class Principal extends javax.swing.JFrame {
         configurarComboBox(jComboBebidas, "< Selecciona una bebida >");
         configurarComboBox(jComboDiario, "< Selecciona un dato >");
         configurarComboBox(jComboMesas, "< Selecciona una mesa >");
+        
+        limpiarCampos();
     }//GEN-LAST:event_jMenuItemActualizarActionPerformed
 
     private void jMenuItemBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemBorrarActionPerformed
@@ -2221,7 +2222,7 @@ public class Principal extends javax.swing.JFrame {
             jCheckBox4.setSelected(false);
             jCheckBox5.setSelected(false);
             jCheckBox6.setSelected(false);
-            jCheckBox7.setSelected(false);
+            jCheckBox1.setSelected(false);
             jCheckBox8.setSelected(false);
             jCheckBox9.setSelected(false);
         }
@@ -2251,7 +2252,7 @@ public class Principal extends javax.swing.JFrame {
             jCheckBox6.setSelected(false);
             jCheckBox7.setSelected(false);
             jCheckBox8.setSelected(false);
-            jCheckBox9.setSelected(false);
+            jCheckBox1.setSelected(false);
         }
     }//GEN-LAST:event_jCheckBox9ActionPerformed
 
