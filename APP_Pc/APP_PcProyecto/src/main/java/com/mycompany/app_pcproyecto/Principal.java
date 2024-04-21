@@ -707,7 +707,17 @@ public class Principal extends javax.swing.JFrame {
             } else {
                 // El artículo no existe, lo agregamos como nuevo
                 cantidadElementos.put(selectedItemString, 1);
-                jTextAreaElementosMenu.append("Cantidad 1: - " + selectedItemString + "\n");
+                // Obtener el precio unitario del artículo
+                double precio = obtenerPrecioUnitario(selectedItemString);
+                // Multiplicar el precio por 1 para obtener el precio de una unidad
+                precio *= 1;
+                // Agregar el artículo al JTextArea con la cantidad y el precio unitario al final de la línea
+                jTextAreaElementosMenu.append("Cantidad 1: - " + selectedItemString + " - " + precio + "\n");
+
+                // Llamar a reemplazarCantidad nuevamente para actualizar la línea recién agregada
+                String textoActual = jTextAreaElementosMenu.getText();
+                String textoActualizado = reemplazarCantidad(textoActual, selectedItemString, 1);
+                jTextAreaElementosMenu.setText(textoActualizado);
             }
         }
     }
@@ -718,15 +728,38 @@ public class Principal extends javax.swing.JFrame {
         boolean encontrado = false;
         for (int i = 0; i < lineas.length; i++) {
             if (lineas[i].contains(item)) {
-                lineas[i] = "Cantidad " + cantidad + ": - " + item;
+                // Extraer el precio unitario de la línea
+                String[] partes = lineas[i].split(" - ");
+                double precioUnitario = Double.parseDouble(partes[partes.length - 2]); // Precio unitario se encuentra al final de la línea
+                // Calcular el precio total
+                double precioTotal = precioUnitario * cantidad;
+                // Reemplazar la cantidad y actualizar el precio total en la línea
+                lineas[i] = "Cantidad " + cantidad + ": - " + item + " - " + precioTotal;
                 encontrado = true;
             }
             textoActualizado.append(lineas[i]).append("\n");
         }
         if (!encontrado) {
-            textoActualizado.append("Cantidad " + cantidad + ": - " + item).append("\n");
+            // Si el artículo no existía previamente, agregarlo como nuevo con su cantidad y precio total
+            String[] partes = lineas[0].split(" - "); // Suponiendo que si no hay líneas, usamos la primera para obtener el precio unitario
+            double precioUnitario = Double.parseDouble(partes[partes.length - 2]); // Precio unitario se encuentra al final de la línea
+            double precioTotal = precioUnitario * cantidad;
+            textoActualizado.append("Cantidad ").append(cantidad).append(": - ").append(item).append(" - ").append(precioTotal).append("\n");
         }
         return textoActualizado.toString();
+    }
+
+    private double obtenerPrecioUnitario(String selectedItemString) {
+        // Obtener el precio unitario del artículo desde el texto en el JTextArea
+        String texto = jTextAreaElementosMenu.getText();
+        String[] lineas = texto.split("\n");
+        for (String linea : lineas) {
+            if (linea.contains(selectedItemString)) {
+                String[] partes = linea.split(" - ");
+                return Double.parseDouble(partes[partes.length - 2]);
+            }
+        }
+        return 0.0; // Valor predeterminado si el precio unitario no se encuentra
     }
 
     private void cargarDatosMesa(String mesaSeleccionada) {
@@ -735,7 +768,7 @@ public class Principal extends javax.swing.JFrame {
             JTextArea jTextAreaMesa = mesasTextArea.get(mesaSeleccionada);
             String textoMesa = jTextAreaMesa.getText();
             jTextAreaElementosMenu.setText(textoMesa);
-        } 
+        }
     }
 
     private void calcularImporteTotal(javax.swing.JTextArea jTextAreaMesa, javax.swing.JTextField jTextPagoMesa) {
@@ -744,10 +777,10 @@ public class Principal extends javax.swing.JFrame {
         double importeTotalMesa = 0.0;
         for (String linea : lineas) {
             String[] partes = linea.split(" - ");
-            if (partes.length >= 3) {
+            if (partes.length >= 4) {
                 String cantidadString = partes[0].replaceAll("[^\\d]", ""); // Extraer solo los dígitos
                 int cantidad = Integer.parseInt(cantidadString);
-                String precioString = partes[partes.length - 1]; // El precio está al final
+                String precioString = partes[partes.length - 2]; // El precio está al final
                 double precio = Double.parseDouble(precioString);
 
                 double importeArticulo = cantidad * precio;
@@ -796,13 +829,38 @@ public class Principal extends javax.swing.JFrame {
 
             // Verificar si hay texto en la mesa y/o el pago
             if (!textoMesa.isEmpty() || !textoPago.isEmpty()) {
-                // Formar la cadena con la hora, el número de mesa, la comanda y el pago
+                // Convertir el pago a un valor numérico
+                double pago = 0.0;
+                try {
+                    pago = Double.parseDouble(textoPago.replace(",", ".")); // Reemplazar la coma por un punto para parsear correctamente
+                } catch (NumberFormatException e) {
+                    // Manejar el caso en que el texto de pago no sea un número válido
+                    JOptionPane.showMessageDialog(this, "El formato del pago no es válido.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Calcular el total con IVA (10%)
+                double totalConIVA = pago * 1.10;
                 String datosMesa = ahora.format(DateTimeFormatter.ofPattern("HH:mm:ss")) + " - Mesa " + numeroMesa + ":\n";
                 if (!textoMesa.isEmpty()) {
-                    datosMesa += textoMesa + "\n";
+                    String[] lineas = textoMesa.split("\n");
+                    for (String linea : lineas) {
+                        // Dividir la línea en partes
+                        String[] partes = linea.split(" - ");
+                        // Obtener los valores de las columnas
+                        String cantidad = partes[0];
+                        String producto = partes[1];
+                        // Rellenar con espacios en blanco la tercera columna
+                        String espacioEnBlanco = "~~~~~~~~";
+                        String precioUnitario = partes.length > 3 ? partes[3] : "";
+                        String precioTotal = partes[4];
+                        // Construir la línea con el formato deseado
+                        datosMesa += String.format("%s - %s - %s - %s - %s\n", cantidad, producto, espacioEnBlanco, precioUnitario,precioTotal);
+                    }
                 }
                 if (!textoPago.isEmpty()) {
-                    datosMesa += textoPago + "€\n";
+                    // Agregar el total con IVA y el pago original
+                    datosMesa += String.format("\nPago: %.2f€ (IVA del 10%% incluido: %.2f€)\n", pago, totalConIVA);
                 }
 
                 // Guardar los datos en el archivo
@@ -1214,6 +1272,9 @@ public class Principal extends javax.swing.JFrame {
         jCheckBox7 = new javax.swing.JCheckBox();
         jCheckBox8 = new javax.swing.JCheckBox();
         jCheckBox9 = new javax.swing.JCheckBox();
+        jLabel24 = new javax.swing.JLabel();
+        jCheckSI = new javax.swing.JCheckBox();
+        jCheckBoNO = new javax.swing.JCheckBox();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenuInicial = new javax.swing.JMenu();
         jMenuPlatos = new javax.swing.JMenu();
@@ -1464,6 +1525,12 @@ public class Principal extends javax.swing.JFrame {
             }
         });
 
+        jLabel24.setText("Imprimir ticket:");
+
+        jCheckSI.setText("Si");
+
+        jCheckBoNO.setText("No");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -1500,20 +1567,9 @@ public class Principal extends javax.swing.JFrame {
                     .addComponent(jComboBebidas, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jComboMesas, javax.swing.GroupLayout.Alignment.TRAILING, 0, 125, Short.MAX_VALUE))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
-                                    .addComponent(jTextFieldMesa)))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(88, 88, 88)
-                                .addComponent(jButtonGuardarMesa)))
-                        .addGap(7, 7, 7))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -1570,11 +1626,27 @@ public class Principal extends javax.swing.JFrame {
                                     .addComponent(jTextPagoMesa4, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jTextPagoMesa6, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jTextPagoMesa8, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jButtonConfirmar, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addGap(80, 80, 80))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel14)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButtonConfirmar)))
-                        .addGap(80, 80, 80)))
+                                .addGap(87, 87, 87)
+                                .addComponent(jButtonGuardarMesa))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel14)
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
+                                        .addComponent(jTextFieldMesa))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel24)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jCheckSI)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jCheckBoNO)))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jScrollPane11, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1655,7 +1727,10 @@ public class Principal extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel5)
-                            .addComponent(jComboPastas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jComboPastas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel24)
+                            .addComponent(jCheckSI)
+                            .addComponent(jCheckBoNO))
                         .addGap(22, 22, 22)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel4)
@@ -1705,15 +1780,15 @@ public class Principal extends javax.swing.JFrame {
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jButtonGuardarMesa)
-                                .addGap(23, 23, 23)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(jLabel14)
                                     .addComponent(jButtonConfirmar))
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addGap(16, 16, 16)
+                                        .addGap(46, 46, 46)
                                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(jCheckBox1)
                                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -1721,7 +1796,7 @@ public class Principal extends javax.swing.JFrame {
                                                 .addComponent(jLabel20))
                                             .addComponent(jLabel15)))
                                     .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addGap(13, 13, 13)
+                                        .addGap(43, 43, 43)
                                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(jCheckBox2)
                                             .addComponent(jTextPagoMesa2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -2056,8 +2131,7 @@ public class Principal extends javax.swing.JFrame {
             Logger.getLogger(Principal.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
-        
-        
+
         // Configurar los JComboBox
         configurarComboBox(jComboPostres, "< Selecciona un plato >");
         configurarComboBox(jComboPescados, "< Selecciona un plato >");
@@ -2072,7 +2146,7 @@ public class Principal extends javax.swing.JFrame {
         configurarComboBox(jComboBebidas, "< Selecciona una bebida >");
         configurarComboBox(jComboDiario, "< Selecciona un dato >");
         configurarComboBox(jComboMesas, "< Selecciona una mesa >");
-        
+
         limpiarCampos();
     }//GEN-LAST:event_jMenuItemActualizarActionPerformed
 
@@ -2331,6 +2405,7 @@ public class Principal extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonConfirmar;
     private javax.swing.JButton jButtonGuardarMesa;
+    private javax.swing.JCheckBox jCheckBoNO;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JCheckBox jCheckBox3;
@@ -2341,6 +2416,7 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JCheckBox jCheckBox8;
     private javax.swing.JCheckBox jCheckBox9;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
+    private javax.swing.JCheckBox jCheckSI;
     private javax.swing.JComboBox<String> jComboArroces;
     private javax.swing.JComboBox<String> jComboBebidas;
     private javax.swing.JComboBox<String> jComboCaldo;
@@ -2370,6 +2446,7 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
