@@ -26,24 +26,28 @@ public class Postres extends javax.swing.JDialog {
         BigDecimal precio = new BigDecimal(jTextPrecio.getText());
         boolean racionCompleta = jCheckBoxCompleta.isSelected();
         boolean mediaRacion = jCheckBoxMedia.isSelected();
+        boolean cafes = jCheckBoxCafe.isSelected();
 
         try {
             // Verificar si el plato ya existe
             boolean platoNoExiste = true;
             if (mediaRacion) {
-                platoNoExiste = platoNoExiste(connection, nombre, true, false);
+                platoNoExiste = platoNoExiste(connection, nombre, true, false, false);
             } else if (racionCompleta) {
-                platoNoExiste = platoNoExiste(connection, nombre, false, true);
+                platoNoExiste = platoNoExiste(connection, nombre, false, true, false);
+            } else if (cafes) {
+                platoNoExiste = platoNoExiste(connection, nombre, false, true, true);
             }
 
             if (platoNoExiste) {
-                String sql = "INSERT INTO postres (nombre, precio, racion_completa, media_racion)"
-                        + "VALUES (?, ?, ?, ?)";
+                String sql = "INSERT INTO postres (nombre, precio, racion_completa, media_racion, cafes)"
+                        + "VALUES (?, ?, ?, ?, ?)";
                 try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                     pstmt.setString(1, nombre);
                     pstmt.setBigDecimal(2, precio);
                     pstmt.setBoolean(3, racionCompleta);
                     pstmt.setBoolean(4, mediaRacion);
+                    pstmt.setBoolean(5, cafes);
                     pstmt.executeUpdate();
                 }
                 limpiarCampos();
@@ -70,7 +74,7 @@ public class Postres extends javax.swing.JDialog {
 
     private void cargarPlatos(Connection connection) throws SQLException {
         try {
-            String sql = "SELECT id, nombre, precio, racion_completa, media_racion FROM postres ORDER BY id";
+            String sql = "SELECT id, nombre, precio, racion_completa, media_racion, cafes FROM postres ORDER BY id";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 try (ResultSet rs = pstmt.executeQuery()) {
                     jComboBoxActualizar.removeAllItems(); // Eliminar todos los elementos existentes
@@ -80,6 +84,7 @@ public class Postres extends javax.swing.JDialog {
                         BigDecimal precio = rs.getBigDecimal("precio");
                         boolean racionCompleta = rs.getBoolean("racion_completa");
                         boolean mediaRacion = rs.getBoolean("media_racion");
+                        boolean cafes = rs.getBoolean("cafes");
 
                         // Construir el texto del item del JComboBox con el tipo de plato
                         String tipoPlato;
@@ -87,6 +92,8 @@ public class Postres extends javax.swing.JDialog {
                             tipoPlato = "Ración Completa";
                         } else if (mediaRacion) {
                             tipoPlato = "Media Ración";
+                        } else if (cafes) {
+                            tipoPlato = "Cafes";
                         } else {
                             tipoPlato = "No especificado";
                         }
@@ -112,12 +119,14 @@ public class Postres extends javax.swing.JDialog {
         }
     }
 
-    private boolean platoNoExiste(Connection con, String nombre, boolean mediaRacion, boolean racionCompleta) throws SQLException {
+    private boolean platoNoExiste(Connection con, String nombre, boolean mediaRacion, boolean racionCompleta, boolean cafes) throws SQLException {
         String sql = null;
         if (mediaRacion) {
             sql = "SELECT COUNT(*) FROM postres WHERE nombre = ? AND media_racion = true";
         } else if (racionCompleta) {
             sql = "SELECT COUNT(*) FROM postres WHERE nombre = ? AND racion_completa = true";
+        } else if (cafes) {
+            sql = "SELECT COUNT(*) FROM postres WHERE nombre = ? AND cafes = true";
         }
         try (PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setString(1, nombre);
@@ -136,6 +145,7 @@ public class Postres extends javax.swing.JDialog {
         jTextPrecio.setText("");
         jCheckBoxMedia.setSelected(false);
         jCheckBoxCompleta.setSelected(false);
+        jCheckBoxCafe.setSelected(false);
     }
 
     /**
@@ -195,6 +205,10 @@ public class Postres extends javax.swing.JDialog {
         jLabel1 = new javax.swing.JLabel();
         jCheckBoxMediaActualizar = new javax.swing.JCheckBox();
         jLabel9 = new javax.swing.JLabel();
+        jCheckBoxCafe = new javax.swing.JCheckBox();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        jCheckBoxCafeActualizar = new javax.swing.JCheckBox();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenuInicio = new javax.swing.JMenu();
         jMenuSalir = new javax.swing.JMenuItem();
@@ -271,6 +285,22 @@ public class Postres extends javax.swing.JDialog {
 
         jLabel9.setText("Precio:");
 
+        jCheckBoxCafe.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxCafeActionPerformed(evt);
+            }
+        });
+
+        jLabel6.setText("Cafe");
+
+        jLabel12.setText("Cafe");
+
+        jCheckBoxCafeActualizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxCafeActualizarActionPerformed(evt);
+            }
+        });
+
         jMenuInicio.setText("Inicio");
 
         jMenuSalir.setText("Salir");
@@ -301,7 +331,12 @@ public class Postres extends javax.swing.JDialog {
                             .addGap(41, 41, 41)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(jCheckBoxCompleta)
-                                .addComponent(jCheckBoxMedia)))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(jCheckBoxMedia)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(jLabel6)
+                                    .addGap(41, 41, 41)
+                                    .addComponent(jCheckBoxCafe))))
                         .addComponent(jLabel13)
                         .addComponent(jLabel9)
                         .addComponent(jLabel7)
@@ -313,7 +348,12 @@ public class Postres extends javax.swing.JDialog {
                             .addGap(18, 18, 18)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(jCheckBoxCompletaActualizar)
-                                .addComponent(jCheckBoxMediaActualizar)))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(jCheckBoxMediaActualizar)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(jLabel12)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(jCheckBoxCafeActualizar))))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jButtonActualizar)
                             .addGroup(layout.createSequentialGroup()
@@ -351,13 +391,16 @@ public class Postres extends javax.swing.JDialog {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel4)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel6)
+                            .addComponent(jCheckBoxCafe))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel5)
                             .addComponent(jCheckBoxCompleta)))
                     .addComponent(jCheckBoxMedia))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
                 .addComponent(jButtonGuardar)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -365,7 +408,7 @@ public class Postres extends javax.swing.JDialog {
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jComboBoxActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel13)
                     .addComponent(jTextFieldID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -380,9 +423,13 @@ public class Postres extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel10)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel11)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel10)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel11))
+                            .addComponent(jLabel12)
+                            .addComponent(jCheckBoxCafeActualizar))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jButtonActualizar))
                     .addGroup(layout.createSequentialGroup()
@@ -400,6 +447,7 @@ public class Postres extends javax.swing.JDialog {
         // TODO add your handling code here:
         if (jCheckBoxCompletaActualizar.isSelected()) {
             jCheckBoxMediaActualizar.setSelected(false);
+            jCheckBoxCafeActualizar.setSelected(false);
         }
     }//GEN-LAST:event_jCheckBoxCompletaActualizarActionPerformed
 
@@ -424,7 +472,7 @@ public class Postres extends javax.swing.JDialog {
             Connection connection = null;
             try {
                 connection = Principal.connection();
-                String sql = "SELECT id, nombre, precio, racion_completa, media_racion FROM postres WHERE id = ?";
+                String sql = "SELECT id, nombre, precio, racion_completa, media_racion, cafes FROM postres WHERE id = ?";
                 try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                     pstmt.setInt(1, idPlato);// Usar el ID del plato obtenido correctamente
                     try (ResultSet rs = pstmt.executeQuery()) {
@@ -434,6 +482,7 @@ public class Postres extends javax.swing.JDialog {
                             jTextPrecioActualizar.setText(rs.getBigDecimal("precio").toString()); // Establece el precio del plato
                             jCheckBoxCompletaActualizar.setSelected(rs.getBoolean("racion_completa")); // Establece el valor de racion_completa
                             jCheckBoxMediaActualizar.setSelected(rs.getBoolean("media_racion")); // Establece el valor de media_racion
+                            jCheckBoxCafeActualizar.setSelected(rs.getBoolean("cafes"));
                         }
                     }
                 }
@@ -459,6 +508,7 @@ public class Postres extends javax.swing.JDialog {
             jTextPrecioActualizar.setText("");
             jCheckBoxCompletaActualizar.setSelected(false);
             jCheckBoxMediaActualizar.setSelected(false);
+            jCheckBoxCafeActualizar.setSelected(false);
         }
     }//GEN-LAST:event_jComboBoxActualizarActionPerformed
 
@@ -488,6 +538,7 @@ public class Postres extends javax.swing.JDialog {
         // TODO add your handling code here:
         if (jCheckBoxMedia.isSelected()) {
             jCheckBoxCompleta.setSelected(false);
+            jCheckBoxCafe.setSelected(false);
         }
     }//GEN-LAST:event_jCheckBoxMediaActionPerformed
 
@@ -514,11 +565,13 @@ public class Postres extends javax.swing.JDialog {
         BigDecimal nuevoPrecio;
         boolean racionCompleta;
         boolean mediaRacion;
+        boolean cafes;
         try {
             nuevoNombre = jTextNombreActualizar.getText();
             nuevoPrecio = new BigDecimal(jTextPrecioActualizar.getText());
             racionCompleta = jCheckBoxCompletaActualizar.isSelected();
             mediaRacion = jCheckBoxMediaActualizar.isSelected();
+            cafes = jCheckBoxCafeActualizar.isSelected();
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Error al actualizar el plato.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
@@ -528,13 +581,14 @@ public class Postres extends javax.swing.JDialog {
         try {
             connection = Principal.connection();
             // Actualizar el plato en la base de datos
-            String sqlUpdate = "UPDATE postres SET nombre = ?, precio = ?, racion_completa = ?, media_racion = ? WHERE id = ?";
+            String sqlUpdate = "UPDATE postres SET nombre = ?, precio = ?, racion_completa = ?, media_racion = ?, cafes = ? WHERE id = ?";
             try (PreparedStatement pstmtUpdate = connection.prepareStatement(sqlUpdate)) {
                 pstmtUpdate.setString(1, nuevoNombre);
                 pstmtUpdate.setBigDecimal(2, nuevoPrecio);
                 pstmtUpdate.setBoolean(3, racionCompleta);
                 pstmtUpdate.setBoolean(4, mediaRacion);
-                pstmtUpdate.setInt(5, idPlato);
+                pstmtUpdate.setBoolean(5, cafes);
+                pstmtUpdate.setInt(6, idPlato);
                 int rowsUpdated = pstmtUpdate.executeUpdate();
                 if (rowsUpdated > 0) {
                     JOptionPane.showMessageDialog(this, "Plato del menu de postres, actualizado correctamente");
@@ -562,6 +616,7 @@ public class Postres extends javax.swing.JDialog {
         // TODO add your handling code here:
         if (jCheckBoxCompleta.isSelected()) {
             jCheckBoxMedia.setSelected(false);
+            jCheckBoxCafe.setSelected(false);
         }
     }//GEN-LAST:event_jCheckBoxCompletaActionPerformed
 
@@ -569,6 +624,7 @@ public class Postres extends javax.swing.JDialog {
         // TODO add your handling code here:
         if (jCheckBoxMediaActualizar.isSelected()) {
             jCheckBoxCompletaActualizar.setSelected(false);
+            jCheckBoxCafeActualizar.setSelected(false);
         }
     }//GEN-LAST:event_jCheckBoxMediaActualizarActionPerformed
 
@@ -576,6 +632,22 @@ public class Postres extends javax.swing.JDialog {
         // TODO add your handling code here:
         dispose();
     }//GEN-LAST:event_jMenuSalirActionPerformed
+
+    private void jCheckBoxCafeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxCafeActionPerformed
+        // TODO add your handling code here:
+        if (jCheckBoxCafe.isSelected()) {
+            jCheckBoxMedia.setSelected(false);
+            jCheckBoxCompleta.setSelected(false);
+        }
+    }//GEN-LAST:event_jCheckBoxCafeActionPerformed
+
+    private void jCheckBoxCafeActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxCafeActualizarActionPerformed
+        // TODO add your handling code here:
+        if (jCheckBoxCafeActualizar.isSelected()) {
+            jCheckBoxCompletaActualizar.setSelected(false);
+            jCheckBoxMediaActualizar.setSelected(false);
+        }
+    }//GEN-LAST:event_jCheckBoxCafeActualizarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -627,6 +699,8 @@ public class Postres extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonActualizar;
     private javax.swing.JButton jButtonGuardar;
+    private javax.swing.JCheckBox jCheckBoxCafe;
+    private javax.swing.JCheckBox jCheckBoxCafeActualizar;
     private javax.swing.JCheckBox jCheckBoxCompleta;
     private javax.swing.JCheckBox jCheckBoxCompletaActualizar;
     private javax.swing.JCheckBox jCheckBoxMedia;
@@ -635,11 +709,13 @@ public class Postres extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;

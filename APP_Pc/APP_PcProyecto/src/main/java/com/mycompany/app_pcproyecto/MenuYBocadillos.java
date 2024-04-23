@@ -26,24 +26,32 @@ public class MenuYBocadillos extends javax.swing.JDialog {
         BigDecimal precio = new BigDecimal(jTextPrecio.getText());
         boolean bocadillo = jCheckBoxBocadillo.isSelected();
         boolean menu = jCheckBoxMenu.isSelected();
+        boolean tostadas = jCheckBoxTostadas.isSelected();
+        boolean tapas = jCheckBoxTapas.isSelected();
 
         try {
             // Verificar si el plato ya existe
             boolean platoNoExiste = true;
             if (menu) {
-                platoNoExiste = platoNoExiste(connection, nombre, true, false);
+                platoNoExiste = platoNoExiste(connection, nombre, true, false, false, false);
             } else if (bocadillo) {
-                platoNoExiste = platoNoExiste(connection, nombre, false, true);
+                platoNoExiste = platoNoExiste(connection, nombre, false, true, false, false);
+            } else if (tostadas) {
+                platoNoExiste = platoNoExiste(connection, nombre, false, false, true, false);
+            } else if (tapas) {
+                platoNoExiste = platoNoExiste(connection, nombre, false, false, false, true);
             }
 
             if (platoNoExiste) {
-                String sql = "INSERT INTO menu_bocadillos (nombre, precio, menu, bocadillo)"
-                        + "VALUES (?, ?, ?, ?)";
+                String sql = "INSERT INTO menu_bocadillos (nombre, precio, menu, bocadillo, tostadas, tapas)"
+                        + "VALUES (?, ?, ?, ?, ?, ?)";
                 try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                     pstmt.setString(1, nombre);
                     pstmt.setBigDecimal(2, precio);
                     pstmt.setBoolean(3, menu);
                     pstmt.setBoolean(4, bocadillo);
+                    pstmt.setBoolean(5, tostadas);
+                    pstmt.setBoolean(6, tapas);
                     pstmt.executeUpdate();
                 }
                 limpiarCampos();
@@ -72,7 +80,7 @@ public class MenuYBocadillos extends javax.swing.JDialog {
 
     private void cargarPlatos(Connection connection) throws SQLException {
         try {
-            String sql = "SELECT id, nombre, precio, menu, bocadillo FROM menu_bocadillos ORDER BY id";
+            String sql = "SELECT id, nombre, precio, menu, bocadillo, tostadas, tapas FROM menu_bocadillos ORDER BY id";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 try (ResultSet rs = pstmt.executeQuery()) {
                     jComboBoxActualizar.removeAllItems(); // Eliminar todos los elementos existentes
@@ -82,6 +90,8 @@ public class MenuYBocadillos extends javax.swing.JDialog {
                         BigDecimal precio = rs.getBigDecimal("precio");
                         boolean menu = rs.getBoolean("menu");
                         boolean bocadillo = rs.getBoolean("bocadillo");
+                        boolean tostadas = rs.getBoolean("tostadas");
+                        boolean tapas = rs.getBoolean("tapas");
 
                         // Construir el texto del item del JComboBox con el tipo de plato
                         String tipoPlato;
@@ -89,6 +99,10 @@ public class MenuYBocadillos extends javax.swing.JDialog {
                             tipoPlato = "Menu";
                         } else if (bocadillo) {
                             tipoPlato = "Bocadillo";
+                        } else if (tostadas) {
+                            tipoPlato = "Tostada";
+                        } else if (tapas) {
+                            tipoPlato = "Tapa";
                         } else {
                             tipoPlato = "No especificado";
                         }
@@ -114,12 +128,16 @@ public class MenuYBocadillos extends javax.swing.JDialog {
         }
     }
 
-    private boolean platoNoExiste(Connection con, String nombre, boolean mediaRacion, boolean racionCompleta) throws SQLException {
+    private boolean platoNoExiste(Connection con, String nombre, boolean menu, boolean bocadillo, boolean tostadas, boolean tapas) throws SQLException {
         String sql = null;
-        if (mediaRacion) {
+        if (menu) {
             sql = "SELECT COUNT(*) FROM menu_bocadillos WHERE nombre = ? AND menu = true";
-        } else if (racionCompleta) {
+        } else if (bocadillo) {
             sql = "SELECT COUNT(*) FROM menu_bocadillos WHERE nombre = ? AND bocadillo = true";
+        } else if (tostadas) {
+            sql = "SELECT COUNT(*) FROM menu_bocadillos WHERE nombre = ? AND tostadas = true";
+        } else if (tapas) {
+            sql = "SELECT COUNT(*) FROM menu_bocadillos WHERE nombre = ? AND tapas = true";
         }
         try (PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setString(1, nombre);
@@ -138,6 +156,8 @@ public class MenuYBocadillos extends javax.swing.JDialog {
         jTextPrecio.setText("");
         jCheckBoxMenu.setSelected(false);
         jCheckBoxBocadillo.setSelected(false);
+        jCheckBoxTostadas.setSelected(false);
+        jCheckBoxTapas.setSelected(false);
     }
 
     /**
@@ -198,6 +218,14 @@ public class MenuYBocadillos extends javax.swing.JDialog {
         jTextPrecio = new javax.swing.JTextField();
         jCheckBoxBocadillo = new javax.swing.JCheckBox();
         jLabel4 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jCheckBoxTostadas = new javax.swing.JCheckBox();
+        jLabel12 = new javax.swing.JLabel();
+        jCheckBoxTostadasActualizar = new javax.swing.JCheckBox();
+        jCheckBoxTapas = new javax.swing.JCheckBox();
+        jLabel14 = new javax.swing.JLabel();
+        jLabel15 = new javax.swing.JLabel();
+        jCheckBoxTapasActualizar = new javax.swing.JCheckBox();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItemSalir = new javax.swing.JMenuItem();
@@ -274,6 +302,38 @@ public class MenuYBocadillos extends javax.swing.JDialog {
 
         jLabel4.setText("Menu");
 
+        jLabel6.setText("Tostadas");
+
+        jCheckBoxTostadas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxTostadasActionPerformed(evt);
+            }
+        });
+
+        jLabel12.setText("Tostadas");
+
+        jCheckBoxTostadasActualizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxTostadasActualizarActionPerformed(evt);
+            }
+        });
+
+        jCheckBoxTapas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxTapasActionPerformed(evt);
+            }
+        });
+
+        jLabel14.setText("Tapas variadas");
+
+        jLabel15.setText("Tapas variadas");
+
+        jCheckBoxTapasActualizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxTapasActualizarActionPerformed(evt);
+            }
+        });
+
         jMenu1.setText("Inicio");
 
         jMenuItemSalir.setText("Salir");
@@ -301,9 +361,19 @@ public class MenuYBocadillos extends javax.swing.JDialog {
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(jLabel4)
                         .addGap(41, 41, 41)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jCheckBoxBocadillo)
-                            .addComponent(jCheckBoxMenu)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jCheckBoxBocadillo)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel14)
+                                .addGap(18, 18, 18)
+                                .addComponent(jCheckBoxTapas))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jCheckBoxMenu)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel6)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jCheckBoxTostadas))))
                     .addComponent(jLabel13, javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING)
@@ -313,9 +383,19 @@ public class MenuYBocadillos extends javax.swing.JDialog {
                             .addComponent(jLabel10)
                             .addComponent(jLabel11))
                         .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jCheckBoxBocadilloActualizar)
-                            .addComponent(jCheckBoxMenuActualizar)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jCheckBoxBocadilloActualizar)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel15)
+                                .addGap(18, 18, 18)
+                                .addComponent(jCheckBoxTapasActualizar))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jCheckBoxMenuActualizar)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel12)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jCheckBoxTostadasActualizar))))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addComponent(jButtonActualizar)
                         .addGroup(layout.createSequentialGroup()
@@ -353,11 +433,18 @@ public class MenuYBocadillos extends javax.swing.JDialog {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel5)
-                            .addComponent(jCheckBoxBocadillo)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel6)
+                            .addComponent(jCheckBoxTostadas, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addGap(9, 9, 9)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel5)
+                                .addComponent(jCheckBoxBocadillo))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel14)
+                                .addComponent(jCheckBoxTapas))))
                     .addComponent(jCheckBoxMenu))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButtonGuardar)
@@ -386,8 +473,15 @@ public class MenuYBocadillos extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel11))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(22, 22, 22)
-                        .addComponent(jCheckBoxBocadilloActualizar))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel12)
+                            .addComponent(jCheckBoxTostadasActualizar))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jCheckBoxBocadilloActualizar)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel15)
+                                .addComponent(jCheckBoxTapasActualizar))))
                     .addComponent(jCheckBoxMenuActualizar))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonActualizar)
@@ -401,6 +495,8 @@ public class MenuYBocadillos extends javax.swing.JDialog {
         // TODO add your handling code here:
         if (jCheckBoxBocadilloActualizar.isSelected()) {
             jCheckBoxMenuActualizar.setSelected(false);
+            jCheckBoxTostadasActualizar.setSelected(false);
+            jCheckBoxTapasActualizar.setSelected(false);
         }
     }//GEN-LAST:event_jCheckBoxBocadilloActualizarActionPerformed
 
@@ -408,6 +504,8 @@ public class MenuYBocadillos extends javax.swing.JDialog {
         // TODO add your handling code here:
         if (jCheckBoxMenuActualizar.isSelected()) {
             jCheckBoxBocadilloActualizar.setSelected(false);
+            jCheckBoxTostadasActualizar.setSelected(false);
+            jCheckBoxTapasActualizar.setSelected(false);
         }
     }//GEN-LAST:event_jCheckBoxMenuActualizarActionPerformed
 
@@ -415,6 +513,8 @@ public class MenuYBocadillos extends javax.swing.JDialog {
         // TODO add your handling code here:
         if (jCheckBoxMenu.isSelected()) {
             jCheckBoxBocadillo.setSelected(false);
+            jCheckBoxTostadas.setSelected(false);
+            jCheckBoxTapas.setSelected(false);
         }
     }//GEN-LAST:event_jCheckBoxMenuActionPerformed
 
@@ -438,7 +538,7 @@ public class MenuYBocadillos extends javax.swing.JDialog {
             Connection connection = null;
             try {
                 connection = Principal.connection();
-                String sql = "SELECT id, nombre, precio, menu, bocadillo FROM menu_bocadillos WHERE id = ?";
+                String sql = "SELECT id, nombre, precio, menu, bocadillo, tostadas, tapas FROM menu_bocadillos WHERE id = ?";
                 try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                     pstmt.setInt(1, idPlato);// Usar el ID del plato obtenido correctamente
                     try (ResultSet rs = pstmt.executeQuery()) {
@@ -446,8 +546,10 @@ public class MenuYBocadillos extends javax.swing.JDialog {
                             jTextFieldID.setText(rs.getInt("id") + ""); // Establece el ID del plato
                             jTextNombreActualizar.setText(rs.getString("nombre")); // Establece el nombre del plato
                             jTextPrecioActualizar.setText(rs.getBigDecimal("precio").toString()); // Establece el precio del plato
-                            jCheckBoxBocadilloActualizar.setSelected(rs.getBoolean("menu")); // Establece el valor de menu
-                            jCheckBoxMenuActualizar.setSelected(rs.getBoolean("bocadillo")); // Establece el valor de bocadillo
+                            jCheckBoxMenuActualizar.setSelected(rs.getBoolean("menu")); // Establece el valor de menu
+                            jCheckBoxBocadilloActualizar.setSelected(rs.getBoolean("bocadillo")); // Establece el valor de bocadillo
+                            jCheckBoxTostadasActualizar.setSelected(rs.getBoolean("tostadas"));
+                            jCheckBoxTapasActualizar.setSelected(rs.getBoolean("tapas"));
                         }
                     }
                 }
@@ -473,6 +575,8 @@ public class MenuYBocadillos extends javax.swing.JDialog {
             jTextPrecioActualizar.setText("");
             jCheckBoxBocadilloActualizar.setSelected(false);
             jCheckBoxMenuActualizar.setSelected(false);
+            jCheckBoxTostadasActualizar.setSelected(false);
+            jCheckBoxTapasActualizar.setSelected(false);
         }
     }//GEN-LAST:event_jComboBoxActualizarActionPerformed
 
@@ -497,13 +601,17 @@ public class MenuYBocadillos extends javax.swing.JDialog {
         // Obtener los nuevos valores
         String nuevoNombre;
         BigDecimal nuevoPrecio;
-        boolean racionCompleta;
-        boolean mediaRacion;
+        boolean bocadillos;
+        boolean menu;
+        boolean tostadas;
+        boolean tapas;
         try {
             nuevoNombre = jTextNombreActualizar.getText();
             nuevoPrecio = new BigDecimal(jTextPrecioActualizar.getText());
-            racionCompleta = jCheckBoxBocadilloActualizar.isSelected();
-            mediaRacion = jCheckBoxMenuActualizar.isSelected();
+            bocadillos = jCheckBoxBocadilloActualizar.isSelected();
+            menu = jCheckBoxMenuActualizar.isSelected();
+            tostadas = jCheckBoxTostadasActualizar.isSelected();
+            tapas = jCheckBoxTapasActualizar.isSelected();
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Error al obtener los nuevos valores.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
@@ -514,13 +622,15 @@ public class MenuYBocadillos extends javax.swing.JDialog {
         try {
             connection = Principal.connection();
             // Actualizar el plato en la base de datos
-            String sqlUpdate = "UPDATE menu_bocadillos SET nombre = ?, precio = ?, menu = ?, bocadillo = ? WHERE id = ?";
+            String sqlUpdate = "UPDATE menu_bocadillos SET nombre = ?, precio = ?, menu = ?, bocadillo = ?, tostadas = ?, tapas = ? WHERE id = ?";
             try (PreparedStatement pstmtUpdate = connection.prepareStatement(sqlUpdate)) {
                 pstmtUpdate.setString(1, nuevoNombre);
                 pstmtUpdate.setBigDecimal(2, nuevoPrecio);
-                pstmtUpdate.setBoolean(3, racionCompleta);
-                pstmtUpdate.setBoolean(4, mediaRacion);
-                pstmtUpdate.setInt(5, idPlato);
+                pstmtUpdate.setBoolean(3, menu);
+                pstmtUpdate.setBoolean(4, bocadillos);
+                pstmtUpdate.setBoolean(5, tostadas);
+                pstmtUpdate.setBoolean(6, tapas);
+                pstmtUpdate.setInt(7, idPlato);
                 int rowsUpdated = pstmtUpdate.executeUpdate();
                 if (rowsUpdated > 0) {
                     JOptionPane.showMessageDialog(this, "Datos de menu o bocadillo, actualizado correctamente");
@@ -570,6 +680,8 @@ public class MenuYBocadillos extends javax.swing.JDialog {
         // TODO add your handling code here:
         if (jCheckBoxBocadillo.isSelected()) {
             jCheckBoxMenu.setSelected(false);
+            jCheckBoxTostadas.setSelected(false);
+            jCheckBoxTapas.setSelected(false);
         }
     }//GEN-LAST:event_jCheckBoxBocadilloActionPerformed
 
@@ -577,6 +689,42 @@ public class MenuYBocadillos extends javax.swing.JDialog {
         // TODO add your handling code here:
         dispose();
     }//GEN-LAST:event_jMenuItemSalirActionPerformed
+
+    private void jCheckBoxTostadasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxTostadasActionPerformed
+        // TODO add your handling code here:
+        if (jCheckBoxTostadas.isSelected()) {
+            jCheckBoxMenu.setSelected(false);
+            jCheckBoxBocadillo.setSelected(false);
+            jCheckBoxTapas.setSelected(false);
+        }
+    }//GEN-LAST:event_jCheckBoxTostadasActionPerformed
+
+    private void jCheckBoxTostadasActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxTostadasActualizarActionPerformed
+        // TODO add your handling code here:
+        if (jCheckBoxTostadasActualizar.isSelected()) {
+            jCheckBoxBocadilloActualizar.setSelected(false);
+            jCheckBoxMenuActualizar.setSelected(false);
+            jCheckBoxTapasActualizar.setSelected(false);
+        }
+    }//GEN-LAST:event_jCheckBoxTostadasActualizarActionPerformed
+
+    private void jCheckBoxTapasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxTapasActionPerformed
+        // TODO add your handling code here:
+        if (jCheckBoxTapas.isSelected()) {
+            jCheckBoxMenu.setSelected(false);
+            jCheckBoxTostadas.setSelected(false);
+            jCheckBoxBocadillo.setSelected(false);
+        }
+    }//GEN-LAST:event_jCheckBoxTapasActionPerformed
+
+    private void jCheckBoxTapasActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxTapasActualizarActionPerformed
+        // TODO add your handling code here:
+        if (jCheckBoxTapasActualizar.isSelected()) {
+            jCheckBoxBocadilloActualizar.setSelected(false);
+            jCheckBoxTostadasActualizar.setSelected(false);
+            jCheckBoxMenuActualizar.setSelected(false);
+        }
+    }//GEN-LAST:event_jCheckBoxTapasActualizarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -632,15 +780,23 @@ public class MenuYBocadillos extends javax.swing.JDialog {
     private javax.swing.JCheckBox jCheckBoxBocadilloActualizar;
     private javax.swing.JCheckBox jCheckBoxMenu;
     private javax.swing.JCheckBox jCheckBoxMenuActualizar;
+    private javax.swing.JCheckBox jCheckBoxTapas;
+    private javax.swing.JCheckBox jCheckBoxTapasActualizar;
+    private javax.swing.JCheckBox jCheckBoxTostadas;
+    private javax.swing.JCheckBox jCheckBoxTostadasActualizar;
     private javax.swing.JComboBox<String> jComboBoxActualizar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
