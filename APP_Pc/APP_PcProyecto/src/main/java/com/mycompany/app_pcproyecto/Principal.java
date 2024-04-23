@@ -145,7 +145,8 @@ public class Principal extends javax.swing.JFrame {
                     + "nombre VARCHAR(50),"
                     + "precio DECIMAL(10, 2),"
                     + "racion_completa BOOLEAN,"
-                    + "media_racion BOOLEAN)";
+                    + "media_racion BOOLEAN,"
+                    + "cafes BOOLEAN)";
 
             String crearTablaMesas = "CREATE TABLE IF NOT EXISTS mesas ("
                     + "id SERIAL PRIMARY KEY,"
@@ -156,7 +157,9 @@ public class Principal extends javax.swing.JFrame {
                     + "nombre VARCHAR(50),"
                     + "precio DECIMAL(10, 2),"
                     + "menu BOOLEAN,"
-                    + "bocadillo BOOLEAN)";
+                    + "bocadillo BOOLEAN,"
+                    + "tostadas BOOLEAN,"
+                    + "tapas BOOLEAN)";
 
             // Ejecutar los comandos SQL
             stmt.executeUpdate(crearTablaEntrantes);
@@ -515,7 +518,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void cargarPlatosPostres(Connection connection) throws SQLException {
         try {
-            String sql = "SELECT id, nombre, precio, racion_completa, media_racion FROM postres ORDER BY id";
+            String sql = "SELECT id, nombre, precio, racion_completa, media_racion, cafes FROM postres ORDER BY id";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 try (ResultSet rs = pstmt.executeQuery()) {
                     jComboPostres.removeAllItems(); // Eliminar todos los elementos existentes
@@ -525,6 +528,7 @@ public class Principal extends javax.swing.JFrame {
                         BigDecimal precio = rs.getBigDecimal("precio");
                         boolean racionCompleta = rs.getBoolean("racion_completa");
                         boolean mediaRacion = rs.getBoolean("media_racion");
+                        boolean cafes = rs.getBoolean("cafes");
 
                         // Construir el texto del item del JComboBox con el tipo de plato
                         String tipoPlato;
@@ -532,6 +536,8 @@ public class Principal extends javax.swing.JFrame {
                             tipoPlato = "Ración Completa";
                         } else if (mediaRacion) {
                             tipoPlato = "Media Ración";
+                        } else if (cafes) {
+                            tipoPlato = "Cafe";
                         } else {
                             tipoPlato = "No especificado";
                         }
@@ -596,7 +602,7 @@ public class Principal extends javax.swing.JFrame {
 
     private void cargarMenuOBocadillos(Connection connection) throws SQLException {
         try {
-            String sql = "SELECT id, nombre, precio, menu, bocadillo FROM menu_bocadillos ORDER BY id";
+            String sql = "SELECT id, nombre, precio, menu, bocadillo, tostadas, tapas FROM menu_bocadillos ORDER BY id";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 try (ResultSet rs = pstmt.executeQuery()) {
                     jComboDiario.removeAllItems(); // Eliminar todos los elementos existentes
@@ -606,6 +612,8 @@ public class Principal extends javax.swing.JFrame {
                         BigDecimal precio = rs.getBigDecimal("precio");
                         boolean menu = rs.getBoolean("menu");
                         boolean bocadillo = rs.getBoolean("bocadillo");
+                        boolean tostadas = rs.getBoolean("tostadas");
+                        boolean tapas = rs.getBoolean("tapas");
 
                         // Construir el texto del item del JComboBox con el tipo de plato
                         String tipoPlato;
@@ -613,6 +621,10 @@ public class Principal extends javax.swing.JFrame {
                             tipoPlato = "Menu";
                         } else if (bocadillo) {
                             tipoPlato = "Bocadillo";
+                        } else if (tostadas) {
+                            tipoPlato = "Tostada";
+                        } else if (tapas) {
+                            tipoPlato = "Tapa";
                         } else {
                             tipoPlato = "No especificado";
                         }
@@ -810,12 +822,12 @@ public class Principal extends javax.swing.JFrame {
         }
     }
 
-    private void guardarDatosMesaSeleccionada(int numeroMesa) {
+    private void guardarDatosMesaSeleccionadaInterno(int numeroMesa) {
         // Obtener la fecha y hora actual
         LocalDateTime ahora = LocalDateTime.now();
 
         // Definir el directorio y el nombre del archivo con la fecha actual
-        String directorio = "C:\\Comandas TPV";
+        String directorio = "C:\\Comandas TPV\\Registro Interno";
         String nombreArchivo = "Registro de comandas dia_" + ahora.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + ".txt";
         File archivo = new File(directorio, nombreArchivo);
 
@@ -851,11 +863,11 @@ public class Principal extends javax.swing.JFrame {
                         String cantidad = partes[0];
                         String producto = partes[1];
                         // Rellenar con espacios en blanco la tercera columna
-                        String espacioEnBlanco = "~~~~~~~~";
+                        String tipoProducto = partes[2];
                         String precioUnitario = partes.length > 3 ? partes[3] : "";
                         String precioTotal = partes[4];
                         // Construir la línea con el formato deseado
-                        datosMesa += String.format("%s - %s - %s - %s - %s\n", cantidad, producto, espacioEnBlanco, precioUnitario,precioTotal);
+                        datosMesa += String.format("%s - %s - %s - %s - %s\n", cantidad, producto, tipoProducto, precioUnitario, precioTotal);
                     }
                 }
                 if (!textoPago.isEmpty()) {
@@ -865,6 +877,89 @@ public class Principal extends javax.swing.JFrame {
 
                 // Guardar los datos en el archivo
                 writer.write(datosMesa);
+                writer.newLine();
+
+                // Mostrar mensaje de confirmación
+                JOptionPane.showMessageDialog(this, "Pago de la mesa " + numeroMesa + " confirmado. ¡Gracias!", "Confirmación", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                // Mostrar un mensaje indicando que no hay datos para guardar
+                JOptionPane.showMessageDialog(this, "No hay comandas para la mesa " + numeroMesa + ".", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            // Manejar la excepción adecuadamente
+        }
+    }
+
+    private void guardarDatosMesaSeleccionadaClientes(int numeroMesa) {
+        // Obtener la fecha y hora actual
+        LocalDateTime ahora = LocalDateTime.now();
+
+        // Definir el directorio y el nombre del archivo con la fecha actual
+        String directorio = "C:\\Comandas TPV\\Tickets a Cliente";
+        String nombreArchivo = "Ticket de comandas dia_" + ahora.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + ".txt";
+        File archivo = new File(directorio, nombreArchivo);
+
+        // Guardar los datos de la mesa seleccionada en el archivo
+        JTextArea jTextAreaMesa = obtenerJTextAreaMesa(numeroMesa);
+        JTextField jTextFieldPagoMesa = obtenerJTextFieldPagoMesa(numeroMesa);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(archivo, true))) {
+            // Obtener el texto de la mesa y el pago
+            String textoMesa = jTextAreaMesa.getText();
+            String textoPago = jTextFieldPagoMesa.getText();
+
+            // Verificar si hay texto en la mesa y/o el pago
+            if (!textoMesa.isEmpty() || !textoPago.isEmpty()) {
+                // Convertir el pago a un valor numérico
+                double pago = 0.0;
+                try {
+                    pago = Double.parseDouble(textoPago.replace(",", ".")); // Reemplazar la coma por un punto para parsear correctamente
+                } catch (NumberFormatException e) {
+                    // Manejar el caso en que el texto de pago no sea un número válido
+                    JOptionPane.showMessageDialog(this, "El formato del pago no es válido.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Calcular el total con IVA (10%)
+                double totalConIVA = pago * 1.10;
+
+                // Encabezado con el nombre del local, el NIF, la fecha y la hora
+                writer.newLine();
+                writer.write(String.format("%20s%s\n", "", "Bar ElEscobar"));
+                writer.write(String.format("%20s%s\n", "", "NIF: 12345678X"));
+                writer.newLine();
+                writer.write("Teléfonos de contacto: 623191754 | 683572682\n");
+                writer.write(ahora.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
+                writer.newLine();
+                writer.newLine();
+
+                // Datos de las mesas
+                if (!textoMesa.isEmpty()) {
+                    writer.write("Comandas:");
+                    writer.newLine();
+                    writer.write(String.format("%-5s%-35s%-20s%-25s\n", "Cant.", "Producto", " ", " "));
+                    writer.write("---------------------------------------------------------------\n");
+                    String[] lineas = textoMesa.split("\n");
+                    for (String linea : lineas) {
+                        // Dividir la línea en partes
+                        String[] partes = linea.split(" - ");
+                        // Obtener los valores de las columnas
+                        String cantidad = partes[0];
+                        String producto = partes[1].substring(0, Math.min(partes[1].length(), 25)); // Limitar la longitud del nombre del producto a 30 caracteres
+                        String precioTotal = partes[4];
+                        String precioUnitario = partes[3];
+                        // Construir la línea con el formato deseado
+                        writer.write(String.format("%-5s%-30s%-20s%-20s\n", cantidad, producto, precioUnitario, precioTotal));
+                    }
+                    writer.newLine();
+                }
+
+                // Total con IVA y pago
+                writer.write(String.format("%-28s%-40s\n", "Pago (sin impuestos):", String.format("%.2f€", pago)));
+                writer.write(String.format("%-20s%-40s\n", "Total (impuestos incluidos):", String.format("%.2f€", totalConIVA)));
+                writer.newLine();
+                writer.write("Gracias por su visita");
                 writer.newLine();
 
                 // Mostrar mensaje de confirmación
@@ -1001,161 +1096,235 @@ public class Principal extends javax.swing.JFrame {
                 // Agregar ActionListener a cada JComboBox para actualizar el JTextArea
                 jComboEntrantes.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        actualizarComandas(jComboEntrantes.getSelectedItem());
-
-                        try (Connection connection = connection()) {
-                            cargarPlatosEntrantes(connection);
-                        } catch (SQLException ex) {
-                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        Object selectedItem = jComboEntrantes.getSelectedItem();
+                        if (selectedItem != null) {
+                            String selectedItemString = selectedItem.toString();
+                            if (!selectedItemString.equals("< Selecciona un plato >")) {
+                                actualizarComandas(selectedItemString);
+                                try (Connection connection = connection()) {
+                                    cargarPlatosEntrantes(connection);
+                                } catch (SQLException ex) {
+                                    Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                configurarComboBox(jComboEntrantes, "< Selecciona un plato >");
+                            }
                         }
-                        configurarComboBox(jComboEntrantes, "< Selecciona un plato >");
                     }
                 });
 
                 jComboBebidas.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        actualizarComandas(jComboBebidas.getSelectedItem());
-                        try (Connection connection = connection()) {
-                            cargarBebidas(connection);
-                        } catch (SQLException ex) {
-                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        Object selectedItem = jComboBebidas.getSelectedItem();
+                        if (selectedItem != null) {
+                            String selectedItemString = selectedItem.toString();
+                            if (!selectedItemString.equals("< Selecciona una bebida >")) {
+                                actualizarComandas(selectedItemString);
+                                try (Connection connection = connection()) {
+                                    cargarBebidas(connection);
+                                } catch (SQLException ex) {
+                                    Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                configurarComboBox(jComboBebidas, "< Selecciona una bebida >");
+                            }
                         }
-                        configurarComboBox(jComboBebidas, "< Selecciona una bebida >");
                     }
                 });
 
                 jComboCarnes.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        actualizarComandas(jComboCarnes.getSelectedItem());
-                        try (Connection connection = connection()) {
-                            cargarPlatosCarnes(connection);
-                        } catch (SQLException ex) {
-                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        Object selectedItem = jComboCarnes.getSelectedItem();
+                        if (selectedItem != null) {
+                            String selectedItemString = selectedItem.toString();
+                            if (!selectedItemString.equals("< Selecciona un plato >")) {
+                                actualizarComandas(selectedItemString);
+                                try (Connection connection = connection()) {
+                                    cargarPlatosCarnes(connection);
+                                } catch (SQLException ex) {
+                                    Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                configurarComboBox(jComboCarnes, "< Selecciona un plato >");
+                            }
                         }
-                        configurarComboBox(jComboCarnes, "< Selecciona un plato >");
                     }
                 });
 
                 jComboCaldo.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        actualizarComandas(jComboCaldo.getSelectedItem());
-                        try (Connection connection = connection()) {
-                            cargarPlatosCaldos(connection);
-                        } catch (SQLException ex) {
-                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        Object selectedItem = jComboCaldo.getSelectedItem();
+                        if (selectedItem != null) {
+                            String selectedItemString = selectedItem.toString();
+                            if (!selectedItemString.equals("< Selecciona un plato >")) {
+                                actualizarComandas(selectedItemString);
+                                try (Connection connection = connection()) {
+                                    cargarPlatosCaldos(connection);
+                                } catch (SQLException ex) {
+                                    Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                configurarComboBox(jComboCaldo, "< Selecciona un plato >");
+                            }
                         }
-                        configurarComboBox(jComboCaldo, "< Selecciona un plato >");
                     }
                 });
 
                 jComboArroces.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        actualizarComandas(jComboArroces.getSelectedItem());
-                        try (Connection connection = connection()) {
-                            cargarPlatosArroz(connection);
-                        } catch (SQLException ex) {
-                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        Object selectedItem = jComboArroces.getSelectedItem();
+                        if (selectedItem != null) {
+                            String selectedItemString = selectedItem.toString();
+                            if (!selectedItemString.equals("< Selecciona un plato >")) {
+                                actualizarComandas(selectedItemString);
+                                try (Connection connection = connection()) {
+                                    cargarPlatosArroz(connection);
+                                } catch (SQLException ex) {
+                                    Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                configurarComboBox(jComboArroces, "< Selecciona un plato >");
+                            }
                         }
-                        configurarComboBox(jComboArroces, "< Selecciona un plato >");
                     }
                 });
 
                 jComboPostres.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        actualizarComandas(jComboPostres.getSelectedItem());
-                        try (Connection connection = connection()) {
-                            cargarPlatosPostres(connection);
-                        } catch (SQLException ex) {
-                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        Object selectedItem = jComboPostres.getSelectedItem();
+                        if (selectedItem != null) {
+                            String selectedItemString = selectedItem.toString();
+                            if (!selectedItemString.equals("< Selecciona un plato >")) {
+                                actualizarComandas(selectedItemString);
+                                try (Connection connection = connection()) {
+                                    cargarPlatosPostres(connection);
+                                } catch (SQLException ex) {
+                                    Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                configurarComboBox(jComboPostres, "< Selecciona un plato >");
+                            }
                         }
-                        configurarComboBox(jComboPostres, "< Selecciona un plato >");
                     }
                 });
 
                 jComboPescados.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        actualizarComandas(jComboPescados.getSelectedItem());
-                        try (Connection connection = connection()) {
-                            cargarPlatosPescados(connection);
-                        } catch (SQLException ex) {
-                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        Object selectedItem = jComboPescados.getSelectedItem();
+                        if (selectedItem != null) {
+                            String selectedItemString = selectedItem.toString();
+                            if (!selectedItemString.equals("< Selecciona un plato >")) {
+                                actualizarComandas(selectedItemString);
+                                try (Connection connection = connection()) {
+                                    cargarPlatosPescados(connection);
+                                } catch (SQLException ex) {
+                                    Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                configurarComboBox(jComboPescados, "< Selecciona un plato >");
+                            }
                         }
-                        configurarComboBox(jComboPescados, "< Selecciona un plato >");
                     }
                 });
 
                 jComboPastas.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        actualizarComandas(jComboPastas.getSelectedItem());
-                        try (Connection connection = connection()) {
-                            cargarPlatosPasta(connection);
-                        } catch (SQLException ex) {
-                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        Object selectedItem = jComboPastas.getSelectedItem();
+                        if (selectedItem != null) {
+                            String selectedItemString = selectedItem.toString();
+                            if (!selectedItemString.equals("< Selecciona un plato >")) {
+                                actualizarComandas(selectedItemString);
+                                try (Connection connection = connection()) {
+                                    cargarPlatosPasta(connection);
+                                } catch (SQLException ex) {
+                                    Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                configurarComboBox(jComboPastas, "< Selecciona un plato >");
+                            }
                         }
-                        configurarComboBox(jComboPastas, "< Selecciona un plato >");
                     }
                 });
 
                 jComboFideua.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        actualizarComandas(jComboFideua.getSelectedItem());
-                        try (Connection connection = connection()) {
-                            cargarPlatosFideua(connection);
-                        } catch (SQLException ex) {
-                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        Object selectedItem = jComboFideua.getSelectedItem();
+                        if (selectedItem != null) {
+                            String selectedItemString = selectedItem.toString();
+                            if (!selectedItemString.equals("< Selecciona un plato >")) {
+                                actualizarComandas(selectedItemString);
+                                try (Connection connection = connection()) {
+                                    cargarPlatosFideua(connection);
+                                } catch (SQLException ex) {
+                                    Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                configurarComboBox(jComboFideua, "< Selecciona un plato >");
+                            }
                         }
-                        configurarComboBox(jComboFideua, "< Selecciona un plato >");
                     }
                 });
 
                 jComboEnsaladas.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        actualizarComandas(jComboEnsaladas.getSelectedItem());
-                        try (Connection connection = connection()) {
-                            cargarPlatosEnsaladas(connection);
-                        } catch (SQLException ex) {
-                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        Object selectedItem = jComboEnsaladas.getSelectedItem();
+                        if (selectedItem != null) {
+                            String selectedItemString = selectedItem.toString();
+                            if (!selectedItemString.equals("< Selecciona un plato >")) {
+                                actualizarComandas(selectedItemString);
+                                try (Connection connection = connection()) {
+                                    cargarPlatosEnsaladas(connection);
+                                } catch (SQLException ex) {
+                                    Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                configurarComboBox(jComboEnsaladas, "< Selecciona un plato >");
+                            }
                         }
-                        configurarComboBox(jComboEnsaladas, "< Selecciona un plato >");
                     }
                 });
 
                 jComboCombinados.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        actualizarComandas(jComboCombinados.getSelectedItem());
-                        try (Connection connection = connection()) {
-                            cargarPlatosCombinados(connection);
-                        } catch (SQLException ex) {
-                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        Object selectedItem = jComboCombinados.getSelectedItem();
+                        if (selectedItem != null) {
+                            String selectedItemString = selectedItem.toString();
+                            if (!selectedItemString.equals("< Selecciona un plato >")) {
+                                actualizarComandas(selectedItemString);
+                                try (Connection connection = connection()) {
+                                    cargarPlatosCombinados(connection);
+                                } catch (SQLException ex) {
+                                    Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                configurarComboBox(jComboCombinados, "< Selecciona un plato >");
+                            }
                         }
-                        configurarComboBox(jComboCombinados, "< Selecciona un plato >");
                     }
                 });
 
                 jComboDiario.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        actualizarComandas(jComboDiario.getSelectedItem());
-                        try (Connection connection = connection()) {
-                            cargarMenuOBocadillos(connection);
-                        } catch (SQLException ex) {
-                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        Object selectedItem = jComboDiario.getSelectedItem();
+                        if (selectedItem != null) {
+                            String selectedItemString = selectedItem.toString();
+                            if (!selectedItemString.equals("< Selecciona un dato >")) {
+                                actualizarComandas(selectedItemString);
+                                try (Connection connection = connection()) {
+                                    cargarMenuOBocadillos(connection);
+                                } catch (SQLException ex) {
+                                    Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                configurarComboBox(jComboDiario, "< Selecciona un dato >");
+                            }
                         }
-                        configurarComboBox(jComboDiario, "< Selecciona un dato >");
                     }
                 });
 
                 jComboMesas.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        // Actualizar la mesa cuando se selecciona una nueva opción en el JComboBox
-                        Object selectedMesa = jComboMesas.getSelectedItem();
-                        actualizarMesa(selectedMesa); // Actualiza la mesa seleccionada
-                        cargarDatosMesa("Mesa: " + selectedMesa); // Carga los datos preexistentes del JTextArea de los menús
-                        try (Connection connection = connection()) {
-                            cargarMesas(connection);
-                        } catch (SQLException ex) {
-                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        String selectedItem = jComboMesas.getSelectedItem().toString();
+                        if (!selectedItem.equals("< Selecciona una mesa >")) {
+                            // Actualizar la mesa cuando se selecciona una nueva opción en el JComboBox
+                            Object selectedMesa = jComboMesas.getSelectedItem();
+                            actualizarMesa(selectedMesa); // Actualiza la mesa seleccionada
+                            cargarDatosMesa("Mesa: " + selectedMesa); // Carga los datos preexistentes del JTextArea de los menús
+                            try (Connection connection = connection()) {
+                                cargarMesas(connection);
+                            } catch (SQLException ex) {
+                                Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                            configurarComboBox(jComboMesas, "< Selecciona una mesa >");
                         }
-                        configurarComboBox(jComboMesas, "< Selecciona una mesa >");
                     }
                 });
 
@@ -1272,9 +1441,6 @@ public class Principal extends javax.swing.JFrame {
         jCheckBox7 = new javax.swing.JCheckBox();
         jCheckBox8 = new javax.swing.JCheckBox();
         jCheckBox9 = new javax.swing.JCheckBox();
-        jLabel24 = new javax.swing.JLabel();
-        jCheckSI = new javax.swing.JCheckBox();
-        jCheckBoNO = new javax.swing.JCheckBox();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenuInicial = new javax.swing.JMenu();
         jMenuPlatos = new javax.swing.JMenu();
@@ -1525,12 +1691,6 @@ public class Principal extends javax.swing.JFrame {
             }
         });
 
-        jLabel24.setText("Imprimir ticket:");
-
-        jCheckSI.setText("Si");
-
-        jCheckBoNO.setText("No");
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -1639,13 +1799,7 @@ public class Principal extends javax.swing.JFrame {
                                     .addComponent(jLabel14)
                                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                         .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
-                                        .addComponent(jTextFieldMesa))
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jLabel24)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jCheckSI)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jCheckBoNO)))))
+                                        .addComponent(jTextFieldMesa)))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -1727,10 +1881,7 @@ public class Principal extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel5)
-                            .addComponent(jComboPastas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel24)
-                            .addComponent(jCheckSI)
-                            .addComponent(jCheckBoNO))
+                            .addComponent(jComboPastas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(22, 22, 22)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel4)
@@ -2112,7 +2263,22 @@ public class Principal extends javax.swing.JFrame {
 
     private void jMenuItemActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemActualizarActionPerformed
         try (Connection connection = connection()) {
-            // TODO add your handling code here:
+            // Remover todos los ActionListener de los JComboBox
+            removeActionListeners(jComboPostres);
+            removeActionListeners(jComboPescados);
+            removeActionListeners(jComboPastas);
+            removeActionListeners(jComboFideua);
+            removeActionListeners(jComboEntrantes);
+            removeActionListeners(jComboEnsaladas);
+            removeActionListeners(jComboCombinados);
+            removeActionListeners(jComboCarnes);
+            removeActionListeners(jComboCaldo);
+            removeActionListeners(jComboArroces);
+            removeActionListeners(jComboBebidas);
+            removeActionListeners(jComboDiario);
+            removeActionListeners(jComboMesas);
+
+            // Cargar los datos en los JComboBox
             cargarPlatosArroz(connection);
             cargarPlatosCaldos(connection);
             cargarPlatosCarnes(connection);
@@ -2125,11 +2291,10 @@ public class Principal extends javax.swing.JFrame {
             cargarPlatosPostres(connection);
             cargarBebidas(connection);
             cargarMenuOBocadillos(connection);
-//            cargarMesas(connection);
+            cargarMesas(connection);
 
         } catch (SQLException ex) {
-            Logger.getLogger(Principal.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         // Configurar los JComboBox
@@ -2148,6 +2313,251 @@ public class Principal extends javax.swing.JFrame {
         configurarComboBox(jComboMesas, "< Selecciona una mesa >");
 
         limpiarCampos();
+
+        // Agregar ActionListener a cada JComboBox para actualizar el JTextArea
+        jComboEntrantes.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Object selectedItem = jComboEntrantes.getSelectedItem();
+                if (selectedItem != null) {
+                    String selectedItemString = selectedItem.toString();
+                    if (!selectedItemString.equals("< Selecciona un plato >")) {
+                        actualizarComandas(selectedItemString);
+                        try (Connection connection = connection()) {
+                            cargarPlatosEntrantes(connection);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        configurarComboBox(jComboEntrantes, "< Selecciona un plato >");
+                    }
+                }
+            }
+        });
+
+        jComboBebidas.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Object selectedItem = jComboBebidas.getSelectedItem();
+                if (selectedItem != null) {
+                    String selectedItemString = selectedItem.toString();
+                    if (!selectedItemString.equals("< Selecciona una bebida >")) {
+                        actualizarComandas(selectedItemString);
+                        try (Connection connection = connection()) {
+                            cargarBebidas(connection);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        configurarComboBox(jComboBebidas, "< Selecciona una bebida >");
+                    }
+                }
+            }
+        });
+
+        jComboCarnes.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Object selectedItem = jComboCarnes.getSelectedItem();
+                if (selectedItem != null) {
+                    String selectedItemString = selectedItem.toString();
+                    if (!selectedItemString.equals("< Selecciona un plato >")) {
+                        actualizarComandas(selectedItemString);
+                        try (Connection connection = connection()) {
+                            cargarPlatosCarnes(connection);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        configurarComboBox(jComboCarnes, "< Selecciona un plato >");
+                    }
+                }
+            }
+        });
+
+        jComboCaldo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Object selectedItem = jComboCaldo.getSelectedItem();
+                if (selectedItem != null) {
+                    String selectedItemString = selectedItem.toString();
+                    if (!selectedItemString.equals("< Selecciona un plato >")) {
+                        actualizarComandas(selectedItemString);
+                        try (Connection connection = connection()) {
+                            cargarPlatosCaldos(connection);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        configurarComboBox(jComboCaldo, "< Selecciona un plato >");
+                    }
+                }
+            }
+        });
+
+        jComboArroces.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Object selectedItem = jComboArroces.getSelectedItem();
+                if (selectedItem != null) {
+                    String selectedItemString = selectedItem.toString();
+                    if (!selectedItemString.equals("< Selecciona un plato >")) {
+                        actualizarComandas(selectedItemString);
+                        try (Connection connection = connection()) {
+                            cargarPlatosArroz(connection);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        configurarComboBox(jComboArroces, "< Selecciona un plato >");
+                    }
+                }
+            }
+        });
+
+        jComboPostres.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Object selectedItem = jComboPostres.getSelectedItem();
+                if (selectedItem != null) {
+                    String selectedItemString = selectedItem.toString();
+                    if (!selectedItemString.equals("< Selecciona un plato >")) {
+                        actualizarComandas(selectedItemString);
+                        try (Connection connection = connection()) {
+                            cargarPlatosPostres(connection);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        configurarComboBox(jComboPostres, "< Selecciona un plato >");
+                    }
+                }
+            }
+        });
+
+        jComboPescados.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Object selectedItem = jComboPescados.getSelectedItem();
+                if (selectedItem != null) {
+                    String selectedItemString = selectedItem.toString();
+                    if (!selectedItemString.equals("< Selecciona un plato >")) {
+                        actualizarComandas(selectedItemString);
+                        try (Connection connection = connection()) {
+                            cargarPlatosPescados(connection);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        configurarComboBox(jComboPescados, "< Selecciona un plato >");
+                    }
+                }
+            }
+        });
+
+        jComboPastas.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Object selectedItem = jComboPastas.getSelectedItem();
+                if (selectedItem != null) {
+                    String selectedItemString = selectedItem.toString();
+                    if (!selectedItemString.equals("< Selecciona un plato >")) {
+                        actualizarComandas(selectedItemString);
+                        try (Connection connection = connection()) {
+                            cargarPlatosPasta(connection);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        configurarComboBox(jComboPastas, "< Selecciona un plato >");
+                    }
+                }
+            }
+        });
+
+        jComboFideua.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Object selectedItem = jComboFideua.getSelectedItem();
+                if (selectedItem != null) {
+                    String selectedItemString = selectedItem.toString();
+                    if (!selectedItemString.equals("< Selecciona un plato >")) {
+                        actualizarComandas(selectedItemString);
+                        try (Connection connection = connection()) {
+                            cargarPlatosFideua(connection);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        configurarComboBox(jComboFideua, "< Selecciona un plato >");
+                    }
+                }
+            }
+        });
+
+        jComboEnsaladas.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Object selectedItem = jComboEnsaladas.getSelectedItem();
+                if (selectedItem != null) {
+                    String selectedItemString = selectedItem.toString();
+                    if (!selectedItemString.equals("< Selecciona un plato >")) {
+                        actualizarComandas(selectedItemString);
+                        try (Connection connection = connection()) {
+                            cargarPlatosEnsaladas(connection);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        configurarComboBox(jComboEnsaladas, "< Selecciona un plato >");
+                    }
+                }
+            }
+        });
+
+        jComboCombinados.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Object selectedItem = jComboCombinados.getSelectedItem();
+                if (selectedItem != null) {
+                    String selectedItemString = selectedItem.toString();
+                    if (!selectedItemString.equals("< Selecciona un plato >")) {
+                        actualizarComandas(selectedItemString);
+                        try (Connection connection = connection()) {
+                            cargarPlatosCombinados(connection);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        configurarComboBox(jComboCombinados, "< Selecciona un plato >");
+                    }
+                }
+            }
+        });
+
+        jComboDiario.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Object selectedItem = jComboDiario.getSelectedItem();
+                if (selectedItem != null) {
+                    String selectedItemString = selectedItem.toString();
+                    if (!selectedItemString.equals("< Selecciona un dato >")) {
+                        actualizarComandas(selectedItemString);
+                        try (Connection connection = connection()) {
+                            cargarMenuOBocadillos(connection);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        configurarComboBox(jComboDiario, "< Selecciona un dato >");
+                    }
+                }
+            }
+        });
+
+        jComboMesas.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String selectedItem = jComboMesas.getSelectedItem().toString();
+                if (!selectedItem.equals("< Selecciona una mesa >")) {
+                    // Actualizar la mesa cuando se selecciona una nueva opción en el JComboBox
+                    Object selectedMesa = jComboMesas.getSelectedItem();
+                    actualizarMesa(selectedMesa); // Actualiza la mesa seleccionada
+                    cargarDatosMesa("Mesa: " + selectedMesa); // Carga los datos preexistentes del JTextArea de los menús
+                    try (Connection connection = connection()) {
+                        cargarMesas(connection);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    configurarComboBox(jComboMesas, "< Selecciona una mesa >");
+                }
+            }
+        });
+
+    }
+
+    private void removeActionListeners(JComboBox comboBox) {
+        ActionListener[] listeners = comboBox.getActionListeners();
+        for (ActionListener listener : listeners) {
+            comboBox.removeActionListener(listener);
+        }
+
+
     }//GEN-LAST:event_jMenuItemActualizarActionPerformed
 
     private void jMenuItemBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemBorrarActionPerformed
@@ -2334,28 +2744,36 @@ public class Principal extends javax.swing.JFrame {
         // TODO add your handling code here:
         // Verificar qué checkbox está seleccionado
         if (jCheckBox1.isSelected()) {
-            guardarDatosMesaSeleccionada(1);
+            guardarDatosMesaSeleccionadaInterno(1);
+            guardarDatosMesaSeleccionadaClientes(1);
         } else if (jCheckBox2.isSelected()) {
-            guardarDatosMesaSeleccionada(2);
+            guardarDatosMesaSeleccionadaInterno(2);
+            guardarDatosMesaSeleccionadaClientes(2);
         } else if (jCheckBox3.isSelected()) {
-            guardarDatosMesaSeleccionada(3);
+            guardarDatosMesaSeleccionadaInterno(3);
+            guardarDatosMesaSeleccionadaClientes(3);
         } else if (jCheckBox4.isSelected()) {
-            guardarDatosMesaSeleccionada(4);
+            guardarDatosMesaSeleccionadaInterno(4);
+            guardarDatosMesaSeleccionadaClientes(4);
         } else if (jCheckBox5.isSelected()) {
-            guardarDatosMesaSeleccionada(5);
+            guardarDatosMesaSeleccionadaInterno(5);
+            guardarDatosMesaSeleccionadaClientes(5);
         } else if (jCheckBox6.isSelected()) {
-            guardarDatosMesaSeleccionada(6);
+            guardarDatosMesaSeleccionadaInterno(6);
+            guardarDatosMesaSeleccionadaClientes(6);
         } else if (jCheckBox7.isSelected()) {
-            guardarDatosMesaSeleccionada(7);
+            guardarDatosMesaSeleccionadaInterno(7);
+            guardarDatosMesaSeleccionadaClientes(7);
         } else if (jCheckBox8.isSelected()) {
-            guardarDatosMesaSeleccionada(8);
+            guardarDatosMesaSeleccionadaInterno(8);
+            guardarDatosMesaSeleccionadaClientes(8);
         } else if (jCheckBox9.isSelected()) {
-            guardarDatosMesaSeleccionada(9);
+            guardarDatosMesaSeleccionadaInterno(9);
+            guardarDatosMesaSeleccionadaClientes(9);
         } else {
             // Mostrar un mensaje de error si no se ha seleccionado ninguna mesa
             JOptionPane.showMessageDialog(this, "Debes seleccionar una mesa para confirmar el pago.", "Error", JOptionPane.ERROR_MESSAGE);
         }
-
     }//GEN-LAST:event_jButtonConfirmarActionPerformed
 
     /**
@@ -2405,7 +2823,6 @@ public class Principal extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonConfirmar;
     private javax.swing.JButton jButtonGuardarMesa;
-    private javax.swing.JCheckBox jCheckBoNO;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JCheckBox jCheckBox3;
@@ -2416,7 +2833,6 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JCheckBox jCheckBox8;
     private javax.swing.JCheckBox jCheckBox9;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
-    private javax.swing.JCheckBox jCheckSI;
     private javax.swing.JComboBox<String> jComboArroces;
     private javax.swing.JComboBox<String> jComboBebidas;
     private javax.swing.JComboBox<String> jComboCaldo;
@@ -2446,7 +2862,6 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
-    private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
