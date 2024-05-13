@@ -7,6 +7,9 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -24,9 +27,14 @@ public class VentanaPrincipalController implements Initializable {
     Pane layout;
     @FXML
     private Button buttonUsuario;
+    private Mesas_ComandasController mesasController;
+    private ObservableList<StringProperty> textAreaData;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        mesasController = new Mesas_ComandasController();
+        textAreaData = FXCollections.observableArrayList();
+        mesasController.setTextAreaData(textAreaData);
         try {
             pantallaInicio();
         } catch (IOException ex) {
@@ -37,6 +45,7 @@ public class VentanaPrincipalController implements Initializable {
 
     @FXML
     public void mostrarLogin() throws IOException {
+
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("CambioUsuario.fxml"));
             Parent root = loader.load();
@@ -59,6 +68,7 @@ public class VentanaPrincipalController implements Initializable {
 
     @FXML
     public void pantallaInicio() throws IOException {
+
         // Cargar el archivo FXML de la ventana de Cambio de Usuario
         Pane inicioImagen = FXMLLoader.load(getClass().getResource("PantallaInicio.fxml"));
         layout.getChildren().setAll(inicioImagen);
@@ -67,6 +77,7 @@ public class VentanaPrincipalController implements Initializable {
 
     @FXML
     public void pantallaGlosario() throws IOException {
+
         // Cargar el archivo FXML de la ventana de Cambio de Usuario
         Pane inicioImagen = FXMLLoader.load(getClass().getResource("Glosario.fxml"));
         layout.getChildren().setAll(inicioImagen);
@@ -75,8 +86,8 @@ public class VentanaPrincipalController implements Initializable {
 
     @FXML
     public void pantallaMesas() throws IOException {
-        // Obtener el texto de los TextArea antes de cambiar de escena
 
+        // Obtener el texto de los TextArea antes de cambiar de escena
         // Cargar el archivo FXML de la ventana de Mesas y Comandas
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Mesas_Comandas.fxml"));
         Parent mesas = loader.load();
@@ -88,16 +99,15 @@ public class VentanaPrincipalController implements Initializable {
         Usuarios usuario = new Usuarios();
         usuario.setId(usuarioId);
         controller.setUsuario(usuario);
-        
+        controller.setTextAreaData(textAreaData);
 
         // Cambiar a la escena de Mesas y Comandas
         layout.getChildren().setAll(mesas);
     }
 
-
-
     @FXML
     public void pantallaPlatos() throws IOException {
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("ListadoMenus.fxml"));
         Parent root = loader.load();
         ListadoMenusController controller = loader.getController();
@@ -121,6 +131,19 @@ public class VentanaPrincipalController implements Initializable {
     public void inicializar(int usuarioId) {
         this.usuarioId = usuarioId;
         // Realiza cualquier inicialización adicional necesaria aquí
+    }
+
+    @FXML
+    public void pantallaDetalle() throws IOException {
+
+        // Cargar el archivo FXML de la ventana de Cambio de Usuario
+        Pane inicioImagen = FXMLLoader.load(getClass().getResource("DetallesComanda.fxml"));
+        layout.getChildren().setAll(inicioImagen);
+
+    }
+
+    public void setMesasController(Mesas_ComandasController mesasController) {
+        this.mesasController = mesasController;
     }
 
 }

@@ -15,7 +15,7 @@
     <center>
         <SplitPane dividerPositions="0.43352135374697826" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <items>
-                <AnchorPane fx:id="insert" minHeight="0.0" minWidth="0.0" onMouseClicked="#confirmarNuevoPlato" prefHeight="855.0" prefWidth="593.0">
+                <AnchorPane fx:id="insert" minHeight="0.0" minWidth="0.0" prefHeight="855.0" prefWidth="593.0">
                     <children>
                         <Label layoutX="14.0" layoutY="14.0" text="Insertar platos a la carta de menus:">
                             <font>

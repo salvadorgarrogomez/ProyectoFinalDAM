@@ -54,7 +54,7 @@ public class DetallesComanda {
         return nombre_mesa;
     }
 
-    public void setMesa_id(Mesas nombre_mesa) {
+    public void setNombre_mesa(Mesas nombre_mesa) {
         this.nombre_mesa = nombre_mesa;
     }
 

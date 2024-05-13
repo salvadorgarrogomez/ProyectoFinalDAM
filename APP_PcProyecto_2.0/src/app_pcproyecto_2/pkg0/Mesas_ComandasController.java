@@ -4,12 +4,12 @@ import constructores.Mesas;
 import static app_pcproyecto_2.pkg0.APP_PcProyecto_20.getConnection;
 import constructores.Categorias;
 import constructores.DetallesComanda;
-import constructores.Pedidos;
 import constructores.Productos;
 import constructores.TicketComanda;
 import constructores.Usuarios;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,8 +27,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -37,6 +39,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.Tab;
@@ -199,6 +202,8 @@ public class Mesas_ComandasController implements Initializable {
     private Button confirmarBarra3;
     @FXML
     private Button confirmarBarra4;
+    @FXML
+    private ProgressIndicator progreso;
 
     private List<Mesas> listaMesas;
     private Usuarios usuario;
@@ -212,6 +217,8 @@ public class Mesas_ComandasController implements Initializable {
     private Map<String, TextField> textFieldTotalIVAMap = new HashMap<>();
     private Map<String, Spinner<Integer>> comensalesMap;
     private Map<Button, String> nombreMesaMap = new HashMap<>();
+    private String numeroTicketGenerado;
+    private ObservableList<StringProperty> textAreaData = FXCollections.observableArrayList();
 
     @Override
     @SuppressWarnings({"unchecked"})
@@ -257,6 +264,21 @@ public class Mesas_ComandasController implements Initializable {
         listViewMap.put("Barra_2", ListBarra_2);
         listViewMap.put("Barra_3", ListBarra_3);
         listViewMap.put("Barra_4", ListBarra_4);
+
+        textAreaData.add(ListMesa_1.textProperty());
+        textAreaData.add(ListMesa_2.textProperty());
+        textAreaData.add(ListMesa_3.textProperty());
+        textAreaData.add(ListMesa_4.textProperty());
+        textAreaData.add(ListMesa_5.textProperty());
+        textAreaData.add(ListMesa_6.textProperty());
+        textAreaData.add(ListMesa_7.textProperty());
+        textAreaData.add(ListMesa_8.textProperty());
+        textAreaData.add(ListMesa_9.textProperty());
+        textAreaData.add(ListMesa_10.textProperty());
+        textAreaData.add(ListBarra_1.textProperty());
+        textAreaData.add(ListBarra_2.textProperty());
+        textAreaData.add(ListBarra_3.textProperty());
+        textAreaData.add(ListBarra_4.textProperty());
 
         SpinnerValueFactory<Integer> gradesValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 100);
         this.cantidad.setValueFactory(gradesValueFactory);
@@ -378,7 +400,6 @@ public class Mesas_ComandasController implements Initializable {
                 activarTab(nombreMesa);
             }
         });
-
     }
 
     public void setUsuario(Usuarios usuario) {
@@ -390,7 +411,6 @@ public class Mesas_ComandasController implements Initializable {
     private void confirmarComanda(ActionEvent event) {
         try {
             Mesas mesaSeleccionada = seleccionMesa.getValue();
-            Pedidos pedido = new Pedidos();
             Productos productoSeleccionado = listProductos.getSelectionModel().getSelectedItem();
             int cantidadSeleccionada = (int) cantidad.getValue();
 
@@ -458,9 +478,6 @@ public class Mesas_ComandasController implements Initializable {
                             textFieldTotal.setText(String.format("%.2f", totalSinIVA));
                             textFieldTotalIVA.setText(String.format("%.2f", totalConIVA));
 
-                            // Insertar el pedido en la base de datos
-                            insertarPedidoEnBD(pedido, mesaSeleccionada, producto, cantidadSeleccionada, producto.getPrecio(), numComensales);
-
                             // Obtener el número de mesa o barra seleccionado en el ComboBox
                             if (mesaSeleccionada != null) {
                                 // Obtener el número de mesa o barra
@@ -509,7 +526,57 @@ public class Mesas_ComandasController implements Initializable {
         }
     }
 
-    // Método para iniciar la actualización continua de las mesas
+    private void actualizarCambiosEnTextArea() {
+        double totalSinIVA = 0.0;
+
+        // Recorrer cada mesa y obtener su TextArea correspondiente
+        for (Map.Entry<String, TextArea> entry : listViewMap.entrySet()) {
+            String nombreMesa = entry.getKey();
+            TextArea textAreaMesa = entry.getValue();
+
+            // Verificar si el TextArea no es nulo
+            if (textAreaMesa != null) {
+                String textoActual = textAreaMesa.getText();
+                double totalMesaSinIVA = 0.0;
+
+                // Procesar cada línea del texto de la comanda
+                String[] lineas = textoActual.split("\n");
+                StringBuilder nuevoTexto = new StringBuilder();
+                for (String linea : lineas) {
+                    String[] partes = linea.split(" - ");
+                    if (partes.length == 4) { // Asegúrate de que la línea tenga el formato esperado
+                        String nombreProducto = partes[0];
+                        int cantidad = Integer.parseInt(partes[1].split(": ")[1]);
+                        double precioUnitario = Double.parseDouble(partes[2].split(": ")[1].replace("€", "").replace(",", "."));
+                        double precioTotal = cantidad * precioUnitario;
+                        totalMesaSinIVA += precioTotal;
+
+                        // Actualizar el precio total en la línea
+                        nuevoTexto.append(String.format("%s - Cantidad: %d - Precio unitario: %.2f€ - Precio total: %.2f€\n",
+                                nombreProducto, cantidad, precioUnitario, precioTotal));
+                    } else {
+                        // Si no es una línea válida, agregarla sin cambios
+                        nuevoTexto.append(linea).append("\n");
+                    }
+                }
+
+                // Establecer el nuevo texto en el TextArea
+                textAreaMesa.setText(nuevoTexto.toString());
+
+                // Agregar el total sin IVA de la mesa al total general
+                totalSinIVA += totalMesaSinIVA;
+
+                // Calcular el total con IVA para la mesa y actualizar los campos correspondientes
+                double totalMesaConIVA = calcularTotalConIVA(totalMesaSinIVA);
+                TextField textFieldTotal = textFieldTotalMap.get(nombreMesa);
+                TextField textFieldTotalIVA = textFieldTotalIVAMap.get(nombreMesa);
+                textFieldTotal.setText(String.format("%.2f", totalMesaSinIVA));
+                textFieldTotalIVA.setText(String.format("%.2f", totalMesaConIVA));
+            }
+        }
+    }
+
+// Método para iniciar la actualización continua de las mesas
     private void iniciarActualizacionContinua() {
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(() -> {
@@ -690,32 +757,12 @@ public class Mesas_ComandasController implements Initializable {
         // Si no se encontró el tab correspondiente, imprime un mensaje de advertencia
     }
 
-    private void insertarPedidoEnBD(Pedidos pedido, Mesas mesaSeleccionada, Productos producto, int cantidad, double precioUnitario, int numComensales) {
-        try (Connection connection = getConnection()) {
-
-            // Insertar el pedido en la base de datos
-            String sql = "INSERT INTO pedidos (nombre_mesa, nombre_producto, cantidad_producto, precio_unitario, precio_total, num_comensales, usuario_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
-            try (PreparedStatement pstmtInsert = connection.prepareStatement(sql)) {
-                pstmtInsert.setString(1, mesaSeleccionada.getNombre());
-                pstmtInsert.setString(2, producto.getNombre());
-                pstmtInsert.setInt(3, cantidad);
-                pstmtInsert.setDouble(4, precioUnitario);
-                pstmtInsert.setDouble(5, precioUnitario * cantidad); // Calcula el precio total multiplicando el precio unitario por la cantidad
-                pstmtInsert.setInt(6, numComensales);
-                pstmtInsert.setInt(7, usuario.getId());
-                pstmtInsert.executeUpdate();
-                mostrarAlerta("Pedido insertado correctamente en la base de datos.", Alert.AlertType.INFORMATION);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void mostrarAlerta(String mensaje, Alert.AlertType tipo) {
         Alert alert = new Alert(tipo);
         alert.setHeaderText(null);
         alert.setContentText(mensaje);
         alert.showAndWait();
+
     }
 
     private class ActualizacionMesasThread extends Thread {
@@ -732,6 +779,7 @@ public class Mesas_ComandasController implements Initializable {
                 try {
                     Platform.runLater(() -> {
                         actualizarTextFieldsWithMesas();
+                        actualizarCambiosEnTextArea();
                     });
                     Thread.sleep(5000); // 5 segundos
                 } catch (InterruptedException e) {
@@ -789,12 +837,14 @@ public class Mesas_ComandasController implements Initializable {
     @FXML
     private void confirmarPago(ActionEvent event) {
         try {
+            // Mostrar la barra de progreso
+            progreso.setVisible(true);
+
             Mesas mesaSeleccionada = seleccionMesa.getValue();
-            Button botonMesa = null;
             Spinner<Integer> spinnerComensales = comensalesMap.get(mesaSeleccionada.getNombre());
             if (mesaSeleccionada != null) {
                 // Obtener el botón correspondiente al nombre de la mesa seleccionada
-                botonMesa = obtenerBotonPorNombreMesa(mesaSeleccionada.getNombre());
+                obtenerBotonPorNombreMesa(mesaSeleccionada.getNombre());
                 // Obtener el TextArea correspondiente a la mesa seleccionada
                 TextArea textAreaMesa = listViewMap.get(mesaSeleccionada.getNombre());
                 if (textAreaMesa != null) {
@@ -807,9 +857,9 @@ public class Mesas_ComandasController implements Initializable {
                     double totalConIVA = calcularTotalConIVA(totalSinIVA);
                     // Obtener el número de comensales
                     int numComensales = spinnerComensales.getValue();
-                    TicketComanda ticket = generarTicket(mesaSeleccionada, detallesComanda, totalSinIVA, totalConIVA, numComensales);
+                    final TicketComanda ticket = generarTicket(mesaSeleccionada, detallesComanda, totalSinIVA, totalConIVA, numComensales, textoComanda);
                     guardarTicketEnBD(ticket);
-                    botonMesa = obtenerBotonPorNombreMesa(mesaSeleccionada.getNombre());
+                    obtenerBotonPorNombreMesa(mesaSeleccionada.getNombre());
                     // Insertar los detalles de la comanda en la base de datos
                     for (DetallesComanda detalle : detallesComanda) {
                         // Aquí utilizamos el botón obtenido para obtener el ID de la mesa
@@ -819,7 +869,11 @@ public class Mesas_ComandasController implements Initializable {
                     actualizarEstadoMesaEnBD(mesaSeleccionada, "libre", 0);
                     // Limpiar el TextArea de la mesa seleccionada
                     textAreaMesa.clear();
+                    // Mostrar el ticket en un popup
                     mostrarAlerta("Pago confirmado. Comanda cerrada.", Alert.AlertType.INFORMATION);
+
+                    // Iniciar el proceso de búsqueda del número de ticket
+                    buscarNumeroTicket(event, ticket);
                 } else {
                     mostrarAlerta("No se pudo encontrar el TextArea de la mesa seleccionada.", Alert.AlertType.ERROR);
                 }
@@ -831,6 +885,85 @@ public class Mesas_ComandasController implements Initializable {
             e.printStackTrace();
             mostrarAlerta("Se produjo un error al confirmar el pago.", Alert.AlertType.ERROR);
         }
+    }
+
+    @FXML
+    private void buscarNumeroTicket(ActionEvent event, TicketComanda ticket) {
+        // Mostrar la barra de progreso
+        progreso.setVisible(true);
+
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                int segundosEspera = 5; // Esperar 5 segundos en total
+                int totalIteraciones = segundosEspera * 10; // 10 actualizaciones por segundo
+
+                for (int i = 0; i < totalIteraciones; i++) {
+                    // Calcular el progreso actual
+                    double progresoActual = (double) i / totalIteraciones;
+
+                    // Actualizar la barra de progreso en la interfaz de usuario
+                    Platform.runLater(() -> progreso.setProgress(progresoActual));
+
+                    // Esperar 100 milisegundos (para simular una décima de segundo)
+                    Thread.sleep(100);
+                }
+
+                // Una vez completado el progreso, buscar el número de ticket
+                String numeroTicketGenerado = obtenerNumeroTicketGenerado();
+                if (numeroTicketGenerado != null) {
+                    Platform.runLater(() -> {
+                        ticket.setNum_ticket(numeroTicketGenerado);
+                        mostrarContenidoPopup(ticket);
+                    });
+                }
+
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(e -> {
+            // Ocultar la barra de progreso cuando la tarea ha terminado
+            progreso.setVisible(false);
+        });
+
+        new Thread(task).start();
+    }
+
+    private void mostrarContenidoPopup(TicketComanda ticket) {
+        try {
+            // Convertir el arreglo de bytes a un String
+            String contenidoTexto = new String(ticket.getArchivo_ticket(), StandardCharsets.UTF_8);
+
+            // Mostrar el contenido del ticket en un popup
+            contenidoTexto += "\n\nNúmero de ticket: " + ticket.getNum_ticket();
+
+            // Mostrar el contenido del ticket en un popup
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Contenido del ticket - " + ticket.getNum_ticket());
+            alert.setHeaderText("Contenido del ticket");
+            alert.setContentText(contenidoTexto);
+            alert.showAndWait();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String obtenerNumeroTicketGenerado() {
+        String numeroTicket = null;
+        try (Connection connection = getConnection()) {
+            String sql = "SELECT num_ticket FROM ticket_comanda ORDER BY id DESC LIMIT 1";
+            try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    if (rs.next()) {
+                        numeroTicket = rs.getString("num_ticket");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return numeroTicket;
     }
 
     private Button obtenerBotonPorNombreMesa(String nombreMesa) {
@@ -900,7 +1033,8 @@ public class Mesas_ComandasController implements Initializable {
                 try (ResultSet rs = pstmt.executeQuery()) {
                     if (rs.next()) {
                         int id = rs.getInt("id");
-                        Productos producto = new Productos(id, nombreProducto);
+                        double precio = rs.getDouble("precio");
+                        Productos producto = new Productos(id, nombreProducto, precio);
                         return producto;
                     } else {
                         return null;
@@ -913,20 +1047,39 @@ public class Mesas_ComandasController implements Initializable {
         }
     }
 
-    private TicketComanda generarTicket(Mesas mesa, List<DetallesComanda> detallesComanda, double totalSinIVA, double totalConIVA, int numComensales) {
+    public String obtenerNombreUsuarioPorId(int usuarioId) {
+        String nombreUsuario = null;
+        try (Connection connection = getConnection()) {
+            String sql = "SELECT nombre FROM usuarios WHERE id = ?";
+            try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+                pstmt.setInt(1, usuarioId);
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    if (rs.next()) {
+                        nombreUsuario = rs.getString("nombre");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return nombreUsuario;
+    }
+
+    private TicketComanda generarTicket(Mesas mesa, List<DetallesComanda> detallesComanda, double totalSinIVA, double totalConIVA, int numComensales, String textoComanda) {
+
         // Generar el contenido del ticket
-        String contenidoTicket = construirContenidoTicket(mesa, detallesComanda, totalSinIVA, totalConIVA, numComensales);
+        String contenidoTicket = construirContenidoTicket(mesa, detallesComanda, totalSinIVA, totalConIVA, numComensales, textoComanda);
 
         // Crear una instancia de TicketComanda
         TicketComanda ticket = new TicketComanda();
         ticket.setNombre_mesa(mesa);
-        ticket.setNum_ticket(generarNumeroTicket());
+        ticket.setNum_ticket(numeroTicketGenerado); // Usar el número de ticket generado previamente
         ticket.setArchivo_ticket(contenidoTicket.getBytes());
-        ticket.setImporte_total_sin_IVA((int) totalSinIVA);
-        ticket.setImporte_total_con_IVA((int) totalConIVA);
+        ticket.setImporte_total_sin_IVA((double) totalSinIVA);
+        ticket.setImporte_total_con_IVA((double) totalConIVA);
         ticket.setNum_comensales(numComensales);
-//        ticket.setUsuario_id(usuarioId); // Utiliza setUsuario_id para establecer el usuario
-        ticket.setFecha_hora(new Date());
+        ticket.setUsuario_id(usuario); // Utiliza setUsuario_id para establecer el usuario
+        ticket.setFecha_pedido(new Date());
 
         return ticket;
     }
@@ -950,42 +1103,86 @@ public class Mesas_ComandasController implements Initializable {
         }
     }
 
-    private String generarNumeroTicket() {
-        // Generar un número de ticket único basado en la fecha y hora actual
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-        String fechaHora = sdf.format(new Date());
-        return "TICKET-" + fechaHora;
+    private String centrarTexto(String texto, int longitudTotal) {
+        int longitudTexto = texto.length();
+        if (longitudTexto >= longitudTotal) {
+            return texto; // No es necesario centrar, devuelve el texto original
+        } else {
+            int espaciosPorAgregar = longitudTotal - longitudTexto;
+            int espaciosAntes = espaciosPorAgregar / 2;
+            int espaciosDespues = espaciosPorAgregar - espaciosAntes;
+            StringBuilder textoCentrado = new StringBuilder();
+            for (int i = 0; i < espaciosAntes; i++) {
+                textoCentrado.append(" ");
+            }
+            textoCentrado.append(texto);
+            for (int i = 0; i < espaciosDespues; i++) {
+                textoCentrado.append(" ");
+            }
+            return textoCentrado.toString();
+        }
     }
 
-    private String construirContenidoTicket(Mesas mesa, List<DetallesComanda> detallesComanda, double totalSinIVA, double totalConIVA, int numComensales) {
+    private String construirContenidoTicket(Mesas mesa, List<DetallesComanda> detallesComanda, double totalSinIVA, double totalConIVA, int numComensales, String textoComanda) {
         StringBuilder contenidoTicket = new StringBuilder();
+        int longitudTotal = 80;
+        int longitudTotalFactura = 50;
+        int longitudTotalNIF = 75;
+        int longitudTotalTele = 70;
+        String nombreUsuario = obtenerNombreUsuarioPorId(usuario.getId());
 
-        // Encabezado del ticket
+        contenidoTicket.append(centrarTexto("NIF: 12345678X", longitudTotalNIF)).append("\n");
+        contenidoTicket.append(centrarTexto("Bar ElEscobar", longitudTotal)).append("\n");
+        contenidoTicket.append(centrarTexto("623191754 | 683572682", longitudTotalTele)).append("\n\n\n");
+
         contenidoTicket.append(mesa.getNombre()).append("\n");
-        contenidoTicket.append(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date())).append("\n\n");
+        contenidoTicket.append(new SimpleDateFormat("dd/MM/yyyy - HH:mm:ss").format(new Date())).append("\n\n");
+        contenidoTicket.append(centrarTexto("***NO VALIDO COMO FACTURA***", longitudTotalFactura)).append("\n");
 
         // Detalles de la comanda
         contenidoTicket.append("Comandas:\n");
-        contenidoTicket.append("Cant.Producto").append("\t\tPrecio").append("\t\tTotal").append("\n");
-        contenidoTicket.append("-----------------------------------------").append("\n");
-        for (DetallesComanda detalle : detallesComanda) {
-//            Productos producto = obtenerProductoPorNombre(nombreProducto); // Suponiendo que tienes un método para obtener el objeto Producto por su ID
-//            contenidoTicket.append("Cantidad ").append(detalle.getCantidad()).append(": ").append(producto.getNombre()).append("\t");
-//            contenidoTicket.append(producto.getPrecio()).append("\t");
-//            contenidoTicket.append(detalle.getCantidad() * producto.getPrecio()).append("\n");
+        contenidoTicket.append(String.format("%-5s%-35s%-15s%-10s\n", "Cant.", "Producto", "Precio", "Total"));
+        contenidoTicket.append("-----------------------------------------\n");
+
+        // Procesar cada línea del texto de la comanda
+        String[] lineas = textoComanda.split("\n");
+        for (String linea : lineas) {
+            String[] campos = linea.split(" - ");
+            String nombreProducto = campos[0];
+            int cantidad = Integer.parseInt(campos[1].split(": ")[1]);
+            Productos producto = obtenerProductoPorNombre(nombreProducto);
+            if (producto != null) {
+                double precio = producto.getPrecio();
+                double totalLinea = cantidad * precio;
+                if (nombreProducto.length() > 25) {
+                    nombreProducto = nombreProducto.substring(0, 20) + "...";
+                    nombreProducto = String.format("%1$-25s", nombreProducto);
+                }
+                // Añadir tabuladores para separar las columnas
+                contenidoTicket.append(String.format("%-5s\t%-30s\t%-15s%-10s\n", cantidad, nombreProducto, String.format("%.2f€", precio), String.format("%.2f€", totalLinea)));
+            }
         }
-        contenidoTicket.append("\n");
 
-        // Total sin impuestos
-        contenidoTicket.append("Pago (sin impuestos): ").append(String.format("%.2f", totalSinIVA)).append("€").append("\n");
-
-        // Total con impuestos
-        contenidoTicket.append("Total (impuestos incluidos): ").append(String.format("%.2f", totalConIVA)).append("€").append("\n\n");
+        contenidoTicket.append("-----------------------------------------\n");
+        contenidoTicket.append("Pago (sin impuestos): ").append(String.format("%.2f", totalSinIVA)).append("€\n");
+        contenidoTicket.append("Total (impuestos incluidos): ").append(String.format("%.2f", totalConIVA)).append("€\n");
+        contenidoTicket.append("-----------------------------------------\n");
+        contenidoTicket.append("Número de comensales: ").append(numComensales).append("\n");
+        contenidoTicket.append("Total a pagar: ").append(String.format("%.2f", totalConIVA)).append("€").append("\n\n\n");
 
         // Agradecimiento
-        contenidoTicket.append("Gracias por su visita");
+        contenidoTicket.append("Le atendió ").append(nombreUsuario).append("\n");
+        contenidoTicket.append("Gracias por su visita").append("\n");
 
         return contenidoTicket.toString();
+    }
+
+    public ObservableList<StringProperty> getTextAreaData() {
+        return textAreaData;
+    }
+
+    void setTextAreaData(ObservableList<StringProperty> textAreaData) {
+        this.textAreaData = textAreaData;
     }
 
 }

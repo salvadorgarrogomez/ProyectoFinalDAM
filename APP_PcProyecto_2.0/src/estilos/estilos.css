@@ -21,3 +21,7 @@
 .spinner {
     -fx-alignment: center;
 }
+
+.progressIndicator {
+    -fx-progress-color: green; -fx-scale-y: 20.0; -fx-scale-x: 20.0;
+}

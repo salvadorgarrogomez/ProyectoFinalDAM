@@ -22,8 +22,9 @@
                 </Pane>
                 <Button fx:id="buttonInicio" alignment="CENTER" layoutX="13.0" layoutY="89.0" mnemonicParsing="false" onMouseClicked="#pantallaInicio" prefHeight="30.0" prefWidth="175.0" text="Inicio" />
                 <Button id="buttonMesasComandas" alignment="CENTER" layoutX="13.0" layoutY="128.0" mnemonicParsing="false" onMouseClicked="#pantallaMesas" prefHeight="30.0" prefWidth="175.0" text="Mesas/Comandas" />
-                <Button id="buttonMenus" fx:id="insertActua" alignment="CENTER" layoutX="12.0" layoutY="283.0" mnemonicParsing="false" onMouseClicked="#pantallaPlatos" prefHeight="30.0" prefWidth="175.0" text="Añadir/Actualizar platos" />
-            <Button id="buttonMenus" fx:id="glosario" alignment="CENTER" layoutX="12.0" layoutY="244.0" mnemonicParsing="false" onMouseClicked="#pantallaGlosario" prefHeight="30.0" prefWidth="175.0" text="Glosario de platos" />
+                <Button id="buttonMenus" fx:id="insertActua" alignment="CENTER" layoutX="13.0" layoutY="204.0" mnemonicParsing="false" onMouseClicked="#pantallaPlatos" prefHeight="30.0" prefWidth="175.0" text="Añadir/Actualizar platos" />
+            <Button id="buttonMenus" fx:id="glosario" alignment="CENTER" layoutX="13.0" layoutY="165.0" mnemonicParsing="false" onMouseClicked="#pantallaGlosario" prefHeight="30.0" prefWidth="175.0" text="Glosario de platos" />
+                  <Button id="registroComandas" alignment="CENTER" layoutX="13.0" layoutY="242.0" mnemonicParsing="false" onMouseClicked="#pantallaDetalle" prefHeight="30.0" prefWidth="175.0" text="Detalles Comandas" />
             </children>
         </Pane>
     </left>
@@ -33,7 +34,6 @@
                 <Pane layoutY="-5.0" prefHeight="136.0" prefWidth="200.0" style="-fx-background-color: #B0E0E6;">
                     <children>
                         <Button id="buttonSalir" alignment="CENTER" layoutX="13.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#botonSalir" prefHeight="30.0" prefWidth="175.0" text="Salir" />
-                        <Button id="registroComandas" alignment="CENTER" layoutX="13.0" layoutY="14.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="175.0" text="Detalles Comandas" />
                       <Button fx:id="buttonUsuario" alignment="CENTER" layoutX="13.0" layoutY="52.0" mnemonicParsing="false" onMouseClicked="#mostrarLogin" prefHeight="30.0" prefWidth="175.0" text="Cerrar sesión" />
                     </children>
                 </Pane>
