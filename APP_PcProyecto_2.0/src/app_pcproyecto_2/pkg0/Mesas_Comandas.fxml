@@ -5,6 +5,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -27,12 +28,12 @@
          </font>
       </Label>
       <ListView fx:id="listProductos" layoutX="17.0" layoutY="213.0" prefHeight="263.0" prefWidth="372.0" />
-      <Label layoutX="20.0" layoutY="128.0" text="Selecciona una mesa disponible:">
+      <Label layoutX="21.0" layoutY="90.0" text="Selecciona una mesa para añadirle comandas:">
          <font>
             <Font name="Courier New" size="12.0" />
          </font></Label>
-      <ComboBox fx:id="seleccionMesa" layoutX="258.0" layoutY="123.0" prefHeight="25.0" prefWidth="180.0" promptText="&lt; Selecciona una Mesa &gt;" stylesheets="@../../estilos/estilos.css" />
-      <Label layoutX="592.0" layoutY="124.0" text="Conjunto de mesas en el local:">
+      <ComboBox fx:id="seleccionMesa" layoutX="336.0" layoutY="98.0" prefHeight="25.0" prefWidth="180.0" promptText="&lt; Selecciona una Mesa &gt;" stylesheets="@../../estilos/estilos.css" />
+      <Label layoutX="592.0" layoutY="99.0" text="Conjunto de mesas en el local:">
          <font>
             <Font name="Courier New" size="18.0" />
          </font>
@@ -171,7 +172,7 @@
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <Button fx:id="confirmarMesa5" layoutX="418.0" layoutY="389.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="106.0" text="Confirmar pago" />
+                        <Button fx:id="confirmarMesa5" layoutX="418.0" layoutY="389.0" mnemonicParsing="false" onAction="#confirmarPago" prefHeight="25.0" prefWidth="106.0" text="Confirmar pago" />
                         <Label layoutX="375.0" layoutY="154.0" text="Importe acumulado sin IVA:">
                            <font>
                               <Font name="Courier New" size="12.0" />
@@ -581,5 +582,21 @@
       </Label>
       <Button fx:id="btnAgregarProductos" layoutX="128.0" layoutY="510.0" mnemonicParsing="false" onAction="#confirmarComanda" text="Siguiente producto/plato" />
       <Spinner fx:id="cantidad" editable="true" layoutX="176.0" layoutY="480.0" prefHeight="25.0" prefWidth="102.0" stylesheets="@../../estilos/estilos.css" />
+      <Label layoutX="21.0" layoutY="110.0" text="Selecciona una mesa para confirmar el pago:">
+         <font>
+            <Font name="Courier New" size="12.0" />
+         </font>
+      </Label>
+      <Label layoutX="487.0" layoutY="152.0" text="(Seleccionar mesa en el desplegable &lt;Selecciona una Mesa&gt; para confirmar el PAGO)">
+         <font>
+            <Font name="Courier New" size="11.0" />
+         </font>
+      </Label>
+      <Label layoutX="679.0" layoutY="135.0" text="INPORTANTE!!!" textFill="#f80000">
+         <font>
+            <Font name="Courier New Bold" size="14.0" />
+         </font>
+      </Label>
+      <ProgressIndicator fx:id="progreso" layoutX="476.0" layoutY="49.0" prefHeight="35.0" prefWidth="65.0" progress="0.0" stylesheets="@../../estilos/estilos.css" visible="false" />
    </children>
 </AnchorPane>

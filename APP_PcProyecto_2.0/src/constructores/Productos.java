@@ -52,6 +52,12 @@ public class Productos {
         this.nombre = nombre;
     }
 
+    public Productos(int id, String nombre, double precio) {
+        this.id = id;
+        this.nombre = nombre;
+        this.precio = precio;
+    }
+
     public Productos(RegistroAuditoria registroAuditoria) {
         this.registroAuditoria = registroAuditoria;
     }
