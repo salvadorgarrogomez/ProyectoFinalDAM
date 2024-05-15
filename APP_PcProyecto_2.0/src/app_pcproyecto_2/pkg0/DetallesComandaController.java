@@ -24,12 +24,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Connection;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
-import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 
@@ -61,6 +57,9 @@ public class DetallesComandaController implements Initializable {
     @FXML
     private TextField comensalesMES;
 
+    private boolean datosMesCalculados = false;
+    private LocalDate fechaMesCalculado;
+    private List<TicketComanda> ticketsMes;
 
     /**
      * Initializes the controller class.
@@ -72,50 +71,59 @@ public class DetallesComandaController implements Initializable {
 
     @FXML
     private void manejarSeleccionFecha() {
-            // Obtener la fecha seleccionada en el DatePicker
-            LocalDate fechaSeleccionada = calendario.getValue();
+        // Obtener la fecha seleccionada en el DatePicker
+        LocalDate fechaSeleccionada = calendario.getValue();
 
-            // Obtener los tickets para el día seleccionado
-            List<TicketComanda> ticketsDia = obtenerTicketsPorFecha(fechaSeleccionada);
-            List<TicketComanda> ticketsMes = obtenerTicketsPorMes(fechaSeleccionada);
-            List<DetallesComanda> detallesComandaDia = obtenerDetallesComandaPorDia(fechaSeleccionada);
-            List<DetallesComanda> detallesComandaMes = obtenerDetallesComandaPorMes(fechaSeleccionada);
+        if (!datosMesCalculados || fechaSeleccionada.getMonthValue() != fechaMesCalculado.getMonthValue()) {
+            // Calcular los datos del mes solo si no han sido calculados previamente o si la fecha seleccionada está en un mes diferente
+            ticketsMes = obtenerTicketsPorMes(fechaSeleccionada);
+            // Actualizar la fecha del mes para la cual se calcularon los datos
+            fechaMesCalculado = fechaSeleccionada;
+            // Actualizar la bandera
+            datosMesCalculados = true;
+        }
 
-            // Calcular los totales del mes
-            double totalSinIVAMes = 0;
-            double totalConIVAMes = 0;
-            int totalComensalesMes = 0;
-            for (TicketComanda ticket : ticketsMes) {
-                totalSinIVAMes += ticket.getImporte_total_sin_IVA();
-                totalConIVAMes += ticket.getImporte_total_con_IVA();
-                totalComensalesMes += ticket.getNum_comensales();
-            }
+        // Obtener los tickets para el día seleccionado
+        List<TicketComanda> ticketsDia = obtenerTicketsPorFecha(fechaSeleccionada);
+        List<TicketComanda> ticketsMes = obtenerTicketsPorMes(fechaSeleccionada);
+        List<DetallesComanda> detallesComandaDia = obtenerDetallesComandaPorDia(fechaSeleccionada);
+        List<DetallesComanda> detallesComandaMes = obtenerDetallesComandaPorMes(fechaSeleccionada);
 
-            double totalSinIVA = 0;
-            double totalConIVA = 0;
-            int totalComensales = 0;
-            for (TicketComanda ticket : ticketsDia) {
-                totalSinIVA += ticket.getImporte_total_sin_IVA();
-                totalConIVA += ticket.getImporte_total_con_IVA();
-                totalComensales += ticket.getNum_comensales();
-            }
+        // Calcular los totales del mes
+        double totalSinIVAMes = 0;
+        double totalConIVAMes = 0;
+        int totalComensalesMes = 0;
+        for (TicketComanda ticket : ticketsMes) {
+            totalSinIVAMes += ticket.getImporte_total_sin_IVA();
+            totalConIVAMes += ticket.getImporte_total_con_IVA();
+            totalComensalesMes += ticket.getNum_comensales();
+        }
 
-            // Mostrar los totales en los TextField
-            totalDIAsinIVA.setText(String.format("%.2f", totalSinIVA) + "€");
-            totalDIAconIVA.setText(String.format("%.2f", totalConIVA) + "€");
-            comensalesDIA.setText(String.valueOf(totalComensales));
+        double totalSinIVA = 0;
+        double totalConIVA = 0;
+        int totalComensales = 0;
+        for (TicketComanda ticket : ticketsDia) {
+            totalSinIVA += ticket.getImporte_total_sin_IVA();
+            totalConIVA += ticket.getImporte_total_con_IVA();
+            totalComensales += ticket.getNum_comensales();
+        }
 
-            // Mostrar los totales del mes en los TextField
-            totalMESsinIVA.setText(String.format("%.2f", totalSinIVAMes) + "€");
-            totalMESconIVA.setText(String.format("%.2f", totalConIVAMes) + "€");
-            comensalesMES.setText(String.valueOf(totalComensalesMes));
+        // Mostrar los totales en los TextField
+        totalDIAsinIVA.setText(String.format("%.2f", totalSinIVA) + "€");
+        totalDIAconIVA.setText(String.format("%.2f", totalConIVA) + "€");
+        comensalesDIA.setText(String.valueOf(totalComensales));
 
-            // Mostrar los tickets del día en el ListView
-            mostrarTickets(ticketsDia);
-            mostrarDetallesComandaDia(detallesComandaDia);
-            mostrarDetallesComandaMes(detallesComandaMes);
+        // Mostrar los totales del mes en los TextField
+        totalMESsinIVA.setText(String.format("%.2f", totalSinIVAMes) + "€");
+        totalMESconIVA.setText(String.format("%.2f", totalConIVAMes) + "€");
+        comensalesMES.setText(String.valueOf(totalComensalesMes));
 
-            // Ocultar la barra de progreso cuando se completan todas las operaciones
+        // Mostrar los tickets del día en el ListView
+        mostrarTickets(ticketsDia);
+        mostrarDetallesComandaDia(detallesComandaDia);
+        mostrarDetallesComandaMes(detallesComandaMes);
+
+        // Ocultar la barra de progreso cuando se completan todas las operaciones
     }
 
     // Método para obtener los tickets asociados a una fecha específica desde la base de datos

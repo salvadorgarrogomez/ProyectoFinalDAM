@@ -219,6 +219,7 @@ public class Mesas_ComandasController implements Initializable {
     private Map<Button, String> nombreMesaMap = new HashMap<>();
     private String numeroTicketGenerado;
     private ObservableList<StringProperty> textAreaData = FXCollections.observableArrayList();
+    private boolean comandaConfirmada = false;
 
     @Override
     @SuppressWarnings({"unchecked"})
@@ -400,6 +401,14 @@ public class Mesas_ComandasController implements Initializable {
                 activarTab(nombreMesa);
             }
         });
+
+        for (TextArea textArea : listViewMap.values()) {
+            textArea.focusedProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue) { // Verificar si el TextArea ha perdido el foco
+                    actualizarComanda(); // Actualizar la comanda cuando se pierde el foco del TextArea
+                }
+            });
+        }
     }
 
     public void setUsuario(Usuarios usuario) {
@@ -458,13 +467,10 @@ public class Mesas_ComandasController implements Initializable {
                                 }
                             }
 
-                            // Si el producto no está presente, agregar una nueva línea al texto del TextArea
                             if (!productoExistente) {
                                 comandaTexto = String.format("%s - Cantidad: %d - Precio unitario: %.2f€ - Precio total: %.2f€\n",
                                         producto.getNombre(), cantidadSeleccionada, producto.getPrecio(), precioTotal);
                                 textAreaMesa.appendText(comandaTexto);
-
-                                // Incrementar el número de comanda y asociarlo a la mesa
                             } else {
                                 // Si el producto ya está presente, reemplazar el texto completo del TextArea con el texto actualizado
                                 textAreaMesa.setText(textoActual);
@@ -503,6 +509,7 @@ public class Mesas_ComandasController implements Initializable {
                             // Limpiar la selección del producto y la cantidad después de enviar la comanda
                             listProductos.getSelectionModel().clearSelection();
                             cantidad.getValueFactory().setValue(0);
+                            comandaConfirmada = true;
                         } else {
                             // Mensaje de error si no se encuentra el TextArea
                             mostrarAlerta("No se pudo encontrar el TextArea de la mesa seleccionada.", Alert.AlertType.ERROR);
@@ -526,9 +533,7 @@ public class Mesas_ComandasController implements Initializable {
         }
     }
 
-    private void actualizarCambiosEnTextArea() {
-        double totalSinIVA = 0.0;
-
+    private void actualizarComanda() {
         // Recorrer cada mesa y obtener su TextArea correspondiente
         for (Map.Entry<String, TextArea> entry : listViewMap.entrySet()) {
             String nombreMesa = entry.getKey();
@@ -538,22 +543,26 @@ public class Mesas_ComandasController implements Initializable {
             if (textAreaMesa != null) {
                 String textoActual = textAreaMesa.getText();
                 double totalMesaSinIVA = 0.0;
+                StringBuilder nuevoTexto = new StringBuilder();
 
                 // Procesar cada línea del texto de la comanda
                 String[] lineas = textoActual.split("\n");
-                StringBuilder nuevoTexto = new StringBuilder();
+
                 for (String linea : lineas) {
                     String[] partes = linea.split(" - ");
                     if (partes.length == 4) { // Asegúrate de que la línea tenga el formato esperado
-                        String nombreProducto = partes[0];
-                        int cantidad = Integer.parseInt(partes[1].split(": ")[1]);
-                        double precioUnitario = Double.parseDouble(partes[2].split(": ")[1].replace("€", "").replace(",", "."));
+                        String nombreProducto = partes[0].trim();
+                        int cantidad = Integer.parseInt(partes[1].split(": ")[1].trim());
+                        double precioUnitario = Double.parseDouble(partes[2].split(": ")[1].replace("€", "").replace(",", ".").trim());
                         double precioTotal = cantidad * precioUnitario;
                         totalMesaSinIVA += precioTotal;
 
-                        // Actualizar el precio total en la línea
-                        nuevoTexto.append(String.format("%s - Cantidad: %d - Precio unitario: %.2f€ - Precio total: %.2f€\n",
-                                nombreProducto, cantidad, precioUnitario, precioTotal));
+                        // Actualizar la línea con la nueva cantidad y precio total
+                        String nuevaLinea = String.format("%s - Cantidad: %d - Precio unitario: %.2f€ - Precio total: %.2f€",
+                                nombreProducto, cantidad, precioUnitario, precioTotal);
+
+                        // Agregar la línea al nuevo texto
+                        nuevoTexto.append(nuevaLinea).append("\n");
                     } else {
                         // Si no es una línea válida, agregarla sin cambios
                         nuevoTexto.append(linea).append("\n");
@@ -561,10 +570,7 @@ public class Mesas_ComandasController implements Initializable {
                 }
 
                 // Establecer el nuevo texto en el TextArea
-                textAreaMesa.setText(nuevoTexto.toString());
-
-                // Agregar el total sin IVA de la mesa al total general
-                totalSinIVA += totalMesaSinIVA;
+                textAreaMesa.setText(nuevoTexto.toString().trim()); // Eliminar el último salto de línea
 
                 // Calcular el total con IVA para la mesa y actualizar los campos correspondientes
                 double totalMesaConIVA = calcularTotalConIVA(totalMesaSinIVA);
@@ -652,8 +658,8 @@ public class Mesas_ComandasController implements Initializable {
                 // Limpiar ComboBox
                 seleccionMesa.getItems().clear();
 
-                // Consulta SQL para obtener las mesas desde la base de datos
-                String sql = "SELECT nombre FROM mesas";
+                // Consulta SQL para obtener las mesas desde la base de datos, ordenadas alfabéticamente
+                String sql = "SELECT nombre FROM mesas ORDER BY nombre";
                 try (PreparedStatement statement = connection.prepareStatement(sql); ResultSet resultSet = statement.executeQuery()) {
                     while (resultSet.next()) {
                         // Obtener el nombre de la mesa de la fila actual
@@ -779,7 +785,6 @@ public class Mesas_ComandasController implements Initializable {
                 try {
                     Platform.runLater(() -> {
                         actualizarTextFieldsWithMesas();
-                        actualizarCambiosEnTextArea();
                     });
                     Thread.sleep(5000); // 5 segundos
                 } catch (InterruptedException e) {
@@ -840,7 +845,13 @@ public class Mesas_ComandasController implements Initializable {
             // Mostrar la barra de progreso
             progreso.setVisible(true);
 
-            Mesas mesaSeleccionada = seleccionMesa.getValue();
+            Button botonConfirmacion = (Button) event.getSource();
+
+            // Obtener el nombre de la mesa asociada al botón desde el mapa
+            String nombreMesa = nombreMesaMap.get(botonConfirmacion);
+
+            // Obtener el objeto Mesas correspondiente al nombre de la mesa
+            Mesas mesaSeleccionada = obtenerMesaPorNombre(nombreMesa);
             Spinner<Integer> spinnerComensales = comensalesMap.get(mesaSeleccionada.getNombre());
             if (mesaSeleccionada != null) {
                 // Obtener el botón correspondiente al nombre de la mesa seleccionada
@@ -867,10 +878,14 @@ public class Mesas_ComandasController implements Initializable {
                     }
                     // Cambiar el estado de la mesa a "libre" y el número de comensales a 0
                     actualizarEstadoMesaEnBD(mesaSeleccionada, "libre", 0);
-                    // Limpiar el TextArea de la mesa seleccionada
                     textAreaMesa.clear();
+                    TextField textFieldTotal = textFieldTotalMap.get(mesaSeleccionada.getNombre());
+                    TextField textFieldTotalIVA = textFieldTotalIVAMap.get(mesaSeleccionada.getNombre());
+                    textFieldTotal.clear();
+                    textFieldTotalIVA.clear();
+                    spinnerComensales.getValueFactory().setValue(0);
                     // Mostrar el ticket en un popup
-                    mostrarAlerta("Pago confirmado. Comanda cerrada.", Alert.AlertType.INFORMATION);
+                    mostrarAlerta("Pago confirmado. Comanda cerrada.\nCargando ticket...", Alert.AlertType.INFORMATION);
 
                     // Iniciar el proceso de búsqueda del número de ticket
                     buscarNumeroTicket(event, ticket);
@@ -895,7 +910,7 @@ public class Mesas_ComandasController implements Initializable {
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                int segundosEspera = 5; // Esperar 5 segundos en total
+                int segundosEspera = 3;
                 int totalIteraciones = segundosEspera * 10; // 10 actualizaciones por segundo
 
                 for (int i = 0; i < totalIteraciones; i++) {
@@ -974,6 +989,18 @@ public class Mesas_ComandasController implements Initializable {
             }
         }
         return null; // Retornar null si no se encuentra el botón
+    }
+
+    private Mesas obtenerMesaPorNombre(String nombreMesa) {
+        // Iterar sobre la lista de mesas
+        for (Mesas mesa : listaMesas) {
+            String nombreBoton = mesa.getNombre(); // Obtener el nombre de la mesa
+            if (nombreMesa.equals(nombreBoton)) {
+                return mesa; // Retorna la mesa correspondiente al nombre
+            }
+        }
+        // Si no se encuentra la mesa, retorna null
+        return null;
     }
 
     private List<DetallesComanda> obtenerDetallesComandaDesdeTexto(String textoComanda, Mesas mesaSeleccionada) {
@@ -1154,8 +1181,8 @@ public class Mesas_ComandasController implements Initializable {
             if (producto != null) {
                 double precio = producto.getPrecio();
                 double totalLinea = cantidad * precio;
-                if (nombreProducto.length() > 25) {
-                    nombreProducto = nombreProducto.substring(0, 20) + "...";
+                if (nombreProducto.length() > 15) {
+                    nombreProducto = nombreProducto.substring(0, 15) + "...";
                     nombreProducto = String.format("%1$-25s", nombreProducto);
                 }
                 // Añadir tabuladores para separar las columnas
