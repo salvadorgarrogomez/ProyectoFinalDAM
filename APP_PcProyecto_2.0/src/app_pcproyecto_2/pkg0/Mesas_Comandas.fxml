@@ -24,16 +24,16 @@
       <ComboBox fx:id="seleccionCategoria" layoutX="17.0" layoutY="180.0" prefHeight="25.0" prefWidth="372.0" promptText="&lt; Selecciona un dato &gt;" stylesheets="@../../estilos/estilos.css" />
       <Label layoutX="14.0" layoutY="14.0" text="Pantalla de comandas y resumen de Mesas:">
          <font>
-            <Font name="System Bold" size="24.0" />
+            <Font name="Courier New Bold" size="24.0" />
          </font>
       </Label>
       <ListView fx:id="listProductos" layoutX="17.0" layoutY="213.0" prefHeight="263.0" prefWidth="372.0" />
-      <Label layoutX="21.0" layoutY="90.0" text="Selecciona una mesa para añadirle comandas:">
+      <Label layoutX="58.0" layoutY="103.0" text="Selecciona una mesa para añadirle comandas:">
          <font>
             <Font name="Courier New" size="12.0" />
          </font></Label>
-      <ComboBox fx:id="seleccionMesa" layoutX="336.0" layoutY="98.0" prefHeight="25.0" prefWidth="180.0" promptText="&lt; Selecciona una Mesa &gt;" stylesheets="@../../estilos/estilos.css" />
-      <Label layoutX="592.0" layoutY="99.0" text="Conjunto de mesas en el local:">
+      <ComboBox fx:id="seleccionMesa" layoutX="113.0" layoutY="122.0" prefHeight="25.0" prefWidth="180.0" promptText="&lt; Selecciona una Mesa &gt;" stylesheets="@../../estilos/estilos.css" />
+      <Label layoutX="571.0" layoutY="136.0" text="Conjunto de mesas en el local:">
          <font>
             <Font name="Courier New" size="18.0" />
          </font>
@@ -48,7 +48,7 @@
                            <font>
                               <Font name="Courier New" size="12.0" />
                            </font></Label>
-                        <TextField fx:id="acumuladoMesa1" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoMesa1" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Button fx:id="confirmarMesa1" layoutX="418.0" layoutY="389.0" mnemonicParsing="false" onAction="#confirmarPago" prefHeight="25.0" prefWidth="106.0" text="Confirmar pago" />
                         <Label layoutX="375.0" layoutY="310.0" text="Imprimir ticket?">
                            <font>
@@ -60,7 +60,7 @@
                               <Font name="Courier New" size="12.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="acumuladoMesa1conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoMesa1conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Label layoutX="347.0" layoutY="14.0" text="Cantidad de comensales en la mesa:">
                            <font>
                               <Font name="Courier New" size="12.0" />
@@ -80,7 +80,7 @@
                            <font>
                               <Font name="Courier New" size="12.0" />
                            </font></Label>
-                        <TextField fx:id="acumuladoMesa2" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoMesa2" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Button fx:id="confirmarMesa2" layoutX="418.0" layoutY="389.0" mnemonicParsing="false" onAction="#confirmarPago" prefHeight="25.0" prefWidth="106.0" text="Confirmar pago" />
                         <Label layoutX="375.0" layoutY="310.0" text="Imprimir ticket?">
                            <font>
@@ -92,7 +92,7 @@
                               <Font name="Courier New" size="12.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="acumuladoMesa2conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoMesa2conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Label layoutX="347.0" layoutY="14.0" text="Cantidad de comensales en la mesa:">
                            <font>
                               <Font name="Courier New" size="12.0" />
@@ -112,7 +112,7 @@
                            <font>
                               <Font name="Courier New" size="12.0" />
                            </font></Label>
-                        <TextField fx:id="acumuladoMesa3" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoMesa3" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Button fx:id="confirmarMesa3" layoutX="418.0" layoutY="389.0" mnemonicParsing="false" onAction="#confirmarPago" prefHeight="25.0" prefWidth="106.0" text="Confirmar pago" />
                         <Label layoutX="375.0" layoutY="310.0" text="Imprimir ticket?">
                            <font>
@@ -124,7 +124,7 @@
                               <Font name="Courier New" size="12.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="acumuladoMesa3conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoMesa3conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Label layoutX="347.0" layoutY="14.0" text="Cantidad de comensales en la mesa:">
                            <font>
                               <Font name="Courier New" size="12.0" />
@@ -145,7 +145,7 @@
                            <font>
                               <Font name="Courier New" size="12.0" />
                            </font></Label>
-                        <TextField fx:id="acumuladoMesa4" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoMesa4" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Label layoutX="375.0" layoutY="310.0" text="Imprimir ticket?">
                            <font>
                               <Font name="Courier New" size="12.0" />
@@ -156,7 +156,7 @@
                               <Font name="Courier New" size="12.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="acumuladoMesa4conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoMesa4conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Label layoutX="347.0" layoutY="14.0" text="Cantidad de comensales en la mesa:">
                            <font>
                               <Font name="Courier New" size="12.0" />
@@ -177,7 +177,7 @@
                            <font>
                               <Font name="Courier New" size="12.0" />
                            </font></Label>
-                        <TextField fx:id="acumuladoMesa5" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoMesa5" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Label layoutX="375.0" layoutY="310.0" text="Imprimir ticket?">
                            <font>
                               <Font name="Courier New" size="12.0" />
@@ -188,7 +188,7 @@
                               <Font name="Courier New" size="12.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="acumuladoMesa5conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoMesa5conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Label layoutX="347.0" layoutY="14.0" text="Cantidad de comensales en la mesa:">
                            <font>
                               <Font name="Courier New" size="12.0" />
@@ -209,7 +209,7 @@
                            <font>
                               <Font name="Courier New" size="12.0" />
                            </font></Label>
-                        <TextField fx:id="acumuladoMesa6" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoMesa6" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Label layoutX="375.0" layoutY="310.0" text="Imprimir ticket?">
                            <font>
                               <Font name="Courier New" size="12.0" />
@@ -220,7 +220,7 @@
                               <Font name="Courier New" size="12.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="acumuladoMesa6conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoMesa6conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Label layoutX="347.0" layoutY="14.0" text="Cantidad de comensales en la mesa:">
                            <font>
                               <Font name="Courier New" size="12.0" />
@@ -241,7 +241,7 @@
                            <font>
                               <Font name="Courier New" size="12.0" />
                            </font></Label>
-                        <TextField fx:id="acumuladoMesa7" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoMesa7" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Label layoutX="375.0" layoutY="310.0" text="Imprimir ticket?">
                            <font>
                               <Font name="Courier New" size="12.0" />
@@ -252,7 +252,7 @@
                               <Font name="Courier New" size="12.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="acumuladoMesa7conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoMesa7conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Label layoutX="347.0" layoutY="14.0" text="Cantidad de comensales en la mesa:">
                            <font>
                               <Font name="Courier New" size="12.0" />
@@ -273,7 +273,7 @@
                            <font>
                               <Font name="Courier New" size="12.0" />
                            </font></Label>
-                        <TextField fx:id="acumuladoMesa8" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoMesa8" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Label layoutX="375.0" layoutY="310.0" text="Imprimir ticket?">
                            <font>
                               <Font name="Courier New" size="12.0" />
@@ -284,7 +284,7 @@
                               <Font name="Courier New" size="12.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="acumuladoMesa8conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoMesa8conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Label layoutX="347.0" layoutY="14.0" text="Cantidad de comensales en la mesa:">
                            <font>
                               <Font name="Courier New" size="12.0" />
@@ -305,7 +305,7 @@
                            <font>
                               <Font name="Courier New" size="12.0" />
                            </font></Label>
-                        <TextField fx:id="acumuladoMesa9" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoMesa9" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Label layoutX="375.0" layoutY="310.0" text="Imprimir ticket?">
                            <font>
                               <Font name="Courier New" size="12.0" />
@@ -316,7 +316,7 @@
                               <Font name="Courier New" size="12.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="acumuladoMesa9conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoMesa9conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Label layoutX="347.0" layoutY="14.0" text="Cantidad de comensales en la mesa:">
                            <font>
                               <Font name="Courier New" size="12.0" />
@@ -337,7 +337,7 @@
                            <font>
                               <Font name="Courier New" size="12.0" />
                            </font></Label>
-                        <TextField fx:id="acumuladoMesa10" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoMesa10" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Label layoutX="375.0" layoutY="310.0" text="Imprimir ticket?">
                            <font>
                               <Font name="Courier New" size="12.0" />
@@ -348,7 +348,7 @@
                               <Font name="Courier New" size="12.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="acumuladoMesa10conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoMesa10conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Label layoutX="347.0" layoutY="14.0" text="Cantidad de comensales en la mesa:">
                            <font>
                               <Font name="Courier New" size="12.0" />
@@ -388,22 +388,22 @@
                            <font>
                               <Font name="Courier New" size="12.0" />
                            </font></Label>
-                        <TextField fx:id="acumuladoBarra1" editable="false" layoutX="189.0" layoutY="54.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoBarra1" editable="false" layoutX="189.0" layoutY="54.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Label layoutX="504.0" layoutY="30.0" text="Importe sin IVA:">
                            <font>
                               <Font name="Courier New" size="12.0" />
                            </font></Label>
-                        <TextField fx:id="acumuladoBarra2" editable="false" layoutX="504.0" layoutY="53.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoBarra2" editable="false" layoutX="504.0" layoutY="53.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Label layoutX="189.0" layoutY="348.0" text="Importe sin IVA:">
                            <font>
                               <Font name="Courier New" size="12.0" />
                            </font></Label>
-                        <TextField fx:id="acumuladoBarra3" editable="false" layoutX="189.0" layoutY="371.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoBarra3" editable="false" layoutX="189.0" layoutY="371.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Label layoutX="504.0" layoutY="347.0" text="Importe sin IVA:">
                            <font>
                               <Font name="Courier New" size="12.0" />
                            </font></Label>
-                        <TextField fx:id="acumuladoBarra4" editable="false" layoutX="504.0" layoutY="370.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoBarra4" editable="false" layoutX="504.0" layoutY="370.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Label layoutX="201.0" layoutY="227.0" text="Imprimir ticket?">
                            <font>
                               <Font name="Courier New" size="12.0" />
@@ -429,25 +429,25 @@
                               <Font name="Courier New" size="12.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="acumuladoBarra1conIVA" editable="false" layoutX="189.0" layoutY="111.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoBarra1conIVA" editable="false" layoutX="189.0" layoutY="111.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Label layoutX="504.0" layoutY="87.0" text="Impuestos incluidos:">
                            <font>
                               <Font name="Courier New" size="12.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="acumuladoBarra2conIVA" editable="false" layoutX="504.0" layoutY="110.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoBarra2conIVA" editable="false" layoutX="504.0" layoutY="110.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Label layoutX="189.0" layoutY="405.0" text="Impuestos incluidos:">
                            <font>
                               <Font name="Courier New" size="12.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="acumuladoBarra3conIVA" editable="false" layoutX="189.0" layoutY="428.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoBarra3conIVA" editable="false" layoutX="189.0" layoutY="428.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Label layoutX="504.0" layoutY="404.0" text="Impuestos incluidos:">
                            <font>
                               <Font name="Courier New" size="12.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="acumuladoBarra4conIVA" editable="false" layoutX="504.0" layoutY="427.0" prefHeight="25.0" prefWidth="107.0" />
+                        <TextField fx:id="acumuladoBarra4conIVA" editable="false" layoutX="504.0" layoutY="427.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
                         <Label layoutX="14.0" layoutY="22.0" text="Comensales:">
                            <font>
                               <Font name="Courier New" size="11.0" />
@@ -582,21 +582,14 @@
       </Label>
       <Button fx:id="btnAgregarProductos" layoutX="128.0" layoutY="510.0" mnemonicParsing="false" onAction="#confirmarComanda" text="Siguiente producto/plato" />
       <Spinner fx:id="cantidad" editable="true" layoutX="176.0" layoutY="480.0" prefHeight="25.0" prefWidth="102.0" stylesheets="@../../estilos/estilos.css" />
-      <Label layoutX="21.0" layoutY="110.0" text="Selecciona una mesa para confirmar el pago:">
-         <font>
-            <Font name="Courier New" size="12.0" />
-         </font>
-      </Label>
-      <Label layoutX="487.0" layoutY="152.0" text="(Seleccionar mesa en el desplegable &lt;Selecciona una Mesa&gt; para confirmar el PAGO)">
+      <ProgressIndicator fx:id="progreso" layoutX="491.0" layoutY="130.0" prefHeight="35.0" prefWidth="65.0" progress="0.0" stylesheets="@../../estilos/estilos.css" visible="false" />
+      <Label layoutX="17.0" layoutY="49.0" text="Selecciona la Mesa a la que quieres añadirle platos, para ir actualizando la comanda.">
          <font>
             <Font name="Courier New" size="11.0" />
-         </font>
-      </Label>
-      <Label layoutX="679.0" layoutY="135.0" text="INPORTANTE!!!" textFill="#f80000">
+         </font></Label>
+      <Label layoutX="17.0" layoutY="67.0" text="Confirma el pago simplemente dandole al boton requerido para ello en cada una de las pestaña asociada a cada Mesa/Barra">
          <font>
-            <Font name="Courier New Bold" size="14.0" />
-         </font>
-      </Label>
-      <ProgressIndicator fx:id="progreso" layoutX="476.0" layoutY="49.0" prefHeight="35.0" prefWidth="65.0" progress="0.0" stylesheets="@../../estilos/estilos.css" visible="false" />
+            <Font name="Courier New" size="11.0" />
+         </font></Label>
    </children>
 </AnchorPane>

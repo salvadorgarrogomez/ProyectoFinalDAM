@@ -1,0 +1,27 @@
+.text-field-libre {
+    -fx-border-color: green;
+    -fx-border-width: 2px;
+    -fx-alignment: center;
+}
+
+.text-field-ocupado {
+    -fx-border-color: red;
+    -fx-border-width: 2px;
+    -fx-alignment: center;
+}
+
+.combo-box {
+    -fx-alignment: center;
+}
+
+.text-field {
+    -fx-alignment: center;
+}
+
+.spinner {
+    -fx-alignment: center;
+}
+
+.progressIndicator {
+    -fx-progress-color: green; -fx-scale-y: 20.0; -fx-scale-x: 20.0;
+}
