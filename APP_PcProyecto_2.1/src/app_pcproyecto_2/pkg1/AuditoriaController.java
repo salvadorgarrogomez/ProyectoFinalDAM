@@ -102,8 +102,16 @@ public class AuditoriaController implements Initializable {
     private TextField newNombreCatego;
     @FXML
     private TextField newNombreUser;
+    @FXML
+    private TextField borraUser;
+    @FXML
+    private TextField borraPlato;
     private int idCategoriaSeleccionada;
     private ObservableList<Categorias> categoriasList = FXCollections.observableArrayList();
+    private ObservableList<Categorias> categoriasListBorrar = FXCollections.observableArrayList();
+    private ObservableList<Usuarios> usuariosList = FXCollections.observableArrayList();
+    private ObservableList<Productos> productosList = FXCollections.observableArrayList();
+
     private Usuarios usuario;
 
     /**
@@ -114,6 +122,7 @@ public class AuditoriaController implements Initializable {
         // TODO
         try {
             cargarCategorias();
+            cargarCategoriasBorrar();
             cargarUsuarios();
             cargarROL();
             cargarProductos();
@@ -159,6 +168,42 @@ public class AuditoriaController implements Initializable {
             }
         });
 
+        selectUser.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Usuarios>() {
+            @Override
+            public void changed(ObservableValue<? extends Usuarios> observable, Usuarios oldValue, Usuarios newValue) {
+                if (newValue != null) {
+                    // Obtener el nombre de la categoría seleccionada
+                    String nombreUsuario = newValue.getNombre();
+                    // Establecer el nombre de la categoría en el TextField
+                    newNombreUser.setText(nombreUsuario);
+                }
+            }
+        });
+
+        selectUserBorrar.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Usuarios>() {
+            @Override
+            public void changed(ObservableValue<? extends Usuarios> observable, Usuarios oldValue, Usuarios newValue) {
+                if (newValue != null) {
+                    // Obtener el nombre de la categoría seleccionada
+                    String nombreUsuario = newValue.getNombre();
+                    // Establecer el nombre de la categoría en el TextField
+                    borraUser.setText(nombreUsuario);
+                }
+            }
+        });
+
+        selectPlatoBorrar.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Productos>() {
+            @Override
+            public void changed(ObservableValue<? extends Productos> observable, Productos oldValue, Productos newValue) {
+                if (newValue != null) {
+                    // Obtener el nombre de la categoría seleccionada
+                    String nombreProducto = newValue.getNombre();
+                    // Establecer el nombre de la categoría en el TextField
+                    borraPlato.setText(nombreProducto);
+                }
+            }
+        });
+
     }
 
     private void cargarCategorias() throws SQLException {
@@ -171,8 +216,21 @@ public class AuditoriaController implements Initializable {
                 Categorias categoria = new Categorias(id, nombre);
                 categoriasList.add(categoria);
             }
-            selectCategor.setItems(categoriasList); // Establecer la lista de categorías en el ComboBox
-            selectCategoriBorrar.setItems(categoriasList); // También actualiza el ComboBox para borrar categorías si es necesario
+            selectCategor.setItems(categoriasList);
+        }
+    }
+
+    private void cargarCategoriasBorrar() throws SQLException {
+        categoriasListBorrar.clear(); // Limpiar la lista antes de volver a cargar las categorías
+        try (Connection connection = getConnection(); PreparedStatement consultaCategorias = connection.prepareStatement("SELECT * FROM categorias WHERE id != 0 ORDER BY id"); ResultSet resultadoCategorias = consultaCategorias.executeQuery()) {
+
+            while (resultadoCategorias.next()) {
+                int id = resultadoCategorias.getInt("id");
+                String nombre = resultadoCategorias.getString("nombre");
+                Categorias categoria = new Categorias(id, nombre);
+                categoriasListBorrar.add(categoria);
+            }
+            selectCategoriBorrar.setItems(categoriasListBorrar);
         }
     }
 
@@ -239,7 +297,6 @@ public class AuditoriaController implements Initializable {
                         }
                     } catch (SQLException e) {
                         e.printStackTrace();
-                        System.out.println("Mensaje de la excepción: " + e.getMessage());
                         mostrarAlerta("Error", "Hubo un error al actualizar el nombre de la categoría.", Alert.AlertType.ERROR);
                     }
                 } else {
@@ -344,17 +401,132 @@ public class AuditoriaController implements Initializable {
     }
 
     private void cargarUsuarios() throws SQLException {
-        try (Connection connection = getConnection(); PreparedStatement consultaUsuarios = connection.prepareStatement("SELECT * FROM usuarios"); ResultSet resultadoUsuarios = consultaUsuarios.executeQuery()) {
+        usuariosList.clear();
+        try (Connection connection = getConnection(); PreparedStatement consultaUsuarios = connection.prepareStatement("SELECT * FROM usuarios WHERE id != 3"); ResultSet resultadoUsuarios = consultaUsuarios.executeQuery()) {
 
-            List<Usuarios> usuarios = new ArrayList<>();
             while (resultadoUsuarios.next()) {
                 int id = resultadoUsuarios.getInt("id");
                 String nombre = resultadoUsuarios.getString("nombre");
-                Usuarios usuario = new Usuarios(id, nombre);
-                usuarios.add(usuario);
+                String rol = resultadoUsuarios.getString("rol");
+                Usuarios usuario = new Usuarios(id, nombre, rol);
+                usuariosList.add(usuario); // Agregar el usuario a la lista
             }
-            selectUser.getItems().addAll(usuarios);
-            selectUserBorrar.getItems().addAll(usuarios);
+
+            selectUser.setItems(usuariosList); // Utilizar setItems() para asignar la lista al ComboBox
+            selectUserBorrar.setItems(usuariosList); // Utilizar setItems() para asignar la lista al otro ComboBox
+        }
+    }
+
+    @FXML
+    private void borrarUsuarios() {
+        // Obtener el nombre de la categoría seleccionada para borrar del TextField
+        String nombreUser = borraUser.getText();
+        // Obtener el ID de la categoría seleccionada
+        int usuarioId = obtenerIdUsuarioPorNombre(nombreUser);
+
+        if (usuarioId != -1) {
+            try (Connection connection = getConnection()) {
+                String sqlDelete = "DELETE FROM usuarios WHERE id = ?";
+                try (PreparedStatement pstmtDelete = connection.prepareStatement(sqlDelete)) {
+                    pstmtDelete.setInt(1, usuarioId);
+                    pstmtDelete.executeUpdate();
+                }
+
+                // Mostrar mensaje de éxito
+                mostrarAlerta("Éxito", "Usuario eliminado correctamente.", Alert.AlertType.INFORMATION);
+                // Limpiar el TextField y el ComboBox
+                borraUser.clear();
+                selectUserBorrar.getSelectionModel().clearSelection();
+                // Actualizar la lista de categorías y el ComboBox
+                cargarUsuarios();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                mostrarAlerta("Error", "Error al eliminar el usuario.", Alert.AlertType.ERROR);
+            }
+        } else {
+            mostrarAlerta("Error", "El usuario especificado no existe.", Alert.AlertType.ERROR);
+        }
+    }
+
+    private int obtenerIdUsuarioPorNombre(String nombreUsuario) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        int usuarioId = -1; // Valor predeterminado en caso de que no se encuentre la categoría
+        try {
+            connection = getConnection();
+            String sql = "SELECT id FROM usuarios WHERE nombre = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, nombreUsuario);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                usuarioId = resultSet.getInt("id");
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (statement != null) {
+                    statement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+        return usuarioId;
+    }
+
+    @FXML
+    private void actualizarNombreUsuario() {
+        // Obtener el nuevo nombre del usuario desde el TextField
+        String nuevoNombre = newNombreUser.getText();
+
+        // Obtener el nuevo rol del usuario desde el ComboBox
+        String nuevoRol = selectRol.getValue();
+
+        // Validar que el nuevo nombre y el nuevo rol no estén vacíos
+        if (!nuevoNombre.isEmpty() && nuevoRol != null) {
+            // Obtener el usuario actualmente seleccionado
+            Usuarios usuarioSeleccionado = selectUser.getValue();
+            if (usuarioSeleccionado != null) {
+                int idUsuario = usuarioSeleccionado.getId(); // Asegúrate de usar el método correcto para obtener el ID
+
+                // Realizar una consulta para verificar si el nuevo nombre ya existe
+                int idExistente = obtenerIdUsuarioPorNombre(nuevoNombre);
+
+                if (idExistente == -1 || idExistente == idUsuario) {
+                    // Si el nuevo nombre no existe o pertenece al mismo usuario, proceder con la actualización
+                    String sql = "UPDATE usuarios SET nombre = ?, rol = ? WHERE id = ?";
+                    try (Connection connection = getConnection(); PreparedStatement pstmt = connection.prepareStatement(sql)) {
+                        pstmt.setString(1, nuevoNombre);
+                        pstmt.setString(2, nuevoRol); // Establecer el nuevo rol del usuario
+                        pstmt.setInt(3, idUsuario); // Establecer el ID del usuario en la consulta SQL
+                        int rowsUpdated = pstmt.executeUpdate();
+                        if (rowsUpdated > 0) {
+                            mostrarAlerta("Éxito", "Nombre y rol del usuario actualizados correctamente.", Alert.AlertType.INFORMATION);
+                            newNombreUser.clear();
+                            selectRol.setValue(null);
+                            // Actualizar la lista de usuarios y volver a establecerla en el ComboBox
+                            cargarUsuarios();
+                        }
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        mostrarAlerta("Error", "Hubo un error al actualizar el nombre y rol del usuario.", Alert.AlertType.ERROR);
+                    }
+                } else {
+                    mostrarAlerta("Error", "El nuevo nombre del usuario ya existe.", Alert.AlertType.ERROR);
+                }
+            } else {
+                mostrarAlerta("Error", "Por favor, seleccione un usuario para actualizar.", Alert.AlertType.ERROR);
+            }
+        } else {
+            mostrarAlerta("Error", "El nuevo nombre del usuario y su rol no pueden estar vacíos.", Alert.AlertType.ERROR);
         }
     }
 
@@ -371,6 +543,7 @@ public class AuditoriaController implements Initializable {
     }
 
     private void cargarProductos() throws SQLException {
+        productosList.clear();
         try (Connection connection = getConnection(); PreparedStatement consultaProductos = connection.prepareStatement("SELECT * FROM productos ORDER BY id"); ResultSet resultadoProductos = consultaProductos.executeQuery()) {
 
             List<Productos> productos = new ArrayList<>();
@@ -380,9 +553,74 @@ public class AuditoriaController implements Initializable {
                 double precio = resultadoProductos.getDouble("precio");
                 String tipo_porcion = resultadoProductos.getString("tipo_porcion");
                 Productos producto = new Productos(id, nombre, precio, tipo_porcion);
-                productos.add(producto);
+                productosList.add(producto);
             }
-            selectPlatoBorrar.getItems().addAll(productos);
+            selectPlatoBorrar.getItems().addAll(productosList);
+        }
+    }
+
+    private int obtenerIdProductoPorNombre(String nombreProducto) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        int productoId = -1; // Valor predeterminado en caso de que no se encuentre la categoría
+        try {
+            connection = getConnection();
+            String sql = "SELECT id FROM productos WHERE nombre = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, nombreProducto);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                productoId = resultSet.getInt("id");
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (statement != null) {
+                    statement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+        return productoId;
+    }
+
+    @FXML
+    private void borrarProducto() {
+        // Obtener el nombre de la categoría seleccionada para borrar del TextField
+        String nombreProducto = borraPlato.getText();
+        // Obtener el ID de la categoría seleccionada
+        int usuarioId = obtenerIdProductoPorNombre(nombreProducto);
+
+        if (usuarioId != -1) {
+            try (Connection connection = getConnection()) {
+                String sqlDelete = "DELETE FROM productos WHERE id = ?";
+                try (PreparedStatement pstmtDelete = connection.prepareStatement(sqlDelete)) {
+                    pstmtDelete.setInt(1, usuarioId);
+                    pstmtDelete.executeUpdate();
+                }
+
+                // Mostrar mensaje de éxito
+                mostrarAlerta("Éxito", "Producto eliminado correctamente.", Alert.AlertType.INFORMATION);
+                // Limpiar el TextField y el ComboBox
+                borraPlato.clear();
+                selectPlatoBorrar.getSelectionModel().clearSelection();
+                // Actualizar la lista de categorías y el ComboBox
+                cargarProductos();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                mostrarAlerta("Error", "Error al eliminar el producto.", Alert.AlertType.ERROR);
+            }
+        } else {
+            mostrarAlerta("Error", "El producto especificado no existe.", Alert.AlertType.ERROR);
         }
     }
 
@@ -636,6 +874,44 @@ public class AuditoriaController implements Initializable {
             dias.add(String.valueOf(i));
         }
         return dias;
+    }
+
+    @FXML
+    private void borrarElementoSeleccionado() {
+        // Obtener el elemento seleccionado del ListView
+        TicketComanda ticketSeleccionado = ListComandas.getSelectionModel().getSelectedItem();
+
+        // Verificar si se ha seleccionado un elemento
+        if (ticketSeleccionado != null) {
+            try (Connection connection = getConnection(); PreparedStatement pstmt = connection.prepareStatement("DELETE FROM ticket_comanda WHERE id = ?")) {
+                // Obtener el ID del ticket seleccionado
+                int idTicket = ticketSeleccionado.getId();
+
+                // Establecer el ID en la consulta preparada
+                pstmt.setInt(1, idTicket);
+
+                // Ejecutar la consulta DELETE
+                int filasBorradas = pstmt.executeUpdate();
+
+                // Verificar si se ha borrado correctamente el elemento
+                if (filasBorradas > 0) {
+                    // Eliminar el elemento del ListView
+                    ListComandas.getItems().remove(ticketSeleccionado);
+                    // Notificar al usuario que se ha borrado correctamente
+                    mostrarAlerta("Éxito", "El ticket ha sido borrado correctamente.", Alert.AlertType.INFORMATION);
+                } else {
+                    // Notificar al usuario si no se ha borrado el elemento
+                    mostrarAlerta("Error", "No se pudo borrar el ticket.", Alert.AlertType.ERROR);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                // Manejar cualquier error de la base de datos
+                mostrarAlerta("Error", "Hubo un error al borrar el ticket.", Alert.AlertType.ERROR);
+            }
+        } else {
+            // Notificar al usuario si no se ha seleccionado ningún elemento
+            mostrarAlerta("Error", "Por favor, seleccione un ticket para borrar.", Alert.AlertType.ERROR);
+        }
     }
 
     private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {

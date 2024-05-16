@@ -183,12 +183,9 @@ public class VentanaPrincipalController implements Initializable {
                         return resultSet.next(); // Retorna true si el usuario tiene el rol de admin
                     }
                 }
-            } else {
-                System.out.println("Error: No se pudo conectar a la base de datos.");
-            }
+            } 
         } catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("Error SQL: " + e.getMessage());
         }
 
         return false; // Retorna false si hubo un error o el usuario no tiene el rol de admin
