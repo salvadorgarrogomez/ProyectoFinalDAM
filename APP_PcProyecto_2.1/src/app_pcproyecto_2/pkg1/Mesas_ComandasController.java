@@ -1183,7 +1183,7 @@ public class Mesas_ComandasController implements Initializable {
                 double totalLinea = cantidad * precio;
                 if (nombreProducto.length() > 15) {
                     nombreProducto = nombreProducto.substring(0, 15) + "...";
-                    nombreProducto = String.format("%1$-25s", nombreProducto);
+                    nombreProducto = String.format("%1$-20s", nombreProducto);
                 }
                 // Añadir tabuladores para separar las columnas
                 contenidoTicket.append(String.format("%-5s\t%-30s\t%-15s%-10s\n", cantidad, nombreProducto, String.format("%.2f€", precio), String.format("%.2f€", totalLinea)));
@@ -1191,15 +1191,17 @@ public class Mesas_ComandasController implements Initializable {
         }
 
         contenidoTicket.append("-----------------------------------------\n");
-        contenidoTicket.append("Pago (sin impuestos): ").append(String.format("%.2f", totalSinIVA)).append("€\n");
-        contenidoTicket.append("Total (impuestos incluidos): ").append(String.format("%.2f", totalConIVA)).append("€\n");
+        contenidoTicket.append("Número de comensales: ").append(numComensales).append("\n\n");
+        contenidoTicket.append("IVA: 10% \t\t\t");
+        double importeIVA = totalConIVA - totalSinIVA;
+        contenidoTicket.append("Cuota: ").append(String.format("%.2f", importeIVA)).append("€\n");
+        contenidoTicket.append("Base: ").append(String.format("%.2f", totalSinIVA)).append("€ \t\t");
+        contenidoTicket.append("Base + Cuota: ").append(String.format("%.2f", totalConIVA)).append("€\n\n");
+        contenidoTicket.append("Total (Impuestos Incl.): ").append(String.format("%.2f", totalConIVA)).append("€\n");
         contenidoTicket.append("-----------------------------------------\n");
-        contenidoTicket.append("Número de comensales: ").append(numComensales).append("\n");
-        contenidoTicket.append("Total a pagar: ").append(String.format("%.2f", totalConIVA)).append("€").append("\n\n\n");
 
-        // Agradecimiento
         contenidoTicket.append("Le atendió ").append(nombreUsuario).append("\n");
-        contenidoTicket.append("Gracias por su visita").append("\n");
+        contenidoTicket.append("Gracias por su visita/Thanks for your visit").append("\n");
 
         return contenidoTicket.toString();
     }

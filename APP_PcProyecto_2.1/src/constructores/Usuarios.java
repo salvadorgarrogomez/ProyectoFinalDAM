@@ -22,6 +22,12 @@ public class Usuarios {
         this.nombre = nombre;
     }
 
+    public Usuarios(int id, String nombre, String rol) {
+        this.id = id;
+        this.nombre = nombre;
+        this.rol = rol;
+    }
+
     public Usuarios(int id) {
         this.id = id;
     }
@@ -60,7 +66,7 @@ public class Usuarios {
 
     @Override
     public String toString() {
-        return nombre;
+        return this.nombre + " - " + this.rol;
     }
 
 }
