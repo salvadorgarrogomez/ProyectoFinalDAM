@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -210,7 +209,6 @@ public class Mesas_ComandasController implements Initializable {
     private Connection connection;
     private Map<Integer, Productos> productosMap;
     private ActualizacionMesasThread actualizacionMesasThread;
-    private Map<Mesas, List<DetallesComanda>> detallesPorMesa = new HashMap<>();
     private Map<String, TextArea> listViewMap;
     private Map<Mesas, String> estadoAnterior = new HashMap<>();
     private Map<String, TextField> textFieldTotalMap = new HashMap<>();
@@ -218,8 +216,6 @@ public class Mesas_ComandasController implements Initializable {
     private Map<String, Spinner<Integer>> comensalesMap;
     private Map<Button, String> nombreMesaMap = new HashMap<>();
     private String numeroTicketGenerado;
-    private ObservableList<StringProperty> textAreaData = FXCollections.observableArrayList();
-    private boolean comandaConfirmada = false;
 
     @Override
     @SuppressWarnings({"unchecked"})
@@ -265,21 +261,6 @@ public class Mesas_ComandasController implements Initializable {
         listViewMap.put("Barra_2", ListBarra_2);
         listViewMap.put("Barra_3", ListBarra_3);
         listViewMap.put("Barra_4", ListBarra_4);
-
-        textAreaData.add(ListMesa_1.textProperty());
-        textAreaData.add(ListMesa_2.textProperty());
-        textAreaData.add(ListMesa_3.textProperty());
-        textAreaData.add(ListMesa_4.textProperty());
-        textAreaData.add(ListMesa_5.textProperty());
-        textAreaData.add(ListMesa_6.textProperty());
-        textAreaData.add(ListMesa_7.textProperty());
-        textAreaData.add(ListMesa_8.textProperty());
-        textAreaData.add(ListMesa_9.textProperty());
-        textAreaData.add(ListMesa_10.textProperty());
-        textAreaData.add(ListBarra_1.textProperty());
-        textAreaData.add(ListBarra_2.textProperty());
-        textAreaData.add(ListBarra_3.textProperty());
-        textAreaData.add(ListBarra_4.textProperty());
 
         SpinnerValueFactory<Integer> gradesValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 100);
         this.cantidad.setValueFactory(gradesValueFactory);
@@ -409,6 +390,7 @@ public class Mesas_ComandasController implements Initializable {
                 }
             });
         }
+
     }
 
     public void setUsuario(Usuarios usuario) {
@@ -509,7 +491,6 @@ public class Mesas_ComandasController implements Initializable {
                             // Limpiar la selección del producto y la cantidad después de enviar la comanda
                             listProductos.getSelectionModel().clearSelection();
                             cantidad.getValueFactory().setValue(0);
-                            comandaConfirmada = true;
                         } else {
                             // Mensaje de error si no se encuentra el TextArea
                             mostrarAlerta("No se pudo encontrar el TextArea de la mesa seleccionada.", Alert.AlertType.ERROR);
@@ -1161,17 +1142,12 @@ public class Mesas_ComandasController implements Initializable {
         contenidoTicket.append(centrarTexto("NIF: 12345678X", longitudTotalNIF)).append("\n");
         contenidoTicket.append(centrarTexto("Bar ElEscobar", longitudTotal)).append("\n");
         contenidoTicket.append(centrarTexto("623191754 | 683572682", longitudTotalTele)).append("\n\n\n");
-
         contenidoTicket.append(mesa.getNombre()).append("\n");
         contenidoTicket.append(new SimpleDateFormat("dd/MM/yyyy - HH:mm:ss").format(new Date())).append("\n\n");
         contenidoTicket.append(centrarTexto("***NO VALIDO COMO FACTURA***", longitudTotalFactura)).append("\n");
-
-        // Detalles de la comanda
         contenidoTicket.append("Comandas:\n");
         contenidoTicket.append(String.format("%-5s%-35s%-15s%-10s\n", "Cant.", "Producto", "Precio", "Total"));
         contenidoTicket.append("-----------------------------------------\n");
-
-        // Procesar cada línea del texto de la comanda
         String[] lineas = textoComanda.split("\n");
         for (String linea : lineas) {
             String[] campos = linea.split(" - ");
@@ -1189,7 +1165,6 @@ public class Mesas_ComandasController implements Initializable {
                 contenidoTicket.append(String.format("%-5s\t%-30s\t%-15s%-10s\n", cantidad, nombreProducto, String.format("%.2f€", precio), String.format("%.2f€", totalLinea)));
             }
         }
-
         contenidoTicket.append("-----------------------------------------\n");
         contenidoTicket.append("Número de comensales: ").append(numComensales).append("\n\n");
         contenidoTicket.append("IVA: 10% \t\t\t");
@@ -1199,19 +1174,9 @@ public class Mesas_ComandasController implements Initializable {
         contenidoTicket.append("Base + Cuota: ").append(String.format("%.2f", totalConIVA)).append("€\n\n");
         contenidoTicket.append("Total (Impuestos Incl.): ").append(String.format("%.2f", totalConIVA)).append("€\n");
         contenidoTicket.append("-----------------------------------------\n");
-
         contenidoTicket.append("Le atendió ").append(nombreUsuario).append("\n");
         contenidoTicket.append("Gracias por su visita/Thanks for your visit").append("\n");
 
         return contenidoTicket.toString();
     }
-
-    public ObservableList<StringProperty> getTextAreaData() {
-        return textAreaData;
-    }
-
-    void setTextAreaData(ObservableList<StringProperty> textAreaData) {
-        this.textAreaData = textAreaData;
-    }
-
 }

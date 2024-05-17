@@ -37,7 +37,6 @@ public class CambioUsuarioController implements Initializable {
     private int usuarioId;
     private Usuarios usuario;
 
-
     private VentanaPrincipalController ventanaPrincipalController;
 
     @Override
@@ -184,6 +183,13 @@ public class CambioUsuarioController implements Initializable {
             }
         }
         return false;
+    }
+
+    @FXML
+    public void botonSalir() throws IOException {
+        // Cargar el archivo FXML de la ventana de Cambio de Usuario
+        System.exit(0);
+
     }
 
     private void mostrarAlerta(String mensaje, Alert.AlertType tipo) {

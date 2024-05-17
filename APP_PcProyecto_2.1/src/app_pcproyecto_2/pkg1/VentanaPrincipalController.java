@@ -9,12 +9,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,6 +22,8 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 
 public class VentanaPrincipalController implements Initializable {
 
@@ -35,13 +36,11 @@ public class VentanaPrincipalController implements Initializable {
     @FXML
     private Button auditoria;
     private Mesas_ComandasController mesasController;
-    private ObservableList<StringProperty> textAreaData;
+    private Parent mesasScene;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        mesasController = new Mesas_ComandasController();
-        textAreaData = FXCollections.observableArrayList();
-        mesasController.setTextAreaData(textAreaData);
+        FXCollections.observableArrayList();
         auditoria.setDisable(true);
         try {
             pantallaInicio();
@@ -53,7 +52,6 @@ public class VentanaPrincipalController implements Initializable {
 
     @FXML
     public void mostrarLogin() throws IOException {
-
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("CambioUsuario.fxml"));
             Parent root = loader.load();
@@ -62,12 +60,21 @@ public class VentanaPrincipalController implements Initializable {
             Stage stage = new Stage();
             stage.setScene(new Scene(root));
             stage.setTitle("Cambio de Usuario");
-            stage.show();
 
-            // Cerrar la ventana principal si se abrió desde el botón en VentanaPrincipal
-            if (controller.isPermitirCerrarVentanaPrincipal()) {
+            // Crear una alerta de confirmación
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirmación");
+            alert.setHeaderText("¿Estás seguro?");
+            alert.setContentText("Se perderán los datos de las comandas que no se haya confirmado el pago. ¿Quieres continuar?");
+
+            // Obtener la respuesta del usuario
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                // Si el usuario confirma, cerrar la ventana principal
                 Stage mainWindow = (Stage) buttonUsuario.getScene().getWindow();
                 mainWindow.close();
+                // Mostrar la ventana de cambio de usuario
+                stage.show();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -109,23 +116,20 @@ public class VentanaPrincipalController implements Initializable {
 
     @FXML
     public void pantallaMesas() throws IOException {
+        // Verificar si la escena de Mesas y Comandas aún no se ha cargado
+        if (mesasScene == null) {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("Mesas_Comandas.fxml"));
+            mesasScene = loader.load();
+            mesasController = loader.getController();
+            Usuarios usuario = new Usuarios();
+            usuario.setId(usuarioId);
+            mesasController.setUsuario(usuario);
+        }
 
-        // Obtener el texto de los TextArea antes de cambiar de escena
-        // Cargar el archivo FXML de la ventana de Mesas y Comandas
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Mesas_Comandas.fxml"));
-        Parent mesas = loader.load();
-
-        // Obtener el controlador del FXML cargado
-        Mesas_ComandasController controller = loader.getController();
-
-        // Establecer el usuario en el controlador
-        Usuarios usuario = new Usuarios();
-        usuario.setId(usuarioId);
-        controller.setUsuario(usuario);
-        controller.setTextAreaData(textAreaData);
-
-        // Cambiar a la escena de Mesas y Comandas
-        layout.getChildren().setAll(mesas);
+        // Alternar la visibilidad de las escenas
+        layout.getChildren().setAll(mesasScene);
+        mesasScene.setVisible(true); // Mostrar la escena de Mesas y Comandas
+        // Aquí puedes ocultar otras escenas si es necesario
     }
 
     @FXML
@@ -169,7 +173,6 @@ public class VentanaPrincipalController implements Initializable {
     }
 
     public void setMesasController(Mesas_ComandasController mesasController) {
-        this.mesasController = mesasController;
     }
 
     private boolean esAdmin(int usuarioId) {
@@ -183,7 +186,7 @@ public class VentanaPrincipalController implements Initializable {
                         return resultSet.next(); // Retorna true si el usuario tiene el rol de admin
                     }
                 }
-            } 
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
