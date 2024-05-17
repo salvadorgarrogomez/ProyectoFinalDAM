@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/javafx/FXMLController.java to edit this template
- */
 package app_pcproyecto_2.pkg1;
 
 import static app_pcproyecto_2.pkg1.APP_PcProyecto_21.getConnection;
@@ -106,7 +102,6 @@ public class AuditoriaController implements Initializable {
     private TextField borraUser;
     @FXML
     private TextField borraPlato;
-    private int idCategoriaSeleccionada;
     private ObservableList<Categorias> categoriasList = FXCollections.observableArrayList();
     private ObservableList<Categorias> categoriasListBorrar = FXCollections.observableArrayList();
     private ObservableList<Usuarios> usuariosList = FXCollections.observableArrayList();
@@ -120,49 +115,59 @@ public class AuditoriaController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
+        //  Dentro de esta clase Controller, se definen las llamadas a metodos definidos, para que se ejecuten y activen nada mas inicializar la escena
+        //  En este caso, se realiza el lanzamiento de varios metodos, diseñados para cargar datos de distintas tablas de la bbdd
+        //  en varios combox de la escena.
         try {
             cargarCategorias();
             cargarCategoriasBorrar();
             cargarUsuarios();
             cargarROL();
             cargarProductos();
+            //  Evento diseñado, para que al selecctionar un dia en el calendario y se cargue la tabla implementada en la escena.
             calendarioTabla.setOnAction(event -> cargarDatosTabla());
 
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
 
+        //  Lanzador que castea las fechas de los pedidos guardados en bbdd, de tal forma que los divida por mes en la tabla, de tal forma que solo salgan
+        //  los ticket del mes seleccionado
         tableMES.setCellValueFactory(cellData -> {
             java.sql.Date fechaPedido = (java.sql.Date) cellData.getValue().getFecha_pedido();
             LocalDate fechaLocal = fechaPedido.toLocalDate(); // Convertir a LocalDate directamente
             return new SimpleStringProperty(String.valueOf(fechaLocal.getMonthValue()));
         });
 
+        //   Igual que el lanzador anterior, pero para que muestre los ticket por diferenciados por dias
         tableDIA.setCellValueFactory(cellData -> {
             java.sql.Date fechaPedido = (java.sql.Date) cellData.getValue().getFecha_pedido();
             LocalDate fechaLocal = fechaPedido.toLocalDate(); // Convertir a LocalDate directamente
             return new SimpleStringProperty(String.valueOf(fechaLocal.getDayOfMonth()));
         });
 
+        //  Lanzador, que permite, mostrar en un textfield, el dato seleccionado en un combox, en este caso se utiliza una lista obersable, para 
+        //  tener controlados todos los valores existentes en el combox
         selectCategor.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Categorias>() {
             @Override
             public void changed(ObservableValue<? extends Categorias> observable, Categorias oldValue, Categorias newValue) {
                 if (newValue != null) {
-                    // Obtener el nombre de la categoría seleccionada
+                    // Se obtiene el nombre de la categoiria dentro del combox, llamando al contructor de Categorias
                     String nombreCategoria = newValue.getNombre();
-                    // Establecer el nombre de la categoría en el TextField
+                    // Se establece el texfield, donde debe de aparece el elemento seleccionado en el combox
                     newNombreCatego.setText(nombreCategoria);
                 }
             }
         });
 
+        //  Lanzador con la misma funcion que en el anterior, pero enfozado para un combox distinto
         selectCategoriBorrar.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Categorias>() {
             @Override
             public void changed(ObservableValue<? extends Categorias> observable, Categorias oldValue, Categorias newValue) {
                 if (newValue != null) {
-                    // Obtener el nombre de la categoría seleccionada
+                    // Se obtiene el nombre del usuario dentro del combox, llamando al contructor de Categorias                    
                     String nombreCategoria = newValue.getNombre();
-                    // Establecer el nombre de la categoría en el TextField
+                    // Se establece el texfield, donde debe de aparece el elemento seleccionado en el combox
                     borraCatego.setText(nombreCategoria);
                 }
             }
@@ -172,9 +177,9 @@ public class AuditoriaController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Usuarios> observable, Usuarios oldValue, Usuarios newValue) {
                 if (newValue != null) {
-                    // Obtener el nombre de la categoría seleccionada
+                    // Se obtiene el nombre del usuario dentro del combox, llamando al contructor de Usuarios
                     String nombreUsuario = newValue.getNombre();
-                    // Establecer el nombre de la categoría en el TextField
+                    // Se establece el texfield, donde debe de aparece el elemento seleccionado en el combox
                     newNombreUser.setText(nombreUsuario);
                 }
             }
@@ -184,9 +189,9 @@ public class AuditoriaController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Usuarios> observable, Usuarios oldValue, Usuarios newValue) {
                 if (newValue != null) {
-                    // Obtener el nombre de la categoría seleccionada
+                    // Se obtiene el nombre del usuario dentro del combox, llamando al contructor de Usuarios
                     String nombreUsuario = newValue.getNombre();
-                    // Establecer el nombre de la categoría en el TextField
+                    // Se establece el texfield, donde debe de aparece el elemento seleccionado en el combox
                     borraUser.setText(nombreUsuario);
                 }
             }
@@ -196,7 +201,7 @@ public class AuditoriaController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Productos> observable, Productos oldValue, Productos newValue) {
                 if (newValue != null) {
-                    // Obtener el nombre de la categoría seleccionada
+                    // Se obtiene el nombre del producto dentro del combox, llamando al contructor de Productos
                     String nombreProducto = newValue.getNombre();
                     // Establecer el nombre de la categoría en el TextField
                     borraPlato.setText(nombreProducto);
@@ -206,20 +211,26 @@ public class AuditoriaController implements Initializable {
 
     }
 
+    //  Metodo con el que se realiza una consulta a la tabla en la bbdd estableciendo la conexion a base de datos,
+    //  En este caso, la consulta se hace a la tabla categorias, ordenando por id, para que se vean los datos ordenados en todo momento.
     private void cargarCategorias() throws SQLException {
-        categoriasList.clear(); // Limpiar la lista antes de volver a cargar las categorías
+        //  Inicializacion de la lista observable, que sera la que cargara el combox
+        categoriasList.clear(); // Se limpia la lista antes de volver a cargar las categorías
         try (Connection connection = getConnection(); PreparedStatement consultaCategorias = connection.prepareStatement("SELECT * FROM categorias ORDER BY id"); ResultSet resultadoCategorias = consultaCategorias.executeQuery()) {
-
+            //  Despues de establecer la consulta, llamanado al constructor de categorias, se deja especificado lo que se requiere que salga por pantalla, en el combox
             while (resultadoCategorias.next()) {
                 int id = resultadoCategorias.getInt("id");
                 String nombre = resultadoCategorias.getString("nombre");
                 Categorias categoria = new Categorias(id, nombre);
+                //  Acto seguido se añade a la lista observable la consulta realizada
                 categoriasList.add(categoria);
             }
+            //  Se establece, donde vamos a mostrar los datos de la lista observable, en este caso en un combox
             selectCategor.setItems(categoriasList);
         }
     }
 
+    //  Este metodo realiza exactamente lo mismo que el metodo anterior, pero exluyendo un valor concreto que no es necesario que el usuario vea por pantalla
     private void cargarCategoriasBorrar() throws SQLException {
         categoriasListBorrar.clear(); // Limpiar la lista antes de volver a cargar las categorías
         try (Connection connection = getConnection(); PreparedStatement consultaCategorias = connection.prepareStatement("SELECT * FROM categorias WHERE id != 0 ORDER BY id"); ResultSet resultadoCategorias = consultaCategorias.executeQuery()) {
@@ -234,55 +245,56 @@ public class AuditoriaController implements Initializable {
         }
     }
 
+    //  Metodo FXML, lo que significa que sera inicializado o llamado desde un boton establecido en la escena
+    //  Con este metodo lo que se consigue, es la inserccion de datos en una tabla concreta, en este caso en la tabla categorias
     @FXML
     private void insertarNuevaCategoria() {
-        // Obtener el nombre de la nueva categoría desde el TextField
+        // Se obtiene el nombre de la nueva categoría desde un TextField
         String nombreCategoria = newCategoria.getText();
-
-        // Verificar si el campo está vacío
+        //  Se verifica si el campo tiene datos, en caso de estar vacio el texfield, al estar configurada la tabla en bbdd como un campo null,
+        //  no se pueden añadir valores en blanco, por tanto se le muestra un mensaje al usuario de que debe de colocar un nombre de forma obligada
         if (nombreCategoria.isEmpty()) {
             mostrarAlerta("Error", "El campo de la nueva categoría está vacío.", Alert.AlertType.ERROR);
             return;
         }
-
-        // Conectar a la base de datos y ejecutar la consulta para insertar la categoría
+        // Conexion a la bbdd para ejecutar la consulta e insertar datos a la categoría
+        //  De forma adicional a la inserccion del nombre de la categoria, tambien se añade de forma "automatica" el id de usuario que ha añadido el dato,
+        //  este dato del usuario, se ha establecido, pasado entre escenas y con su constructor, el usuario que se ha logeado en la app
         try (Connection connection = getConnection()) {
             String sql = "INSERT INTO categorias (nombre, usuario_id) VALUES (?, ?)";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setString(1, nombreCategoria);
                 pstmt.setInt(2, usuario.getId());
                 pstmt.executeUpdate();
-                // Mostrar mensaje de éxito
+                // En caso de inserccion correcta de datos, al usuario se le muestra un mensaje de exito
                 mostrarAlerta("Éxito", "La nueva categoría se ha insertado correctamente.", Alert.AlertType.INFORMATION);
-                // Limpiar el TextField después de la inserción
+                // Se limpia el TextField después de la inserción
                 newCategoria.clear();
-                // Actualizar la lista de categorías y volver a establecerla en el ComboBox
+                // Se actualiza nuevamente la lista de categorías en el combox, para que la nueva inserccion ya sea utilizable por el usuario
                 cargarCategorias();
             }
         } catch (SQLException e) {
-            // Mostrar mensaje de error en caso de fallo
+            // En caso de error, se muestra notificacion de fallo
             mostrarAlerta("Error", "Error al insertar la nueva categoría en la base de datos.", Alert.AlertType.ERROR);
             e.printStackTrace();
         }
     }
 
+    //  En este caso, este boton se ha establecido para que el usuario pueda actualizar el nombre de la categoria seleccionada en un combox
     @FXML
     private void actualizarNombreCategoria() {
-        // Obtener el nuevo nombre de la categoría desde el TextField
+        // Texfield donde se establecera el nuevo nombre para la categoria
         String nuevoNombre = newNombreCatego.getText();
-
-        // Validar que el nuevo nombre no esté vacío
+        // Se valida que el nuevo nombre establecido por el usuario no este en blanco o sea null
         if (!nuevoNombre.isEmpty()) {
-            // Obtener la categoría actualmente seleccionada
+            //  Con esta instanciacion d la clase Categorias, y en base al combox, se establece la categoria a la que se requiere cambiar el nombre desde el textfield
             Categorias categoriaSeleccionada = selectCategor.getValue();
             if (categoriaSeleccionada != null) {
                 int idCategoria = categoriaSeleccionada.getId();
-
-                // Realizar una consulta para verificar si el nuevo nombre ya existe
+                // Se realiza una consulta para verificar si el nuevo nombre ya existe
                 boolean nombreExistente = nombreCategoriaExistente(nuevoNombre);
-
                 if (!nombreExistente) {
-                    // Si el nuevo nombre no existe, proceder con la actualización
+                    // Si el nuevo nombre no existe, se procede con la actualización
                     String sql = "UPDATE categorias SET nombre = ?, usuario_id = ? WHERE id = ?";
                     try (Connection connection = getConnection(); PreparedStatement pstmt = connection.prepareStatement(sql)) {
                         pstmt.setString(1, nuevoNombre);
@@ -292,7 +304,7 @@ public class AuditoriaController implements Initializable {
                         if (rowsUpdated > 0) {
                             mostrarAlerta("Éxito", "Nombre de la categoría actualizado correctamente.", Alert.AlertType.INFORMATION);
                             newNombreCatego.clear();
-                            // Actualizar la lista de categorías y volver a establecerla en el ComboBox
+                            // Se actualiza la lista de categorías en el combox
                             cargarCategorias();
                         }
                     } catch (SQLException e) {
@@ -310,6 +322,7 @@ public class AuditoriaController implements Initializable {
         }
     }
 
+    //  Metodo auxiliar que sera utilizado desde otros metodos, para verificar en base al nombre, la concordancia del nombre con el id relacionado en la tabla
     private int obtenerIdCategoriaPorNombre(String nombreCategoria) {
         Connection connection = null;
         PreparedStatement statement = null;
@@ -808,8 +821,8 @@ public class AuditoriaController implements Initializable {
         }
 
         // Mostrar los totales en los TextField correspondientes
-        totalSINIVA.setText(String.format(String.valueOf(totalSinIVA) + "€"));
-        totalCONIVA.setText(String.format(String.valueOf(totalConIVA) + "€"));
+        totalSINIVA.setText(String.format("%.2f€", totalSinIVA));
+        totalCONIVA.setText(String.format("%.2f€", totalConIVA));
         totalComensales.setText(String.valueOf(totalNumComensales));
         totalComandas.setText(String.valueOf(totalNumComandas));
     }

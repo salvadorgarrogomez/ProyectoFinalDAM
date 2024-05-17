@@ -21,24 +21,24 @@ import javax.swing.JOptionPane;
  */
 public class APP_PcProyecto_21 extends Application {
     
+    //  Datos necesarios para el establecimiento de la conexion a la bbdd postgresql.
     private static final String URL = "jdbc:postgresql://192.168.1.138:5432/Bar_ElEscobar_2.0";
     private static final String USUARIO = "postgres";
     private static final String CONTRASEÑA = "12345";
 
     @Override
     public void start(Stage stage) throws Exception {
-        // Obtener la conexión a la base de datos
+        // Obtenemos la conexión a la bbdd postgresql
         Connection connection = getConnection();
 
-        // Verificar si la conexión es nula antes de continuar
+        // Comprobacion de la conexion, si es null saca por pantalla el mensaje de error.
         if (connection == null) {
-            // Mostrar un mensaje de error y salir de la aplicación si no se puede establecer la conexión
+            // En caso de ser null, se muestra mensaje de error y se sale de la aplicación si no se puede establecer la conexión
             JOptionPane.showMessageDialog(null, "Error de conexión a la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
-
-        // Cargar el archivo FXML de la ventana de Cambio de Usuario
+        // Si la establece correctamente la conexion a la bbdd, se ha definido el archivo fxml que debe de mostrarse en primera instancia, para iniciar la app
         Parent cambioUsuario = FXMLLoader.load(getClass().getResource("CambioUsuario.fxml"));
         Scene cambioUsuarioScene = new Scene(cambioUsuario);
         stage.setScene(cambioUsuarioScene);
@@ -46,15 +46,20 @@ public class APP_PcProyecto_21 extends Application {
         stage.show();
     }
 
+    //  Metodo de establecimiento de la conexion, en caso de que de error, es decir que el server este apagado no se localice la conexion
+    //  se muestra por pantalla el mensaje de error con un pequeño mensaje descriptivo del problema al usuario.
     public static Connection getConnection() throws SQLException {
         try {
             return DriverManager.getConnection(URL, USUARIO, CONTRASEÑA);
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Error de conexión: " + ex.getMessage() + "\nEquipo servidor, ¿apagado o encendido? \nRevisar.", "Error", JOptionPane.ERROR_MESSAGE);
+            //  Con esta implementacion, al darle al boton aceptar de la ventana del error, se cierra la conexion, para que esta no se quede en segundo
+            //  intentando establecer la conexion de forma indefinida.
             throw ex; 
         }
     }
 
+    //  Metodo main, de lanzamiendo de la app JavaFX
     public static void main(String[] args) {
         launch(args);
     }
