@@ -13,10 +13,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +36,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 
 /**
@@ -101,12 +98,12 @@ public class AuditoriaController implements Initializable {
     @FXML
     private TextField borraUser;
     @FXML
+    
     private TextField borraPlato;
     private ObservableList<Categorias> categoriasList = FXCollections.observableArrayList();
     private ObservableList<Categorias> categoriasListBorrar = FXCollections.observableArrayList();
     private ObservableList<Usuarios> usuariosList = FXCollections.observableArrayList();
     private ObservableList<Productos> productosList = FXCollections.observableArrayList();
-
     private Usuarios usuario;
 
     /**
@@ -357,6 +354,8 @@ public class AuditoriaController implements Initializable {
         return categoriaId;
     }
 
+    //  Metodo auxiliar, que llamamos desde actualizarNombreCategoria de tal forma que si el usuario quiere actualizar un nombre, y el nuevo nombre ya existe
+    //  No se pueda actualizar, al existir previamente
     private boolean nombreCategoriaExistente(String nuevoNombre) {
         String sql = "SELECT COUNT(*) FROM categorias WHERE nombre = ?";
         try (Connection connection = getConnection(); PreparedStatement pstmt = connection.prepareStatement(sql)) {
@@ -373,39 +372,43 @@ public class AuditoriaController implements Initializable {
         return false;
     }
 
+    //  Meotodo para dar funcionamiente a un boton de borrar da datos, en este caso la finalidad es borrar la categoria establecida con un combox que pasa info
+    //  a un texfield
     @FXML
     private void borrarCategoria() {
-        // Obtener el nombre de la categoría seleccionada para borrar del TextField
+        // Se obtiene el nombre de la categoría seleccionada para borrar del TextField
         String nombreCategoria = borraCatego.getText();
-        // Obtener el ID de la categoría seleccionada
+        // Se consulta concordandia por nombre con el id de la tabla Categorias
         int categoriaId = obtenerIdCategoriaPorNombre(nombreCategoria);
-
+        //  con el != en caso de el id sea diferente de -1 significa que no se ha encontrado concordancia de id, por tanto no se ejecutara el borrado
+        //  Si es igual a 1 si se que ejecutara la operacion, en este caso, como el id_categoria es una foreign key de Productos, y no puede ser not null, 
+        //  lo que se ha realizado es en primera opcion un update de todos los productos con id categoria asociado, para asignarles otra categoria
+        //  por defecto sera a la categoria 0, y despues de ello se eliminara la categoria seleccionada con un delete
         if (categoriaId != -1) {
             try (Connection connection = getConnection()) {
-                // Actualizar los productos asociados a la categoría borrada
+                // Se actualizan los productos asociados a la categoría borrada
                 String sqlUpdate = "UPDATE productos SET categoria_id = 0 WHERE categoria_id = ? AND usuario_id = ?";
                 try (PreparedStatement pstmtUpdate = connection.prepareStatement(sqlUpdate)) {
                     pstmtUpdate.setInt(1, categoriaId);
                     pstmtUpdate.setInt(2, usuario.getId());
                     pstmtUpdate.executeUpdate();
                 }
-
-                // Borrar la categoría seleccionada
+                // Se borrar la categoría seleccionada
                 String sqlDelete = "DELETE FROM categorias WHERE id = ?";
                 try (PreparedStatement pstmtDelete = connection.prepareStatement(sqlDelete)) {
                     pstmtDelete.setInt(1, categoriaId);
                     pstmtDelete.executeUpdate();
                 }
-
-                // Mostrar mensaje de éxito
+                // Se le muestra al usuario un mensaje de confirmacion del cambio
                 mostrarAlerta("Éxito", "Categoría eliminada correctamente.", Alert.AlertType.INFORMATION);
-                // Limpiar el TextField y el ComboBox
+                // Se limpian el TextField y el ComboBox
                 borraCatego.clear();
                 selectCategoriBorrar.getSelectionModel().clearSelection();
-                // Actualizar la lista de categorías y el ComboBox
+                // Se actualiza la lista de categorías y el ComboBox
                 cargarCategorias();
             } catch (SQLException e) {
                 e.printStackTrace();
+                //  En caso de -1, es decir de no concordancia de id_categoria con una existente, se muestran mensajes de error al usuario
                 mostrarAlerta("Error", "Error al eliminar la categoría.", Alert.AlertType.ERROR);
             }
         } else {
@@ -413,6 +416,8 @@ public class AuditoriaController implements Initializable {
         }
     }
 
+    //  Como en los metodos anteriores de cargaCategorias, se realiza consulta en este caso a la tabla Usuarios, para que se cargue en su combox de referencia
+    //  De forma adicional, se implementa que se carguen todos los id menos el 3 que corresponde al admin, por seguridad este usuario no quiero sea modifcado o borrado
     private void cargarUsuarios() throws SQLException {
         usuariosList.clear();
         try (Connection connection = getConnection(); PreparedStatement consultaUsuarios = connection.prepareStatement("SELECT * FROM usuarios WHERE id != 3"); ResultSet resultadoUsuarios = consultaUsuarios.executeQuery()) {
@@ -430,13 +435,15 @@ public class AuditoriaController implements Initializable {
         }
     }
 
+    //  Implementacion del metodo de borrado de usuarios por inicializacion mediante boton en la escena
     @FXML
     private void borrarUsuarios() {
-        // Obtener el nombre de la categoría seleccionada para borrar del TextField
+        // Obtencion del nombre del usuario seleccionado para borrar del TextField
         String nombreUser = borraUser.getText();
-        // Obtener el ID de la categoría seleccionada
+        // Se obtiene el nombre del usuario mediante conconcordancia por id
         int usuarioId = obtenerIdUsuarioPorNombre(nombreUser);
-
+        //  Como en el metodo para borrar Categorias, se establece una relacion en base al id, si el id no es igual a 1, salta error no permitiendo borrar 
+        //  el usuario, si el id coincide con uno ya existente, significa que ya existe en la base de datos, en tal caso si que dejara borrar el usuario seleccionado
         if (usuarioId != -1) {
             try (Connection connection = getConnection()) {
                 String sqlDelete = "DELETE FROM usuarios WHERE id = ?";
@@ -444,16 +451,16 @@ public class AuditoriaController implements Initializable {
                     pstmtDelete.setInt(1, usuarioId);
                     pstmtDelete.executeUpdate();
                 }
-
-                // Mostrar mensaje de éxito
+                // Se le muestra al usuario un mensaje de confirmacion del cambio
                 mostrarAlerta("Éxito", "Usuario eliminado correctamente.", Alert.AlertType.INFORMATION);
-                // Limpiar el TextField y el ComboBox
+                // Se limpian el TextField y el ComboBox
                 borraUser.clear();
                 selectUserBorrar.getSelectionModel().clearSelection();
-                // Actualizar la lista de categorías y el ComboBox
+                // Actualización la lista de categorías y el ComboBox
                 cargarUsuarios();
             } catch (SQLException e) {
                 e.printStackTrace();
+                //  En caso de -1, es decir de no concordancia de id_categoria con una existente, se muestran mensajes de error al usuario
                 mostrarAlerta("Error", "Error al eliminar el usuario.", Alert.AlertType.ERROR);
             }
         } else {
@@ -461,11 +468,13 @@ public class AuditoriaController implements Initializable {
         }
     }
 
+    //  Metodo auxliar para consulta de concordancia de nombre con un id en la tabla, con este metodo que se llama desde el metodo de borrado,
     private int obtenerIdUsuarioPorNombre(String nombreUsuario) {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
-        int usuarioId = -1; // Valor predeterminado en caso de que no se encuentre la categoría
+        // Valor predeterminado en caso de que no se encuentre la categoría
+        int usuarioId = -1;
         try {
             connection = getConnection();
             String sql = "SELECT id FROM usuarios WHERE nombre = ?";
@@ -495,26 +504,23 @@ public class AuditoriaController implements Initializable {
         return usuarioId;
     }
 
+    //  Metodo de activacion por boton para actualizar el nombre de usuario en base a los datos obtenidos desde un combox
     @FXML
     private void actualizarNombreUsuario() {
-        // Obtener el nuevo nombre del usuario desde el TextField
+        // Obtencion el nuevo nombre del usuario desde el TextField
         String nuevoNombre = newNombreUser.getText();
-
-        // Obtener el nuevo rol del usuario desde el ComboBox
+        // Obtencion el nuevo rol del usuario desde el ComboBox
         String nuevoRol = selectRol.getValue();
-
-        // Validar que el nuevo nombre y el nuevo rol no estén vacíos
+        // Validacion de que el nuevo nombre y el nuevo rol no estén vacíos en sus respectivos apartados, texfield y combox
         if (!nuevoNombre.isEmpty() && nuevoRol != null) {
-            // Obtener el usuario actualmente seleccionado
+            // Obtencion el usuario actualmente seleccionado
             Usuarios usuarioSeleccionado = selectUser.getValue();
             if (usuarioSeleccionado != null) {
-                int idUsuario = usuarioSeleccionado.getId(); // Asegúrate de usar el método correcto para obtener el ID
-
-                // Realizar una consulta para verificar si el nuevo nombre ya existe
+                int idUsuario = usuarioSeleccionado.getId(); 
+                // Se realiza consulta para verificar si el nuevo nombre ya existe
                 int idExistente = obtenerIdUsuarioPorNombre(nuevoNombre);
-
                 if (idExistente == -1 || idExistente == idUsuario) {
-                    // Si el nuevo nombre no existe o pertenece al mismo usuario, proceder con la actualización
+                    // Si el nuevo nombre no existe o pertenece al mismo usuario, se procede con la actualización
                     String sql = "UPDATE usuarios SET nombre = ?, rol = ? WHERE id = ?";
                     try (Connection connection = getConnection(); PreparedStatement pstmt = connection.prepareStatement(sql)) {
                         pstmt.setString(1, nuevoNombre);
@@ -525,7 +531,7 @@ public class AuditoriaController implements Initializable {
                             mostrarAlerta("Éxito", "Nombre y rol del usuario actualizados correctamente.", Alert.AlertType.INFORMATION);
                             newNombreUser.clear();
                             selectRol.setValue(null);
-                            // Actualizar la lista de usuarios y volver a establecerla en el ComboBox
+                            // Se actualiza la lista de usuarios y se vuelve a establecer el ComboBox
                             cargarUsuarios();
                         }
                     } catch (SQLException e) {
@@ -543,9 +549,9 @@ public class AuditoriaController implements Initializable {
         }
     }
 
+    //  Igual que con otros casos, en este caso para cargar los roles disponibles de usuarios
     private void cargarROL() throws SQLException {
         try (Connection connection = getConnection(); PreparedStatement consultaRoles = connection.prepareStatement("SELECT DISTINCT rol FROM usuarios"); ResultSet resultadoRoles = consultaRoles.executeQuery()) {
-
             List<String> roles = new ArrayList<>();
             while (resultadoRoles.next()) {
                 String rol = resultadoRoles.getString("rol");
@@ -555,12 +561,13 @@ public class AuditoriaController implements Initializable {
         }
     }
 
+    //  Todos estos metodos son muy similares, ene ste caso se realiza consulta a los productos para cargar el combox con los productos ordenados por ID
     private void cargarProductos() throws SQLException {
         productosList.clear();
         try (Connection connection = getConnection(); PreparedStatement consultaProductos = connection.prepareStatement("SELECT * FROM productos ORDER BY id"); ResultSet resultadoProductos = consultaProductos.executeQuery()) {
-
             List<Productos> productos = new ArrayList<>();
             while (resultadoProductos.next()) {
+                //  Se ha creado un contructor a proposito en la clase Productos para mostrar los datos en el formato requerido, que seria para mostrar los datos siguiente.
                 int id = resultadoProductos.getInt("id");
                 String nombre = resultadoProductos.getString("nombre");
                 double precio = resultadoProductos.getDouble("precio");
@@ -572,6 +579,7 @@ public class AuditoriaController implements Initializable {
         }
     }
 
+    //  Metodo auxiliar para obtener el id de Producto en base al nombre seleccionado. Este metodo se llama desde el metodo de FXML para borrar productos de la tabla
     private int obtenerIdProductoPorNombre(String nombreProducto) {
         Connection connection = null;
         PreparedStatement statement = null;
@@ -606,13 +614,14 @@ public class AuditoriaController implements Initializable {
         return productoId;
     }
 
+    //  Metodo FXML para poder inicializarlo desde la escena, en este caso desde un boton
     @FXML
     private void borrarProducto() {
-        // Obtener el nombre de la categoría seleccionada para borrar del TextField
+        // Obtencion del nombre del producto seleccionada para borrar del TextField
         String nombreProducto = borraPlato.getText();
-        // Obtener el ID de la categoría seleccionada
+        // Obtencion del ID del producto seleccionada
         int usuarioId = obtenerIdProductoPorNombre(nombreProducto);
-
+        // Como en casos anteriores, se utiliza el id para concordar con el producto correspondiente
         if (usuarioId != -1) {
             try (Connection connection = getConnection()) {
                 String sqlDelete = "DELETE FROM productos WHERE id = ?";
@@ -620,13 +629,12 @@ public class AuditoriaController implements Initializable {
                     pstmtDelete.setInt(1, usuarioId);
                     pstmtDelete.executeUpdate();
                 }
-
-                // Mostrar mensaje de éxito
+                // Se muestra mensaje de éxito al usuario
                 mostrarAlerta("Éxito", "Producto eliminado correctamente.", Alert.AlertType.INFORMATION);
-                // Limpiar el TextField y el ComboBox
+                // Se limpian el TextField y el ComboBox
                 borraPlato.clear();
                 selectPlatoBorrar.getSelectionModel().clearSelection();
-                // Actualizar la lista de categorías y el ComboBox
+                // Se actualiza la lista de categorías y el ComboBox
                 cargarProductos();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -637,28 +645,31 @@ public class AuditoriaController implements Initializable {
         }
     }
 
+    //  Metodo que se inicializa desde la escena, en este caso este metodo se utiliza para dar funcionalidad al calendario, de tal forma que cuando se le da a un
+    //  en el calendario, se muestra por pantalla informacion relevante, en este caso se carga un listview con los Tickets
     @FXML
     private void manejarSeleccionFecha() {
-        // Obtener la fecha seleccionada en el DatePicker
+        // Se obtiene la fecha seleccionada en el DatePicker
         LocalDate fechaSeleccionada = calendario.getValue();
-
-        // Obtener las comandas correspondientes a la fecha seleccionada
+        // Se obtienen las comandas correspondientes a la fecha seleccionada
         List<TicketComanda> comandas = obtenerTicketsPorFecha(fechaSeleccionada);
-
-        // Mostrar las comandas en el ListView
+        // Se muestran las comandas en el ListView
         mostrarTickets(comandas);
+        //  Con las tres funciones, se esta llamando a varios metodos, donde se encapsulan los funcionamientos necesarios par mostrar datos
     }
 
+    //  Meotodo auxiliar llamado desde el metodo anterior para manejar fechas, con este metodo y mediante consulta a bbdd, se obtienen los ticket asociados
+    //  al dia en concreto de creacion del ticket
     private List<TicketComanda> obtenerTicketsPorFecha(LocalDate fecha) {
+        //  Array instanciado en la clase de TicketComanda que hace referencia a su tabla en bbdd, de esta forma se tiene acceso a todos los datos guardados
         List<TicketComanda> tickets = new ArrayList<>();
-
-        // Conectar a la base de datos y ejecutar la consulta
         try (Connection connection = getConnection()) {
+            //  Consulta para obtencion de los datos en la tabla, la fecha_pedido::date se basa en la seleccion del dia en el calendario
             String sql = "SELECT * FROM ticket_comanda WHERE fecha_pedido::date = ?";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setObject(1, fecha);
                 try (ResultSet rs = pstmt.executeQuery()) {
-                    // Iterar sobre los resultados y crear objetos TicketComanda
+                    // Se itera sobre los resultados y crean objetos TicketComanda
                     while (rs.next()) {
                         TicketComanda ticket = new TicketComanda();
                         ticket.setId(rs.getInt("id"));
@@ -678,7 +689,6 @@ public class AuditoriaController implements Initializable {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return tickets;
     }
 
@@ -690,7 +700,7 @@ public class AuditoriaController implements Initializable {
     // Método para manejar la selección de un ticket en el ListView
     @FXML
     private void handleTicketSelection(MouseEvent event) {
-        if (event.getClickCount() == 1) { // Verifica si se ha hecho un solo clic
+        if (event.getClickCount() == 1) { // Se verifica si se ha hecho un solo clic
             // Obtener el ticket seleccionado en la lista
             TicketComanda ticketSeleccionado = ListComandas.getSelectionModel().getSelectedItem();
             if (ticketSeleccionado != null) {
@@ -703,13 +713,11 @@ public class AuditoriaController implements Initializable {
     // Método para mostrar el contenido de un ticket seleccionado en un popup
     private void mostrarContenidoPopup(TicketComanda ticket) {
         try {
-            // Convertir el arreglo de bytes a un String
+            // Se convierte el arreglo de bytes a un String
             String contenidoTexto = new String(ticket.getArchivo_ticket(), StandardCharsets.UTF_8);
-
-            // Agregar el número de ticket al contenido del ticket
+            // Se agrega el número de ticket al contenido del ticket
             contenidoTexto += "\n\nNúmero de ticket: " + ticket.getNum_ticket();
-
-            // Mostrar el contenido del ticket en un popup
+            // Se muestra el contenido del ticket en un popup
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Contenido del ticket - " + ticket.getNum_ticket());
             alert.setHeaderText("Contenido del ticket");
@@ -723,17 +731,15 @@ public class AuditoriaController implements Initializable {
     // Método para obtener el objeto Mesas por su nombre
     private Mesas obtenerMesaPorNombre(String nombreMesa) {
         Mesas mesa = null;
-        // Conectar a la base de datos y ejecutar la consulta
         try (Connection connection = getConnection()) {
             String sql = "SELECT * FROM mesas WHERE nombre = ?";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setString(1, nombreMesa);
                 try (ResultSet rs = pstmt.executeQuery()) {
                     if (rs.next()) {
-                        // Construir el objeto Mesas
+                        // Construccion del objeto Mesas
                         mesa = new Mesas();
                         mesa.setNombre(rs.getString("nombre"));
-                        // Otros campos...
                     }
                 }
             }
@@ -743,16 +749,15 @@ public class AuditoriaController implements Initializable {
         return mesa;
     }
 
+    //  En este metodo, mediante la creacion de objetos de TicketComanda, para mostrar los datos y añadirlos a una tabla en base a la fecha seleccionada en un DatePicker
     private void cargarDatosTabla() {
+        //  Se obtiene la fecha seleccionada en un DatePicker
         LocalDate fechaSeleccionada = calendarioTabla.getValue();
-
         if (fechaSeleccionada != null) {
             // Mapa para almacenar los datos por día
             Map<Integer, TicketComanda> datosPorDia = new HashMap<>();
-
             // Obtener el mes y el año de la fecha seleccionada
             int anio = fechaSeleccionada.getYear();
-
             // Consulta SQL para obtener los datos de las comandas del mes seleccionado
             String sql = "SELECT EXTRACT(DAY FROM fecha_pedido) as dia, COUNT(*) as id, "
                     + "SUM(importe_total_sin_IVA) as total_sin_iva, SUM(importe_total_con_IVA) as total_con_iva, "
@@ -760,22 +765,21 @@ public class AuditoriaController implements Initializable {
                     + "FROM ticket_comanda "
                     + "WHERE EXTRACT(MONTH FROM fecha_pedido) = ? AND EXTRACT(YEAR FROM fecha_pedido) = ? "
                     + "GROUP BY EXTRACT(DAY FROM fecha_pedido)";
-
             try (Connection connection = getConnection(); PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setInt(1, fechaSeleccionada.getMonthValue());
                 pstmt.setInt(2, anio);
                 try (ResultSet rs = pstmt.executeQuery()) {
-                    // Procesar los resultados de la consulta y almacenar los datos por día
+                    // Se procesan los resultados de la consulta y almacenan los datos por día
                     while (rs.next()) {
                         int dia = rs.getInt("dia");
                         int id = rs.getInt("id");
                         double totalSinIVA = rs.getDouble("total_sin_iva");
                         double totalConIVA = rs.getDouble("total_con_iva");
                         int totalComensales = rs.getInt("total_comensales");
-
-                        // Crear un objeto TicketComanda y agregarlo al mapa
+                        // Creacion de un objeto TicketComanda y agregarlo al mapa
                         TicketComanda ticketComanda = new TicketComanda();
-                        ticketComanda.setFecha_pedido(Date.valueOf(LocalDate.of(anio, fechaSeleccionada.getMonthValue(), dia))); // Setear la fecha con el año, mes y día obtenidos de la base de datos
+                        // Se setea la fecha con el año, mes y día obtenidos de la base de datos
+                        ticketComanda.setFecha_pedido(Date.valueOf(LocalDate.of(anio, fechaSeleccionada.getMonthValue(), dia))); 
                         ticketComanda.setId(id);
                         ticketComanda.setImporte_total_con_IVA(totalConIVA);
                         ticketComanda.setImporte_total_sin_IVA(totalSinIVA);
@@ -787,64 +791,59 @@ public class AuditoriaController implements Initializable {
                 e.printStackTrace();
                 mostrarAlerta("Error", "Hubo un error al cargar los datos de la tabla." + e.getMessage(), Alert.AlertType.ERROR);
             }
-
-            // Limpiar la tabla antes de agregar nuevos datos
+            // Se limpia la tabla antes de agregar nuevos datos
             tableDatos.getItems().clear();
-
-            // Agregar los datos organizados por día a la tabla
+            // Se agregan los datos organizados por día a la tabla
             tableDatos.getItems().addAll(datosPorDia.values());
             tableDatos.refresh();
-
-            // Configurar las celdas de la tabl
+            // Configuracion de las celdas de la tabla
             tableComandas.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getId())));
             tableSIN.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getImporte_total_sin_IVA())));
             tableCON.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getImporte_total_con_IVA())));
             tableComensa.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getNum_comensales())));
-
             calcularTotalesMensuales();
             actualizarGrafica();
         }
     }
 
+    //  Metodo para el calculo de los valores, en este caso, se calculan los totales de los iva y sin iva, asi como de los comensales que han entrado al loca, como del total de comandas
+    //  Este metodo, se ha asociado al metodo anterior de carga de datos a la tabla, para que los coja de referencia y realice los calculos
     private void calcularTotalesMensuales() {
         double totalSinIVA = 0.0;
         double totalConIVA = 0.0;
         int totalNumComensales = 0;
         int totalNumComandas = 0;
-
-        // Recorrer los datos de la tabla
+        // Se recorren los datos de la tabla
         for (TicketComanda ticket : tableDatos.getItems()) {
             totalSinIVA += ticket.getImporte_total_sin_IVA();
             totalConIVA += ticket.getImporte_total_con_IVA();
             totalNumComensales += ticket.getNum_comensales();
-            totalNumComandas += ticket.getId(); // Sumar la cantidad de comandas realizadas día a día
+            totalNumComandas += ticket.getId(); // Suma de la cantidad de comandas realizadas día a día
         }
-
-        // Mostrar los totales en los TextField correspondientes
+        // Se muestran los totales en los TextField correspondientes con un stringformat, para asignar un valor mentario y de decimales
         totalSINIVA.setText(String.format("%.2f€", totalSinIVA));
         totalCONIVA.setText(String.format("%.2f€", totalConIVA));
         totalComensales.setText(String.valueOf(totalNumComensales));
         totalComandas.setText(String.valueOf(totalNumComandas));
     }
 
+    //  Metodo auxiliar, asociado al metodo de carga de datos de la tabla, en este caso, para cargar los datos en una grafica de estadisticas.
     @SuppressWarnings("unchecked")
     private void actualizarGrafica() {
-        // Obtener los datos de la tabla
+        // Obtencion de los datos de la tabla
         ObservableList<TicketComanda> datosTabla = tableDatos.getItems();
-
-        // Crear series de datos para cada métrica
+        // Se crean las series de datos para cada métrica
         XYChart.Series<String, Number> serieSinIVA = new XYChart.Series<>();
         XYChart.Series<String, Number> serieConIVA = new XYChart.Series<>();
         XYChart.Series<String, Number> serieComensales = new XYChart.Series<>();
         XYChart.Series<String, Number> serieComandas = new XYChart.Series<>();
-
+        //  Designacion de lo que representa cada valor en la tabla (cada area de datos)
         serieSinIVA.setName("Sin IVA");
         serieConIVA.setName("Con IVA");
         serieComensales.setName("Comensales");
         serieComandas.setName("Comandas");
         List<String> etiquetasEjeX = new ArrayList<>();
-
-        // Recorrer los datos de la tabla y agregarlos a las series de datos correspondientes
+        // Se recorren los datos de la tabla y se agregan a las series de datos correspondientes
         for (TicketComanda ticket : datosTabla) {
             Date fechaPedido = (Date) ticket.getFecha_pedido();
             LocalDate localDate = fechaPedido.toLocalDate();
@@ -853,80 +852,57 @@ public class AuditoriaController implements Initializable {
             double totalConIVA = ticket.getImporte_total_con_IVA();
             int totalComensales = ticket.getNum_comensales();
             int totalComandas = ticket.getId(); // Comandas
-
-            // Agregar los datos a las series de datos
+            // Se agregan los datos a las series de datos
             serieSinIVA.getData().add(new XYChart.Data<>(dia, totalSinIVA));
             serieConIVA.getData().add(new XYChart.Data<>(dia, totalConIVA));
             serieComensales.getData().add(new XYChart.Data<>(dia, totalComensales));
             serieComandas.getData().add(new XYChart.Data<>(dia, totalComandas));
             etiquetasEjeX.add(dia); // Agregar el día como etiqueta del eje X
         }
-
-        // Configurar etiquetas personalizadas en el eje X
+        // Configuracion de las etiquetas personalizadas en el eje X
         CategoryAxis xAxis = new CategoryAxis();
         xAxis.setCategories(FXCollections.observableArrayList(etiquetasEjeX));
         ((CategoryAxis) graficaDatos.getXAxis()).setCategories(FXCollections.observableArrayList(etiquetasEjeX));
-
-        // Configurar etiquetas emergentes al pasar el ratón sobre las columnas
-        final DecimalFormat format = new DecimalFormat("#.00"); // Formato para el importe
-        for (XYChart.Series<String, Number> series : Arrays.asList(serieSinIVA, serieConIVA, serieComensales, serieComandas)) {
-            for (XYChart.Data<String, Number> data : series.getData()) {
-                Tooltip.install(data.getNode(), new Tooltip(format.format(data.getYValue()) + "€"));
-            }
-        }
-
-        // Limpiar los datos existentes en la gráfica y agregar las nuevas series de datos
+        // Se limpian los datos existentes en la gráfica y se agregan las nuevas series de datos
         graficaDatos.getData().clear();
         graficaDatos.getData().addAll(serieSinIVA, serieConIVA, serieComensales, serieComandas);
     }
 
-// Método para obtener los días del mes como etiquetas para el eje X
-    private ObservableList<String> getDiasDelMes() {
-        ObservableList<String> dias = FXCollections.observableArrayList();
-        for (int i = 1; i <= 31; i++) {
-            dias.add(String.valueOf(i));
-        }
-        return dias;
-    }
-
+    //  Metodo inicializado mediante un boton en la escena, cone ste metodo se busca que mediante la seleccion de un valor en el listview, se pueda borrar
+    //  el TicketComanda en base al id del ticket seleccionado
     @FXML
     private void borrarElementoSeleccionado() {
-        // Obtener el elemento seleccionado del ListView
+        // Se obtiene el elemento seleccionado del ListView
         TicketComanda ticketSeleccionado = ListComandas.getSelectionModel().getSelectedItem();
-
-        // Verificar si se ha seleccionado un elemento
+        // Verificacion de si se ha seleccionado un elemento
         if (ticketSeleccionado != null) {
             try (Connection connection = getConnection(); PreparedStatement pstmt = connection.prepareStatement("DELETE FROM ticket_comanda WHERE id = ?")) {
-                // Obtener el ID del ticket seleccionado
+                // Obtenicion del ID del ticket seleccionado
                 int idTicket = ticketSeleccionado.getId();
-
-                // Establecer el ID en la consulta preparada
+                // Se establece el ID en la consulta preparada
                 pstmt.setInt(1, idTicket);
-
-                // Ejecutar la consulta DELETE
+                // Finalmente se ejectua la consulta DELETE
                 int filasBorradas = pstmt.executeUpdate();
-
-                // Verificar si se ha borrado correctamente el elemento
+                // Por ultimo se verifica si se ha borrado correctamente el elemento
                 if (filasBorradas > 0) {
-                    // Eliminar el elemento del ListView
+                    // Eliminacion del elemento del ListView
                     ListComandas.getItems().remove(ticketSeleccionado);
-                    // Notificar al usuario que se ha borrado correctamente
+                    // Se notifica al usuario que se ha borrado correctamente con un mensaje de alerta
                     mostrarAlerta("Éxito", "El ticket ha sido borrado correctamente.", Alert.AlertType.INFORMATION);
                 } else {
-                    // Notificar al usuario si no se ha borrado el elemento
+                    // Se notifica al usuario si no se ha borrado el elemento
                     mostrarAlerta("Error", "No se pudo borrar el ticket.", Alert.AlertType.ERROR);
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
-                // Manejar cualquier error de la base de datos
                 mostrarAlerta("Error", "Hubo un error al borrar el ticket.", Alert.AlertType.ERROR);
             }
         } else {
-            // Notificar al usuario si no se ha seleccionado ningún elemento
             mostrarAlerta("Error", "Por favor, seleccione un ticket para borrar.", Alert.AlertType.ERROR);
         }
     }
 
+    //  Metodo base, para la implementacion de mensaje de alerta estilo poup emergente, para que sean mostrados al usuario, mostrando en todo momento que es lo que esta realizando
     private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {
         Alert alerta = new Alert(tipo);
         alerta.setTitle(titulo);
@@ -935,6 +911,8 @@ public class AuditoriaController implements Initializable {
         alerta.showAndWait();
     }
 
+    //  Con la utilizacion del constructor de la clase Usuarios y pasando este metodo, se pasa al controlador el usuaria logeado en la app,
+    //  de tal forma que siempre quedara registrado todo lo que vayan realizando los usuario en la app y en la bbdd
     public void setUsuario(Usuarios usuario) {
         this.usuario = usuario;
     }

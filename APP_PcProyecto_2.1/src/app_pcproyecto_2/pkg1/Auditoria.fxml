@@ -134,9 +134,9 @@
             <ComboBox fx:id="selectRol" layoutX="229.0" layoutY="261.0" prefHeight="25.0" prefWidth="185.0" promptText="&lt; Selecciona un ROL &gt;" />
             <Line endX="513.0" layoutX="115.0" layoutY="177.0" startX="-100.0" />
             <DatePicker fx:id="calendarioTabla" layoutX="1028.0" layoutY="71.0" />
-            <TextField fx:id="totalSINIVA" layoutX="1056.0" layoutY="319.0" promptText="0.00" />
-            <TextField fx:id="totalCONIVA" layoutX="1056.0" layoutY="352.0" promptText="0.00" />
-            <TextField fx:id="totalComensales" layoutX="1056.0" layoutY="387.0" promptText="0" />
+            <TextField fx:id="totalSINIVA" editable="false" layoutX="1056.0" layoutY="319.0" promptText="0.00" />
+            <TextField fx:id="totalCONIVA" editable="false" layoutX="1056.0" layoutY="352.0" promptText="0.00" />
+            <TextField fx:id="totalComensales" editable="false" layoutX="1056.0" layoutY="387.0" promptText="0" />
             <Label layoutX="675.0" layoutY="323.0" text="Computo total de la entrada mensual sin IVA:">
                <font>
                   <Font name="Courier New" size="12.0" />
@@ -149,7 +149,7 @@
                <font>
                   <Font name="Courier New" size="12.0" />
                </font></Label>
-            <TextField fx:id="totalComandas" layoutX="1056.0" layoutY="424.0" promptText="0" />
+            <TextField fx:id="totalComandas" editable="false" layoutX="1056.0" layoutY="424.0" promptText="0" />
             <Label layoutX="675.0" layoutY="428.0" text="Computo total de comandas al cabo del mes:">
                <font>
                   <Font name="Courier New" size="12.0" />
