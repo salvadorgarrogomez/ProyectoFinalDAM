@@ -1,4 +1,3 @@
-// VentanaPrincipalController.java
 package app_pcproyecto_2.pkg1;
 
 import static app_pcproyecto_2.pkg1.APP_PcProyecto_21.getConnection;
@@ -35,9 +34,13 @@ public class VentanaPrincipalController implements Initializable {
     private Button buttonUsuario;
     @FXML
     private Button auditoria;
+
     private Mesas_ComandasController mesasController;
     private Parent mesasScene;
 
+    //  Metodo initialize, donde he especificado la escena que debe de salir por defecto al iniciar al entrar en ella, en este caso se incializa el metodo
+    //  fxml del pantallaInicio, de tal forma que se mostrar el contenido de la escena indicada
+    //  por otro lado, se deshabilita el boton de auditoria, este solo ha de estar activado en determinadas condiciones
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         FXCollections.observableArrayList();
@@ -50,30 +53,31 @@ public class VentanaPrincipalController implements Initializable {
 
     }
 
+    // Metodo activado por boton, que se activa en la escena, con este boton, se mostrara la escena del FXML referenciada
     @FXML
     public void mostrarLogin() throws IOException {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("CambioUsuario.fxml"));
             Parent root = loader.load();
             CambioUsuarioController controller = loader.getController();
-            controller.setPermitirCerrarVentanaPrincipal(true); // Establecer el indicador como verdadero
+            // Se establece el indicador como verdadero, en este caso, se cierra la ventanaprincipal para que no este disponible mientras la escena de CambioUsuario
+            //  este abierta a modo de seguridad
+            controller.setPermitirCerrarVentanaPrincipal(true);
             Stage stage = new Stage();
             stage.setScene(new Scene(root));
             stage.setTitle("Cambio de Usuario");
-
-            // Crear una alerta de confirmación
+            // Se crea una alerta de confirmación y se avisa al usuario
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirmación");
             alert.setHeaderText("¿Estás seguro?");
             alert.setContentText("Se perderán los datos de las comandas que no se haya confirmado el pago. ¿Quieres continuar?");
-
-            // Obtener la respuesta del usuario
+            // Se obtiene la respuesta del usuario
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                // Si el usuario confirma, cerrar la ventana principal
+                // Si el usuario confirma, se cierra la ventana principal
                 Stage mainWindow = (Stage) buttonUsuario.getScene().getWindow();
                 mainWindow.close();
-                // Mostrar la ventana de cambio de usuario
+                // Se muestra la ventana de cambio de usuario
                 stage.show();
             }
         } catch (IOException e) {
@@ -81,42 +85,45 @@ public class VentanaPrincipalController implements Initializable {
         }
     }
 
+    //  Metodo activado desde la escena, este metodo es el que por defecto se activa en el initialice, para se que muestre en primera instancia al entrar
     @FXML
     public void pantallaInicio() throws IOException {
-
-        // Cargar el archivo FXML de la ventana de Cambio de Usuario
+        // Se carga el archivo FXML de la ventana de PantallaInicio
         Pane inicioImagen = FXMLLoader.load(getClass().getResource("PantallaInicio.fxml"));
         layout.getChildren().setAll(inicioImagen);
 
     }
 
+    // Metodo activado desde la escena
     @FXML
     public void pantallaGlosario() throws IOException {
-
-        // Cargar el archivo FXML de la ventana de Cambio de Usuario
+        // Se carga el archivo FXML de la ventana de Glosario
         Pane inicioImagen = FXMLLoader.load(getClass().getResource("Glosario.fxml"));
         layout.getChildren().setAll(inicioImagen);
 
     }
 
+    // Metodo activado desde la escena mediante un boton
     @FXML
     public void pantallaAuditoria() throws IOException {
-        // Cargar el archivo FXML de la ventana de Auditoria
+        // Se carga el archivo FXML de la ventana de Auditoria
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Auditoria.fxml"));
         Parent auditoria = loader.load();
         AuditoriaController controller = loader.getController();
-
+        //  Se pasa mediante el contoladaror el usuario logeado a la escena destino, para poder mostrarlo y darlo uso en las distintas operaciones que se realicen
         Usuarios usuario = new Usuarios();
         usuario.setId(usuarioId);
-
         controller.setUsuario(usuario);
-        // Cambiar a la escena de Auditoria
+        // Se cambia a la escena de Auditoria
         layout.getChildren().setAll(auditoria);
     }
 
+    // Metodo activado a desde la escena mediante un boton
+    //  Este metodo es distinto a los demas, en este caso, para que las comandas sean funcionales y no se borre el contenido al cambiar de escena,
+    // donde se mata y reactiva la escena y el Controller, no se destruye la escena, sino que se deja en segundo plano, para que los datos en la escena no se pierdan
     @FXML
     public void pantallaMesas() throws IOException {
-        // Verificar si la escena de Mesas y Comandas aún no se ha cargado
+        // Se verifica si la escena de Mesas y Comandas aún no se ha cargado
         if (mesasScene == null) {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("Mesas_Comandas.fxml"));
             mesasScene = loader.load();
@@ -125,59 +132,65 @@ public class VentanaPrincipalController implements Initializable {
             usuario.setId(usuarioId);
             mesasController.setUsuario(usuario);
         }
-
-        // Alternar la visibilidad de las escenas
+        // Se alterna la visibilidad de las escenas
         layout.getChildren().setAll(mesasScene);
         mesasScene.setVisible(true); // Mostrar la escena de Mesas y Comandas
-        // Aquí puedes ocultar otras escenas si es necesario
     }
 
+    // Metodo activado a desde la escena mediante un boton
     @FXML
     public void pantallaPlatos() throws IOException {
-
         FXMLLoader loader = new FXMLLoader(getClass().getResource("ListadoMenus.fxml"));
         Parent root = loader.load();
         ListadoMenusController controller = loader.getController();
-
-        // Crear un objeto Usuarios con el usuarioId y pasarlo al controlador ListadoMenusController
+        // Se crea un objeto Usuarios con el usuarioId y se pasa al controlador ListadoMenusController
         Usuarios usuario = new Usuarios();
         usuario.setId(usuarioId);
-
         controller.setUsuario(usuario);
         layout.getChildren().setAll(root);
     }
 
+    // Metodo activado a desde la escena mediante un boton
+    //  Con este metodo, se cierra la aplicacion
     @FXML
     public void botonSalir() throws IOException {
-        // Cargar el archivo FXML de la ventana de Cambio de Usuario
-        System.exit(0);
-
-    }
-
-    // Método para inicializar el usuarioId
-    public void inicializar(int usuarioId) {
-        this.usuarioId = usuarioId;
-        if (esAdmin(usuarioId)) {
-            auditoria.setDisable(false);
+        // Se crea una alerta de confirmación para que el usuario este al tanto
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmación");
+        alert.setHeaderText("¿Estás seguro?");
+        alert.setContentText("Se perderán los datos de las comandas que no se hayan confirmado. ¿Quieres continuar?");
+        // Se obtiene la respuesta del usuario
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            // Si el usuario confirma, cerrar la aplicación
+            System.exit(0);
+        } else {
+            // Si el usuario cancela, simplemente se cierra la alerta
+            alert.close();
         }
-        // Realiza cualquier inicialización adicional necesaria aquí
     }
 
+    // Metodo activado a desde la escena mediante un boton
     @FXML
     public void pantallaDetalle() throws IOException {
-
-        // Cargar el archivo FXML de la ventana de Cambio de Usuario
+        // Se carga el archivo FXML de la ventana de DetallesComanda
         Pane inicioImagen = FXMLLoader.load(getClass().getResource("DetallesComanda.fxml"));
         layout.getChildren().setAll(inicioImagen);
 
     }
 
-    public void setMesasController(Mesas_ComandasController mesasController) {
+    // Método para inicializar el usuarioId, si con la consulta de esAdmin se verifica que es  rol "admin" se habilita para su uso el boton "auditoria"
+    public void inicializar(int usuarioId) {
+        this.usuarioId = usuarioId;
+        if (esAdmin(usuarioId)) {
+            auditoria.setDisable(false);
+        }
     }
 
+    //  Verificacion sobre el rol del usuario logeado en la aplicacion, si user loegado tiene el rol "admin" se habilita el requerido en el metodo inicializar
     private boolean esAdmin(int usuarioId) {
         try {
-            Connection connection = getConnection(); // Obtener la conexión a la base de datos (debes implementar este método)
+            Connection connection = getConnection(); // Se obtiene la conexión a la base de datos
             if (connection != null) {
                 String sql = "SELECT rol FROM usuarios WHERE id = ? AND rol = 'admin'";
                 try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -190,8 +203,6 @@ public class VentanaPrincipalController implements Initializable {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return false; // Retorna false si hubo un error o el usuario no tiene el rol de admin
     }
-
 }

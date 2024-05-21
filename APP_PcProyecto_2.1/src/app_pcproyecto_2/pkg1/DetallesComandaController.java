@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/javafx/FXMLController.java to edit this template
- */
 package app_pcproyecto_2.pkg1;
 
 import static app_pcproyecto_2.pkg1.APP_PcProyecto_21.getConnection;
@@ -70,25 +66,22 @@ public class DetallesComandaController implements Initializable {
 
     @FXML
     private void manejarSeleccionFecha() {
-        // Obtener la fecha seleccionada en el DatePicker
+        // Se obtiene la fecha seleccionada en el DatePicker
         LocalDate fechaSeleccionada = calendario.getValue();
-
         if (!datosMesCalculados || fechaSeleccionada.getMonthValue() != fechaMesCalculado.getMonthValue()) {
-            // Calcular los datos del mes solo si no han sido calculados previamente o si la fecha seleccionada está en un mes diferente
+            // Se calculan los datos del mes solo si no han sido calculados previamente o si la fecha seleccionada está en un mes diferente
             obtenerTicketsPorMes(fechaSeleccionada);
-            // Actualizar la fecha del mes para la cual se calcularon los datos
+            // Se actualiza la fecha del mes para la cual se calcularon los datos
             fechaMesCalculado = fechaSeleccionada;
-            // Actualizar la bandera
             datosMesCalculados = true;
         }
-
-        // Obtener los tickets para el día seleccionado
+        // Se obtienen los tickets para el día y mes seleccionado, esto se realiza, creando un List con objetos TicketComanda, llamando a los metodos
+        // recurrentes, donde se verifican los ticket que se deben de mostrar al seleccionar un dia en el datepicker
         List<TicketComanda> ticketsDia = obtenerTicketsPorFecha(fechaSeleccionada);
         List<TicketComanda> ticketsMes = obtenerTicketsPorMes(fechaSeleccionada);
         List<DetallesComanda> detallesComandaDia = obtenerDetallesComandaPorDia(fechaSeleccionada);
         List<DetallesComanda> detallesComandaMes = obtenerDetallesComandaPorMes(fechaSeleccionada);
-
-        // Calcular los totales del mes
+        // Calculo de los totales por mes seleccionado
         double totalSinIVAMes = 0;
         double totalConIVAMes = 0;
         int totalComensalesMes = 0;
@@ -97,7 +90,7 @@ public class DetallesComandaController implements Initializable {
             totalConIVAMes += ticket.getImporte_total_con_IVA();
             totalComensalesMes += ticket.getNum_comensales();
         }
-
+        // Calculo de los totales por dia seleccionado
         double totalSinIVA = 0;
         double totalConIVA = 0;
         int totalComensales = 0;
@@ -106,46 +99,42 @@ public class DetallesComandaController implements Initializable {
             totalConIVA += ticket.getImporte_total_con_IVA();
             totalComensales += ticket.getNum_comensales();
         }
-
-        // Mostrar los totales en los TextField
+        // Se muestran los totales por dia en los TextField
         totalDIAsinIVA.setText(String.format("%.2f", totalSinIVA) + "€");
         totalDIAconIVA.setText(String.format("%.2f", totalConIVA) + "€");
         comensalesDIA.setText(String.valueOf(totalComensales));
-
-        // Mostrar los totales del mes en los TextField
+        // Se muestra los totales por mes seleccionado en los TextField
         totalMESsinIVA.setText(String.format("%.2f", totalSinIVAMes) + "€");
         totalMESconIVA.setText(String.format("%.2f", totalConIVAMes) + "€");
         comensalesMES.setText(String.valueOf(totalComensalesMes));
-
-        // Mostrar los tickets del día en el ListView
+        // Se muestran los ticket asociados al dia seleccionado en el datepicker, llamando a determinados metodos para mostrar determinados datos donde sea 
+        //  requerido en la escena
         mostrarTickets(ticketsDia);
         mostrarDetallesComandaDia(detallesComandaDia);
         mostrarDetallesComandaMes(detallesComandaMes);
-
-        // Ocultar la barra de progreso cuando se completan todas las operaciones
     }
 
-    // Método para obtener los tickets asociados a una fecha específica desde la base de datos
+    // Método para obtener los tickets asociados a una fecha específica en este caso por mes, desde la base de datos
     private List<TicketComanda> obtenerTicketsPorMes(LocalDate fecha) {
         List<TicketComanda> tickets = new ArrayList<>();
-
-        // Obtener el primer día del mes y el último día del mes
+        // Con LocalDate, se obtiene el primer día del mes y el último día del mes
         LocalDate primerDiaMes = fecha.withDayOfMonth(1);
         LocalDate ultimoDiaMes = fecha.withDayOfMonth(fecha.lengthOfMonth());
-
-        // Conectar a la base de datos y ejecutar la consulta
+        // Conexion a la base de datos y se ejecuta la consulta
         try (Connection connection = getConnection()) {
+            // La consulta sql se basa en la realizacion de un select, determinado en base a la fecha_pedido, valor generado de forma automatica en bbdd,
+            // para determinar la fecha de creacion de la inserccion dentro de un mes determinado
             String sql = "SELECT * FROM ticket_comanda WHERE fecha_pedido::date >= ? AND fecha_pedido::date <= ?";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setObject(1, primerDiaMes);
                 pstmt.setObject(2, ultimoDiaMes);
                 try (ResultSet rs = pstmt.executeQuery()) {
-                    // Iterar sobre los resultados y crear objetos TicketComanda
+                    // Se iteran sobre los resultados y crean objetos TicketComanda
                     while (rs.next()) {
                         TicketComanda ticket = new TicketComanda();
                         ticket.setId(rs.getInt("id"));
                         String nombreMesa = rs.getString("nombre_mesa");
-                        // Implementa el método obtenerMesaPorNombre para obtener el objeto Mesas
+                        // Se implementa el método obtenerMesaPorNombre para obtener el objeto Mesas
                         Mesas mesa = obtenerMesaPorNombre(nombreMesa);
                         ticket.setNombre_mesa(mesa);
                         ticket.setNum_ticket(rs.getString("num_ticket"));
@@ -161,24 +150,25 @@ public class DetallesComandaController implements Initializable {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return tickets;
     }
 
+    //  Igual que el metodo anterior, para para obtener en base al dia, en el anterior metodo, se realizaba en base al mes, en este caso, en base al dia
+    //  especifico seleccionado en el datepicker
     private List<TicketComanda> obtenerTicketsPorFecha(LocalDate fecha) {
         List<TicketComanda> tickets = new ArrayList<>();
-
         // Conectar a la base de datos y ejecutar la consulta
         try (Connection connection = getConnection()) {
             String sql = "SELECT * FROM ticket_comanda WHERE fecha_pedido::date = ?";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setObject(1, fecha);
                 try (ResultSet rs = pstmt.executeQuery()) {
-                    // Iterar sobre los resultados y crear objetos TicketComanda
+                    // Se iteran sobre los resultados y crear objetos TicketComanda
                     while (rs.next()) {
                         TicketComanda ticket = new TicketComanda();
                         ticket.setId(rs.getInt("id"));
                         String nombreMesa = rs.getString("nombre_mesa");
+                        // Se implementa el método obtenerMesaPorNombre para obtener el objeto Mesas
                         Mesas mesa = obtenerMesaPorNombre(nombreMesa);
                         ticket.setNombre_mesa(mesa);
                         ticket.setNum_ticket(rs.getString("num_ticket"));
@@ -194,7 +184,6 @@ public class DetallesComandaController implements Initializable {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return tickets;
     }
 
@@ -203,14 +192,15 @@ public class DetallesComandaController implements Initializable {
         listTicket.getItems().setAll(tickets);
     }
 
-    // Método para manejar la selección de un ticket en el ListView
+    // Método para manejar la selección de un ticket en el ListView, en este caso, con este metodo se llama al metodo mostrarContenidoPopup, que nos permitira 
+    //  mostrar el contenido de los ticket guardados en bbdd
     @FXML
     private void handleTicketSelection(MouseEvent event) {
         if (event.getClickCount() == 1) { // Verifica si se ha hecho un solo clic
-            // Obtener el ticket seleccionado en la lista
+            // Se obtiene el ticket seleccionado en la lista
             TicketComanda ticketSeleccionado = listTicket.getSelectionModel().getSelectedItem();
             if (ticketSeleccionado != null) {
-                // Mostrar el contenido del ticket en un popup
+                // Se muestra el contenido del ticket en un popup
                 mostrarContenidoPopup(ticketSeleccionado);
             }
         }
@@ -219,13 +209,11 @@ public class DetallesComandaController implements Initializable {
     // Método para mostrar el contenido de un ticket seleccionado en un popup
     private void mostrarContenidoPopup(TicketComanda ticket) {
         try {
-            // Convertir el arreglo de bytes a un String
+            // Se convierte el arreglo de bytes a un String
             String contenidoTexto = new String(ticket.getArchivo_ticket(), StandardCharsets.UTF_8);
-
-            // Agregar el número de ticket al contenido del ticket
+            // Se agrega el número de ticket al contenido del ticket
             contenidoTexto += "\n\nNúmero de ticket: " + ticket.getNum_ticket();
-
-            // Mostrar el contenido del ticket en un popup
+            // Se muestra el contenido del ticket en un popup
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Contenido del ticket - " + ticket.getNum_ticket());
             alert.setHeaderText("Contenido del ticket");
@@ -239,17 +227,16 @@ public class DetallesComandaController implements Initializable {
     // Método para obtener el objeto Mesas por su nombre
     private Mesas obtenerMesaPorNombre(String nombreMesa) {
         Mesas mesa = null;
-        // Conectar a la base de datos y ejecutar la consulta
+        // Conexión a la base de datos y ejecución de la consulta
         try (Connection connection = getConnection()) {
             String sql = "SELECT * FROM mesas WHERE nombre = ?";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setString(1, nombreMesa);
                 try (ResultSet rs = pstmt.executeQuery()) {
                     if (rs.next()) {
-                        // Construir el objeto Mesas
+                        // Construcción del objeto Mesas
                         mesa = new Mesas();
                         mesa.setNombre(rs.getString("nombre"));
-                        // Otros campos...
                     }
                 }
             }
@@ -259,6 +246,8 @@ public class DetallesComandaController implements Initializable {
         return mesa;
     }
 
+    // Método para obtener un objeto Producto por su ID, necesario para mostrar el nombre del producto en los detalles de la comanda,
+    //  de tal forma, que con id, asociado se obtiene el nombre asociado para poder mostrarlo
     private Productos obtenerProductoPorId(int productoId) {
         Productos producto = null;
         try (Connection connection = getConnection()) {
@@ -278,35 +267,35 @@ public class DetallesComandaController implements Initializable {
         return producto;
     }
 
+    // Método para mostrar los detalles de la comanda del día en el ListView
     private void mostrarDetallesComandaDia(List<DetallesComanda> detallesComandaDia) {
         ObservableList<String> detallesList = FXCollections.observableArrayList();
-
-        // Iterar sobre los detalles de la comanda y agregarlos a la lista
+        // Iteración sobre los detalles de la comanda y agregación a la lista
         for (DetallesComanda detalle : detallesComandaDia) {
             String detalleString = " - " + detalle.getProducto_id().getNombre() + " - " + detalle.getCantidad();
             detallesList.add(detalleString);
         }
-
-        // Establecer la lista de detalles en el ListView
+        // Establecimiento de la lista de detalles en el ListView
         comandasDIA.setItems(detallesList);
     }
 
+    // Método para mostrar los detalles de la comanda del mes en el ListView
     private void mostrarDetallesComandaMes(List<DetallesComanda> detallesComandaMes) {
         ObservableList<String> detallesList = FXCollections.observableArrayList();
-
-        // Iterar sobre los detalles de la comanda y agregarlos a la lista
+        // Iteración sobre los detalles de la comanda y agregación a la lista
         for (DetallesComanda detalle : detallesComandaMes) {
             String detalleString = " - " + detalle.getProducto_id().getNombre() + " - " + detalle.getCantidad();
             detallesList.add(detalleString);
         }
-
-        // Establecer la lista de detalles en el ListView
+        // Establecimiento de la lista de detalles en el ListView
         comandasMES.setItems(detallesList);
     }
 
+    //  Metodos que me permiten obetener en base al dia y mes seleccionados en el datepicker, y en base a ellos obtener el total de cantidades acumuladas
+    //  por producto, es decir, permite realizar un sumatorio de todas las cantidades a modo de estadistica, sobre cuales serian las comandas mas demandadas
+    // Método para obtener los detalles de la comanda de un día específico
     private List<DetallesComanda> obtenerDetallesComandaPorDia(LocalDate fecha) {
         List<DetallesComanda> detallesComanda = new ArrayList<>();
-
         try (Connection connection = getConnection()) {
             String sql = "SELECT producto_id, SUM(cantidad) AS cantidad_total FROM detalles_comanda WHERE fecha_hora::date = ? GROUP BY producto_id ORDER BY cantidad_total DESC";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
@@ -328,13 +317,12 @@ public class DetallesComandaController implements Initializable {
         return detallesComanda;
     }
 
+    // Método para obtener los detalles de la comanda de un mes específico
     private List<DetallesComanda> obtenerDetallesComandaPorMes(LocalDate fecha) {
         List<DetallesComanda> detallesComanda = new ArrayList<>();
-
-        // Obtener el primer y último día del mes
+        // Obtención del primer y último día del mes
         LocalDate primerDiaMes = fecha.withDayOfMonth(1);
         LocalDate ultimoDiaMes = fecha.withDayOfMonth(fecha.lengthOfMonth());
-
         try (Connection connection = getConnection()) {
             String sql = "SELECT producto_id, SUM(cantidad) AS cantidad_total FROM detalles_comanda WHERE fecha_hora::date >= ? AND fecha_hora::date <= ? GROUP BY producto_id ORDER BY cantidad_total DESC";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {

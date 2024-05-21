@@ -21,7 +21,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
@@ -31,14 +30,10 @@ import javafx.scene.input.KeyEvent;
 
 public class ListadoMenusController implements Initializable {
 
-    private Usuarios usuario;
-
     @FXML
     private ComboBox<Categorias> selecionInsert;
-
     @FXML
     private ComboBox<Categorias> seleccionCategoriaActua;
-
     @FXML
     private TextField platoNuevo;
     @FXML
@@ -82,39 +77,36 @@ public class ListadoMenusController implements Initializable {
     @FXML
     private CheckBox picanteActua;
     @FXML
-    private Button limpiar;
-
-    @FXML
     private ComboBox<Productos> selecctionProductoActua;
 
     private ObservableList<Productos> productosObservableList = FXCollections.observableArrayList();
+    private Usuarios usuario;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         try (Connection connection = getConnection()) {
-            // Obtener la lista de todas las categorías utilizando la conexión a la base de datos
+            // Se obtiene la lista de todas las categorías utilizando la conexión a la base de datos
             List<Categorias> categorias = obtenerCategoriasDesdeBD(connection);
+            //  Llamada al metodo requerido, para cargar los datos done se requiere
             cargarCategorias();
             configurarListeners();
-            // Crear una lista de nombres de categorías
+            // Se crea una lista de nombres de categorías
             List<String> nombresCategorias = new ArrayList<>();
             for (Categorias categoria : categorias) {
                 nombresCategorias.add(categoria.getNombre());
             }
-
-            // Agregar los nombres de categorías al ComboBox
+            // Se agregan los nombres de categorías al ComboBox
             selecionInsert.getItems().addAll(categorias);
             seleccionCategoriaActua.getItems().addAll(categorias);
-
-            // Configurar el listener para el ComboBox de categorías
+            // Se configura el listener para el ComboBox de categorías
+            //  En este caso, en lugar de crear un metodo especifico en la clase, se añade el onAction directamente en el initialice, funcionando de igual forma
             seleccionCategoriaActua.setOnAction(event -> {
                 if (seleccionCategoriaActua.getValue() != null) {
                     categoriaActua.setText(seleccionCategoriaActua.getValue().getNombre());
                 } else {
                     categoriaActua.clear(); // Limpiar el TextField si no hay ninguna categoría seleccionada
                 }
-
-                // Llamar al método para cargar los productos asociados a la categoría seleccionada
+                // Se llama al método para cargar los productos asociados a la categoría seleccionada
                 cargarProductosPorCategoria(seleccionCategoriaActua.getValue());
             });
         } catch (SQLException ex) {
@@ -122,14 +114,14 @@ public class ListadoMenusController implements Initializable {
         }
     }
 
+    // Método para obtener la lista de categorías desde la base de datos
     private List<Categorias> obtenerCategoriasDesdeBD(Connection connection) {
         List<Categorias> categorias = new ArrayList<>();
         try (PreparedStatement consulta = connection.prepareStatement("SELECT * FROM categorias ORDER BY id"); ResultSet resultado = consulta.executeQuery()) {
-
             while (resultado.next()) {
                 int id = resultado.getInt("id");
                 String nombre = resultado.getString("nombre");
-                // Crear instancia de Categorias con los valores recuperados de la base de datos
+                // Se crea la instancia de Categorias con los valores recuperados de la base de datos
                 Categorias categoria = new Categorias(id, nombre);
                 categorias.add(categoria);
             }
@@ -139,11 +131,13 @@ public class ListadoMenusController implements Initializable {
         return categorias;
     }
 
+    // Método para manejar el evento de confirmación de un nuevo plato
     @FXML
     private void confirmarNuevoPlato(ActionEvent event) {
         try {
+            //  Obtencion del id del usuario que se ha logeado en la aplicacion, para que apareza referenciado en la inserccion
             int usuarioId = usuario.getId();
-            // Obtener valores ingresados por el usuario desde la interfaz gráfica
+            // Obtencion de los valores ingresados por el usuario desde la interfaz gráfica, haciendo referencia a los checkbox, textfield y demas apartados presentes en la escena
             String nombre = platoNuevo.getText();
             String description = descriNuevo.getText();
             double precio = Double.parseDouble(precioNuevo.getText());
@@ -154,17 +148,15 @@ public class ListadoMenusController implements Initializable {
             boolean esSinGluten = glutenNuevo.isSelected();
             boolean esSinLactosa = lactosaNuevo.isSelected();
             boolean esPicante = picaNuevo.isSelected();
-            // Obtener el nombre de la categoría seleccionada
-
-            // Obtener el objeto Categorias correspondiente al nombre seleccionado
+            // Obtencion del objeto Categorias correspondiente al nombre seleccionado
             Categorias categoriaSeleccionada = selecionInsert.getValue();
-
-            // Crear una instancia de Productos con los datos ingresados por el usuario
+            // Se crea una instancia de Productos con los datos ingresados por el usuario
             Productos nuevoProducto = new Productos();
+            //  Con la utilizacion de los pojos de la clase Poductos, se asocian los datos para poder insertarlo en la tabla de la bbdd
             nuevoProducto.setNombre(nombre);
             nuevoProducto.setDescripcion(description);
             nuevoProducto.setPrecio(precio);
-            nuevoProducto.setCategoria_id(categoriaSeleccionada); // Establecer la categoría seleccionada
+            nuevoProducto.setCategoria_id(categoriaSeleccionada); // Se establece la categoría seleccionada
             nuevoProducto.setTipo_plato(tipoPlato);
             nuevoProducto.setTipo_porcion(tipoPorcion);
             nuevoProducto.setEs_vegetariano(esVegetariano);
@@ -172,58 +164,37 @@ public class ListadoMenusController implements Initializable {
             nuevoProducto.setEs_sin_gluten(esSinGluten);
             nuevoProducto.setEs_sin_lactosa(esSinLactosa);
             nuevoProducto.setEs_picante(esPicante);
-
-            // Insertar el nuevo producto en la base de datos
+            // Insertar el nuevo producto en la base de datos llamando al metodo con la consulta sql del Insert
             boolean exito = insertarProductoEnBD(nuevoProducto, usuarioId);
             if (exito) {
-                // Mostrar mensaje de éxito al usuario
+                // Se muestra un mensaje de éxito al usuario
                 mostrarAlerta("Éxito", "Producto insertado correctamente", AlertType.INFORMATION);
-                // Limpiar los campos después de la inserción
+                // Se limpian los campos después de la inserción, llamando al metodo que permite limpiar todos los campos
                 limpiarCampos();
             } else {
-                // Mostrar mensaje de error al usuario
+                // Se muestra mensaje de error al usuario
                 mostrarAlerta("Error", "No se pudo insertar el producto", AlertType.ERROR);
             }
         } catch (Exception e) {
-            // Mostrar mensaje de error al usuario si ocurre una excepción
+            // Se muestra mensaje de error al usuario si ocurre una excepción
             mostrarAlerta("Error", "Ha ocurrido un error al procesar la solicitud" + e.getMessage(), AlertType.ERROR);
             e.printStackTrace();
         }
     }
 
-    private void mostrarAlerta(String titulo, String mensaje, AlertType tipo) {
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        alerta.showAndWait();
-    }
-
-    private void limpiarCampos() {
-        platoNuevo.clear();
-        descriNuevo.clear();
-        precioNuevo.clear();
-        tipoNuevo.clear();
-        porcionNuevo.clear();
-        vegeNuevo.setSelected(false);
-        vegaNuevo.setSelected(false);
-        glutenNuevo.setSelected(false);
-        lactosaNuevo.setSelected(false);
-        picaNuevo.setSelected(false);
-        selecionInsert.getSelectionModel().clearSelection();
-        selecionInsert.setPromptText("< Selecciona un elemento >");
-    }
-
+    //  Metodo utilizado para insertar datos a la tabla Productos, en base a los datos obtenidos de la interfaz, del metodo anterior
     public static boolean insertarProductoEnBD(Productos producto, int usuarioId) throws SQLException {
         Connection connection = null;
         PreparedStatement statement = null;
         try {
+            //  Insert con todas las columnas de la tabla, en base a los datos del metodo anterior, seran los datos añadidos
             connection = getConnection();
             String sql = "INSERT INTO productos (nombre, description, precio, categoria_id, tipo_plato, tipo_porcion, es_vegetariano, es_vegano, es_sin_gluten, es_sin_lactosa, es_picante, usuario_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             statement = connection.prepareStatement(sql);
             statement.setString(1, producto.getNombre());
             statement.setString(2, producto.getDescripcion());
             statement.setDouble(3, producto.getPrecio());
+            //  La categoria, se establece en base al id del nombre de categoria seleccionado en el combox
             statement.setInt(4, producto.getCategoria_id().getId());
             statement.setString(5, producto.getTipo_plato());
             statement.setString(6, producto.getTipo_porcion());
@@ -232,7 +203,7 @@ public class ListadoMenusController implements Initializable {
             statement.setBoolean(9, producto.isEs_sin_gluten());
             statement.setBoolean(10, producto.isEs_sin_lactosa());
             statement.setBoolean(11, producto.isEs_picante());
-            statement.setInt(12, usuarioId); // Establecer el usuarioId en la sentencia SQL
+            statement.setInt(12, usuarioId); // Establecer el usuarioId en la sentencia SQL, este dato se obtiene del usuario logeado en la app
             int filasAfectadas = statement.executeUpdate();
             return filasAfectadas > 0;
         } finally {
@@ -252,21 +223,16 @@ public class ListadoMenusController implements Initializable {
         }
     }
 
-    public void setUsuario(Usuarios usuario) {
-        this.usuario = usuario;
-    }
-
     // Método para cargar los productos por categoría
-// Método para cargar los productos por categoría
     private void cargarProductosPorCategoria(Categorias categoriaSeleccionada) {
         if (categoriaSeleccionada != null) {
-            // Limpiar la lista de productos
+            // Se limpia la lista de productos
             productosObservableList.clear();
-            // Obtener los productos asociados a la categoría seleccionada
+            // Se obtienen los productos asociados a la categoría seleccionada
             List<Productos> productos = obtenerProductosPorCategoria(categoriaSeleccionada);
-            // Agregar los productos a la lista observable
+            // Se agregan los productos a la lista observable
             productosObservableList.addAll(productos);
-            // Establecer la lista observable como elementos del ComboBox de productos
+            // Se establece la lista observable como elementos del ComboBox de productos
             selecctionProductoActua.setItems(productosObservableList);
         }
     }
@@ -293,7 +259,7 @@ public class ListadoMenusController implements Initializable {
                         producto.setEs_sin_gluten(resultSet.getBoolean("es_sin_gluten"));
                         producto.setEs_sin_lactosa(resultSet.getBoolean("es_sin_lactosa"));
                         producto.setEs_picante(resultSet.getBoolean("es_picante"));
-
+                        //  Se añaden los productos al combox requerido, en base a la categoria seleccionada
                         productos.add(producto);
                     }
                 }
@@ -304,26 +270,24 @@ public class ListadoMenusController implements Initializable {
         return productos;
     }
 
+    //  Metodo que se activa mediante boton en la escena
     @FXML
     private void confirmarActua(ActionEvent event) {
         try {
             int usuarioId = usuario.getId();
-            // Obtener el producto seleccionado
+            // Se obtiene el producto seleccionado
             Productos productoSeleccionado = selecctionProductoActua.getValue();
-
-            // Verificar que el producto no sea nulo
+            // Se verifica que el producto no sea nulo
             if (productoSeleccionado != null) {
-                // Obtener la categoría seleccionada
+                // Se obtiene la categoría seleccionada
                 Categorias categoriaSeleccionada = seleccionCategoriaActua.getValue();
-
-                // Verificar si la categoría seleccionada no es nula
+                // Se verifica si la categoría seleccionada no es nula
                 if (categoriaSeleccionada != null) {
-                    // Obtener el objeto Categorias correspondiente al nombre seleccionado
+                    // Se obtiene el objeto Categorias correspondiente al nombre seleccionado
                     Integer categoria = obtenerIdCategoriaPorNombre(categoriaSeleccionada.getNombre());
-
-                    // Verificar si la categoría se encontró en la base de datos
+                    // Se verifica si la categoría se encontró en la base de datos
                     if (categoria != null) {
-                        // Obtener los valores ingresados por el usuario desde la interfaz gráfica
+                        // Se obtienen los valores ingresados por el usuario desde la interfaz gráfica
                         String nombre = nombreActua.getText();
                         String description = descriActua.getText();
                         double precio = Double.parseDouble(precioActua.getText());
@@ -334,8 +298,7 @@ public class ListadoMenusController implements Initializable {
                         boolean esSinGluten = glutenActua.isSelected();
                         boolean esSinLactosa = lactosaActua.isSelected();
                         boolean esPicante = picanteActua.isSelected();
-
-                        // Actualizar los valores del producto seleccionado
+                        // Se actualizan los valores del producto seleccionado
                         productoSeleccionado.setNombre(nombre);
                         productoSeleccionado.setDescripcion(description);
                         productoSeleccionado.setPrecio(precio);
@@ -346,33 +309,33 @@ public class ListadoMenusController implements Initializable {
                         productoSeleccionado.setEs_sin_gluten(esSinGluten);
                         productoSeleccionado.setEs_sin_lactosa(esSinLactosa);
                         productoSeleccionado.setEs_picante(esPicante);
-
-                        // Llamar al método para actualizar el producto en la base de datos
+                        // Se llama al método para actualizar el producto en la base de datos
                         boolean exito = actualizarProductoEnBD(productoSeleccionado, usuarioId);
                         limpiarCamposProducto();
                         if (exito) {
-                            // Mostrar mensaje de éxito al usuario
+                            // Se muestra un mensaje de éxito al usuario
                             mostrarAlerta("Éxito", "Producto actualizado correctamente", AlertType.INFORMATION);
                         } else {
-                            // Mostrar mensaje de error al usuario
+                            // Se muestra un mensaje de error al usuario
                             mostrarAlerta("Error", "No se pudo actualizar el producto", AlertType.ERROR);
                         }
                     } else {
-                        // Mostrar mensaje de error si la categoría no se encontró en la base de datos
+                        // Se muestra un mensaje de error si la categoría no se encontró en la base de datos
                         mostrarAlerta("Error", "La categoría seleccionada no existe", AlertType.ERROR);
                     }
                 } else {
-                    // Si la categoría seleccionada es nula, mostrar mensaje de error
+                    // Si la categoría seleccionada es nula, se muestra un mensaje de error
                     mostrarAlerta("Error", "No se ha seleccionado ninguna categoría", AlertType.ERROR);
                 }
             }
         } catch (Exception e) {
-            // Mostrar mensaje de error al usuario si ocurre una excepción
+            // Se muestra un mensaje de error al usuario si ocurre una excepción en la conexion a la bbdd
             mostrarAlerta("Error", "Ha ocurrido un error al procesar la solicitud" + e.getMessage(), AlertType.ERROR);
             e.printStackTrace();
         }
     }
 
+    //  Metodo auxiliar para encontrar el id de la categoria en base al nombre, a este metodo se le llamada desde el confirmarActua y el metodo de actualizacion
     private int obtenerIdCategoriaPorNombre(String nombreCategoria) {
         Connection connection = null;
         PreparedStatement statement = null;
@@ -389,6 +352,7 @@ public class ListadoMenusController implements Initializable {
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
+            //  finally para cerrar por precaucion la conexion, al haberla establecido en el propio metodo
         } finally {
             try {
                 if (resultSet != null) {
@@ -407,22 +371,20 @@ public class ListadoMenusController implements Initializable {
         return categoriaId;
     }
 
+    //  Metodo auxiliar para actualizar datos de Productos en base a los datos obtenidos en la escena, estos datos se obtienen desde otro metodo, como es confirmarActua
     private boolean actualizarProductoEnBD(Productos producto, int usuarioId) {
         Connection connection = null;
         PreparedStatement statement = null;
         try {
             connection = getConnection();
-
-            // Obtener el nombre de la categoría desde el campo de texto
+            // Se obtiene el nombre de la categoría desde el campo de texto
             String nombreCategoria = categoriaActua.getText();
-
-            // Verificar si el nombre de la categoría existe en la base de datos
+            // Se verifica si el nombre de la categoría existe en la base de datos
             int categoriaId = obtenerIdCategoriaPorNombre(nombreCategoria);
             if (categoriaId != -1) {
-                // Obtener la fecha y hora actual
+                // Se obtiene la fecha y hora actual, de tal forma que en bbdd se actualice la fecha, para saber cuando se actualizo o modifico por ultima vez el producto
                 LocalDateTime now = LocalDateTime.now();
                 Timestamp timestamp = Timestamp.valueOf(now);
-
                 String sql = "UPDATE productos SET nombre = ?, description = ?, precio = ?, categoria_id = ?, tipo_plato = ?, tipo_porcion = ?, es_vegetariano = ?, es_vegano = ?, es_sin_gluten = ?, es_sin_lactosa = ?, es_picante = ?, usuario_id = ?, fecha_hora = ? WHERE id = ?";
                 statement = connection.prepareStatement(sql);
                 statement.setString(1, producto.getNombre());
@@ -443,7 +405,7 @@ public class ListadoMenusController implements Initializable {
                 return filasAfectadas > 0;
             } else {
                 // Si el nombre de la categoría no existe, mostrar un mensaje de error
-                mostrarAlerta("Error","El nombre de la categoría no existe en la base de datos.", AlertType.ERROR);
+                mostrarAlerta("Error", "El nombre de la categoría no existe en la base de datos.", AlertType.ERROR);
                 return false;
             }
         } catch (SQLException ex) {
@@ -463,6 +425,7 @@ public class ListadoMenusController implements Initializable {
         }
     }
 
+    //  Metodos para cargar los combox de datos
     private void cargarCategorias() throws SQLException {
         try (Connection connection = getConnection()) {
             List<Categorias> categorias = obtenerCategoriasDesdeBD(connection);
@@ -471,19 +434,22 @@ public class ListadoMenusController implements Initializable {
         }
     }
 
+    //  Configuracion de los listener, que permitiran que al seleccionar un valor en el combox el dato seleccionado se muestre en un textfield determinado para poder trabajar con el
     private void configurarListeners() {
         seleccionCategoriaActua.setOnAction(event -> {
             cargarProductosPorCategoria(seleccionCategoriaActua.getValue());
         });
-
+        //  En este caso, el listener esta diseñado para que al seleccionar el valor en el combox, que es un producto, llamando al metodo actualizarCampos
+        //  mostrando asi en todos los apartados indicados en el metodo actualizar en textfield y combox referenciados, para poder trabajar con ellos
         selecctionProductoActua.setOnAction(event -> {
             actualizarCamposProducto();
         });
     }
 
+    //  Metodo auxiliar llamado desde el onAction indicado anteriormente, que mediante la creacion de un constructor de Productos, se mostrara por pantalla
+    // en la escena, todos los datos o valores de la tabla en base al producto seleccionado
     private void actualizarCamposProducto() {
         Productos productoSeleccionado = selecctionProductoActua.getValue();
-
         if (productoSeleccionado != null) {
             nombreActua.setText(productoSeleccionado.getNombre());
             descriActua.setText(productoSeleccionado.getDescripcion());
@@ -498,6 +464,23 @@ public class ListadoMenusController implements Initializable {
         } else {
             limpiarCamposProducto();
         }
+    }
+
+    //  Conjunto de metodos, que permitira llamandolos desde distintos puntos de de la clase Controller, para limpiar los campos indicados, para poder trabajar
+    //  despues de limpiarlos y asi ingresar nuevos
+    private void limpiarCampos() {
+        platoNuevo.clear();
+        descriNuevo.clear();
+        precioNuevo.clear();
+        tipoNuevo.clear();
+        porcionNuevo.clear();
+        vegeNuevo.setSelected(false);
+        vegaNuevo.setSelected(false);
+        glutenNuevo.setSelected(false);
+        lactosaNuevo.setSelected(false);
+        picaNuevo.setSelected(false);
+        selecionInsert.getSelectionModel().clearSelection();
+        selecionInsert.setPromptText("< Selecciona un elemento >");
     }
 
     private void limpiarCamposProducto() {
@@ -516,7 +499,8 @@ public class ListadoMenusController implements Initializable {
         seleccionCategoriaActua.getSelectionModel().clearSelection();
         seleccionCategoriaActua.setPromptText("< Selecciona un elemento >");
     }
-    
+
+    //  Metodo activado desde la escena, a partir de boton, forzando asi la limpiza de los campos indicados, si asi lo prefiere el usuario
     @FXML
     private void limpiarCamposProducto(ActionEvent event) {
         nombreActua.clear();
@@ -533,6 +517,20 @@ public class ListadoMenusController implements Initializable {
         selecctionProductoActua.setPromptText("< Selecciona un producto >");
         seleccionCategoriaActua.getSelectionModel().clearSelection();
         seleccionCategoriaActua.setPromptText("< Selecciona un elemento >");
+    }
+
+    //  Metodo que sirve para dar estructura a las alertas que se le mostraran al usuario para que este en todo momento informado de las acciones que va realizando
+    private void mostrarAlerta(String titulo, String mensaje, AlertType tipo) {
+        Alert alerta = new Alert(tipo);
+        alerta.setTitle(titulo);
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensaje);
+        alerta.showAndWait();
+    }
+
+    //  Con este metodo, se pasa al Controller, el usuario que se ha logeado en la aplicacion para que se pueda asociar a las consultas y modificaciones en la bbdd
+    public void setUsuario(Usuarios usuario) {
+        this.usuario = usuario;
     }
 
 }

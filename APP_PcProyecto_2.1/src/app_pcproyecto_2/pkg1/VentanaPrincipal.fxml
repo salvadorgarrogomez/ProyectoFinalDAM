@@ -48,7 +48,7 @@
             <children>
                 <Pane layoutY="-5.0" prefHeight="136.0" prefWidth="200.0" style="-fx-background-color: #B0E0E6;">
                     <children>
-                        <Button id="buttonSalir" alignment="CENTER" layoutX="13.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#botonSalir" prefHeight="30.0" prefWidth="175.0" text="Salir">
+                        <Button id="buttonSalir" fx:id="buttonSalir" alignment="CENTER" layoutX="13.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#botonSalir" prefHeight="30.0" prefWidth="175.0" text="Salir">
                      <font>
                         <Font name="Courier New" size="12.0" />
                      </font></Button>

@@ -19,13 +19,10 @@ public class NuevaContraseñaController implements Initializable {
 
     @FXML
     private TextField usuarioRecuperar;
-
     @FXML
     private PasswordField nuevaContra;
-
     @FXML
     private PasswordField repiteNuevaContra;
-
     @FXML
     private Button confirmarContra;
 
@@ -34,38 +31,36 @@ public class NuevaContraseñaController implements Initializable {
         // TODO
     }
 
+    //  Metodo incializado desde un boton en la escena, para cambiar la contraseña si asi lo desea un usuario que haya olvidado la contraseña de su usuario
     @FXML
     private void cambiarContraseña() {
         String nombreUsuario = usuarioRecuperar.getText();
         String contrasenia = nuevaContra.getText();
         String repiteContrasenia = repiteNuevaContra.getText();
-
-        // Verificar si las contraseñas coinciden
+        // Se verifica las contraseñas coinciden
         if (!contrasenia.equals(repiteContrasenia)) {
             mostrarAlerta("Las contraseñas no coinciden.", Alert.AlertType.ERROR);
             return;
         }
-
-        // Verificar si el nombre de usuario existe en la base de datos
+        // Se verifica si el nombre de usuario existe en la base de datos
         if (!existeUsuario(nombreUsuario)) {
             mostrarAlerta("El nombre de usuario no existe.", Alert.AlertType.ERROR);
             return;
         }
-
-        // Realizar el cambio de contraseña
+        // Se realiza el cambio de contraseña
         if (actualizarContraseña(nombreUsuario, contrasenia)) {
-            // Mostrar un mensaje de éxito si se actualizó correctamente
+            // Se muestra un mensaje de éxito si se actualizó correctamente
             mostrarAlerta("Contraseña cambiada correctamente.", Alert.AlertType.INFORMATION);
         } else {
-            // Mostrar un mensaje de error si no se pudo actualizar la contraseña
+            // Se muestra un mensaje de error si no se pudo actualizar la contraseña
             mostrarAlerta("Error al cambiar la contraseña.", Alert.AlertType.ERROR);
         }
-
-        // Cerrar la ventana
+        // Cerrado de la ventana al terminar la operacion
         Stage stage = (Stage) confirmarContra.getScene().getWindow();
         stage.close();
     }
 
+    //  Metodo auxiliar donde se encuentra el UPDATE para actualizar el valor en bbdd
     private boolean actualizarContraseña(String nombreUsuario, String nuevaContraseña) {
         String sqlUpdate = "UPDATE usuarios SET contrasenia = ? WHERE nombre = ?";
         try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(sqlUpdate)) {
@@ -79,6 +74,7 @@ public class NuevaContraseñaController implements Initializable {
         }
     }
 
+    //  Metodo auxiliar para comprobar  si existe un usuario con el nombre añadido, si existe el usuario se podra cambiar la contraseña
     private boolean existeUsuario(String nombreUsuario) {
         String sql = "SELECT COUNT(*) FROM usuarios WHERE nombre = ?";
         try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -95,6 +91,7 @@ public class NuevaContraseñaController implements Initializable {
         return false;
     }
 
+    //  Metodo necesario para dar formato a las aletar poup que van saliendole al usuario cada vez que realiza una operacion
     private void mostrarAlerta(String mensaje, Alert.AlertType tipo) {
         Alert alert = new Alert(tipo);
         alert.setHeaderText(null);
