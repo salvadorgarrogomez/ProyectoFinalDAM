@@ -1,8 +1,13 @@
 package app_pcproyecto_2.pkg1;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
@@ -11,53 +16,70 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javax.swing.JOptionPane;
 
-/**
- *
- * @author salva
- */
 public class APP_PcProyecto_21 extends Application {
-    
-    //  Datos necesarios para el establecimiento de la conexion a la bbdd postgresql.
-    private static final String URL = "jdbc:postgresql://192.168.1.138:5432/Bar_ElEscobar_2.0";
-    private static final String USUARIO = "postgres";
-    private static final String CONTRASEÑA = "12345";
 
+    //  Datos de acceso al entorno servidor, no se establece de forma estatica, sino en base a los datos ingresados por el usuario
+    static String URL;
+    static String USUARIO;
+    static String CONTRASEÑA;
+    //  Creacion de un archvio de configuracion donde se guardaran los datos y credenciales de acceso al servidor, para dar algo mas de seguridad (no estan cifrados)
+    //  el archivo se guarda en la raiz del usuario del sistema, no en el directorio de la aplicacion
+    private static final String CONFIG_FILE = System.getProperty("user.home") + File.separator + ".config.properties";
+
+    // Al iniciar el programa, se cargara por defecto la escena fxml indicada, de tal forma que el usuario pueda colocar de forma dinamica el servidor de trabajo
     @Override
     public void start(Stage stage) throws Exception {
-        // Obtenemos la conexión a la bbdd postgresql
-        Connection connection = getConnection();
-
-        // Comprobacion de la conexion, si es null saca por pantalla el mensaje de error.
-        if (connection == null) {
-            // En caso de ser null, se muestra mensaje de error y se sale de la aplicación si no se puede establecer la conexión
-            JOptionPane.showMessageDialog(null, "Error de conexión a la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        // Si la establece correctamente la conexion a la bbdd, se ha definido el archivo fxml que debe de mostrarse en primera instancia, para iniciar la app
-        Parent cambioUsuario = FXMLLoader.load(getClass().getResource("CambioUsuario.fxml"));
-        Scene cambioUsuarioScene = new Scene(cambioUsuario);
-        stage.setScene(cambioUsuarioScene);
-        stage.setTitle("Cambio de Usuario");
+        // Se cargan los datos del servidor desde un archivo de propiedades
+        cargarConfiguracion();
+        // Se muestran la ventana de configuración del servidor
+        Parent root = FXMLLoader.load(getClass().getResource("DireccionServidor.fxml"));
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.setTitle("Configuración del Servidor");
         stage.show();
     }
 
-    //  Metodo de establecimiento de la conexion, en caso de que de error, es decir que el server este apagado no se localice la conexion
-    //  se muestra por pantalla el mensaje de error con un pequeño mensaje descriptivo del problema al usuario.
+    //  Metodo para cargar los datos guardados en local de las credenciales de acceso al servidor, de tal forma que los datos se cargaran en las celdas de la
+    //  escena para que usuario no tenga que introducir los datos siempre que habra la aplicacion
+    public static void cargarConfiguracion() {
+        File configFile = new File(CONFIG_FILE);
+        if (configFile.exists()) {
+            Properties propiedades = new Properties();
+            try (FileInputStream input = new FileInputStream(CONFIG_FILE)) {
+                propiedades.load(input);
+                URL = propiedades.getProperty("url");
+                USUARIO = propiedades.getProperty("usuario");
+                CONTRASEÑA = propiedades.getProperty("contrasena");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    //  Metodo para guardar los datos de acceso al servidor la primera vez que el usuario los introduzca
+    public static void guardarConfiguracion(String url, String usuario, String contrasena) {
+        Properties propiedades = new Properties();
+        propiedades.setProperty("url", url);
+        propiedades.setProperty("usuario", usuario);
+        propiedades.setProperty("contrasena", contrasena);
+        try (FileOutputStream output = new FileOutputStream(CONFIG_FILE)) {
+            propiedades.store(output, null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //  Conexion con el servidor, de aqui tiran y heredan todas las conexiones de la aplicacion, haciendo asi que se reutilice en todo momento y no se sature el sistema
     public static Connection getConnection() throws SQLException {
         try {
             return DriverManager.getConnection(URL, USUARIO, CONTRASEÑA);
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Error de conexión: " + ex.getMessage() + "\nEquipo servidor, ¿apagado o encendido? \nRevisar.", "Error", JOptionPane.ERROR_MESSAGE);
-            //  Con esta implementacion, al darle al boton aceptar de la ventana del error, se cierra la conexion, para que esta no se quede en segundo
-            //  intentando establecer la conexion de forma indefinida.
-            throw ex; 
+            JOptionPane.showMessageDialog(null, "Error de conexión: " + ex.getMessage() + "\nEquipo servidor, ¿apagado o encendido?. Revisar.\nSi para acceder has ingresado por primera vez los datos de acceso al servidor, reinicia.", "Error", JOptionPane.ERROR_MESSAGE);
+            throw ex;
         }
     }
 
-    //  Metodo main, de lanzamiendo de la app JavaFX
     public static void main(String[] args) {
         launch(args);
     }
-    
 }
