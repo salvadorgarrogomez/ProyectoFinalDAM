@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="detalleComanda" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="857.0" prefWidth="1350.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app_pcproyecto_2.pkg1.DetallesComandaController">
+<BorderPane fx:id="detalleComanda" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1070.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app_pcproyecto_2.pkg1.DetallesComandaController">
    <center>
       <Pane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
@@ -30,52 +30,52 @@
                <font>
                   <Font name="Courier New" size="12.0" />
                </font></Label>
-            <ListView fx:id="comandasDIA" layoutX="382.0" layoutY="449.0" prefHeight="355.0" prefWidth="275.0" />
-            <Label layoutX="382.0" layoutY="414.0" text="Estadistica de comandas mas demandadas ">
+            <ListView fx:id="comandasDIA" layoutX="382.0" layoutY="394.0" prefHeight="315.0" prefWidth="275.0" />
+            <Label layoutX="382.0" layoutY="359.0" text="Estadistica de comandas mas demandadas ">
                <font>
                   <Font name="Courier New" size="12.0" />
                </font></Label>
             <DatePicker fx:id="calendario" layoutX="7.0" layoutY="131.0" onAction="#manejarSeleccionFecha" prefHeight="25.0" prefWidth="111.0" />
-            <TextField fx:id="totalDIAsinIVA" editable="false" layoutX="901.0" layoutY="79.0" />
-            <TextField fx:id="totalDIAconIVA" editable="false" layoutX="901.0" layoutY="115.0" />
-            <TextField fx:id="comensalesDIA" editable="false" layoutX="901.0" layoutY="152.0" />
-            <Label layoutX="563.0" layoutY="83.0" text="Importe total de las comandas del dia:">
+            <TextField fx:id="totalDIAsinIVA" editable="false" layoutX="858.0" layoutY="87.0" />
+            <TextField fx:id="totalDIAconIVA" editable="false" layoutX="858.0" layoutY="123.0" />
+            <TextField fx:id="comensalesDIA" editable="false" layoutX="858.0" layoutY="160.0" />
+            <Label layoutX="520.0" layoutY="91.0" text="Importe total de las comandas del dia:">
                <font>
                   <Font name="Courier New" size="11.0" />
                </font></Label>
-            <Label layoutX="563.0" layoutY="119.0" text="Importe total de las comandas del dia + IVA:">
+            <Label layoutX="520.0" layoutY="127.0" text="Importe total de las comandas del dia + IVA:">
                <font>
                   <Font name="Courier New" size="11.0" />
                </font></Label>
-            <Label layoutX="563.0" layoutY="156.0" text="Cantidad de comensales que entraron durante el dia:">
+            <Label layoutX="520.0" layoutY="164.0" text="Cantidad de comensales que entraron durante el dia:">
                <font>
                   <Font name="Courier New" size="11.0" />
                </font></Label>
-            <Label layoutX="563.0" layoutY="248.0" text="Importe total sin IVA de todo el mes:">
+            <Label layoutX="520.0" layoutY="256.0" text="Importe total sin IVA de todo el mes:">
                <font>
                   <Font name="Courier New" size="11.0" />
                </font></Label>
-            <Label layoutX="563.0" layoutY="280.0" text="Importe total + IVA de todo el mes:">
+            <Label layoutX="520.0" layoutY="288.0" text="Importe total + IVA de todo el mes:">
                <font>
                   <Font name="Courier New" size="11.0" />
                </font></Label>
-            <TextField fx:id="totalMESsinIVA" editable="false" layoutX="901.0" layoutY="244.0" />
-            <TextField fx:id="totalMESconIVA" editable="false" layoutX="901.0" layoutY="276.0" />
-            <TextField fx:id="comensalesMES" editable="false" layoutX="901.0" layoutY="309.0" />
-            <Label layoutX="563.0" layoutY="314.0" text="Cantidad de comensales que entraron durante el mes:">
+            <TextField fx:id="totalMESsinIVA" editable="false" layoutX="858.0" layoutY="252.0" />
+            <TextField fx:id="totalMESconIVA" editable="false" layoutX="858.0" layoutY="284.0" />
+            <TextField fx:id="comensalesMES" editable="false" layoutX="858.0" layoutY="317.0" />
+            <Label layoutX="520.0" layoutY="322.0" text="Cantidad de comensales que entraron durante el mes:">
                <font>
                   <Font name="Courier New" size="11.0" />
                </font></Label>
-            <ListView fx:id="comandasMES" layoutX="731.0" layoutY="449.0" prefHeight="355.0" prefWidth="275.0" />
-            <Label layoutX="731.0" layoutY="414.0" text="Estadistica de comandas mas demandadas ">
+            <ListView fx:id="comandasMES" layoutX="731.0" layoutY="394.0" prefHeight="315.0" prefWidth="275.0" />
+            <Label layoutX="731.0" layoutY="359.0" text="Estadistica de comandas mas demandadas ">
                <font>
                   <Font name="Courier New" size="12.0" />
                </font></Label>
-            <Label layoutX="382.0" layoutY="428.0" text="durante el dia:">
+            <Label layoutX="382.0" layoutY="377.0" text="durante el dia:">
                <font>
                   <Font name="Courier New" size="12.0" />
                </font></Label>
-            <Label layoutX="731.0" layoutY="428.0" text="durante el mes:">
+            <Label layoutX="731.0" layoutY="377.0" text="durante el mes:">
                <font>
                   <Font name="Courier New" size="12.0" />
                </font></Label>
