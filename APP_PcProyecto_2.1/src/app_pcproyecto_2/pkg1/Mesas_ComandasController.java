@@ -886,7 +886,7 @@ public class Mesas_ComandasController implements Initializable {
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                int segundosEspera = 3;
+                int segundosEspera = 2;
                 int totalIteraciones = segundosEspera * 10; // 10 actualizaciones por segundo
                 for (int i = 0; i < totalIteraciones; i++) {
                     // Se calcula el progreso actual
