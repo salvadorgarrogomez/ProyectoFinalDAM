@@ -33,22 +33,11 @@ public class CambioUsuarioController implements Initializable {
     private boolean permitirCerrarVentanaPrincipal;
     private int usuarioId;
     private Usuarios usuario;
-
     private VentanaPrincipalController ventanaPrincipalController;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Inicialización de cualquier dato necesario al cargar la ventana
-    }
-
-    // Método para establecer el ID del usuario actual
-    public void setUsuarioId(int usuarioId) {
-        this.usuarioId = usuarioId;
-    }
-
-    // Método para establecer el controlador de la ventana principal
-    public void setVentanaPrincipalController(VentanaPrincipalController controller) {
-        this.ventanaPrincipalController = controller;
     }
 
     // Método para mostrar la ventana de cambio de contraseña
@@ -72,27 +61,7 @@ public class CambioUsuarioController implements Initializable {
         popupStage.initModality(Modality.APPLICATION_MODAL);
         popupStage.setTitle("Nuevo Usuario:");
         popupStage.setScene(new Scene(root));
-        popupStage.setOnCloseRequest(event -> {
-            event.consume(); // Evita el cierre predeterminado
-            popupStage.close(); // Cierra la ventana manualmente
-            cargarVentanaCambioUsuario(); // Recarga la ventana de cambio de usuario
-        });
         popupStage.showAndWait();
-    }
-
-    // Método para cargar y mostrar la ventana de cambio de usuario
-    private void cargarVentanaCambioUsuario() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("CambioUsuario.fxml"));
-            Parent root = loader.load();
-            Scene scene = new Scene(root);
-            Stage stage = (Stage) buttonEntrar.getScene().getWindow();
-            stage.setScene(scene);
-            stage.setTitle("Cambio de Usuario");
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     // Método para manejar el evento de login
@@ -173,24 +142,6 @@ public class CambioUsuarioController implements Initializable {
         return 0; // Devolver 0 si no se encontró ningún usuario con las credenciales proporcionadas
     }
 
-    // Método para validar las credenciales de un usuario
-    private boolean validarCredenciales(String nombreUsuario, String contrasenia) throws SQLException {
-        Connection connection = getConnection();
-        if (connection != null) {
-            String sql = "SELECT * FROM usuarios WHERE nombre = ? AND contrasenia = ?";
-            try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                statement.setString(1, nombreUsuario);
-                statement.setString(2, contrasenia);
-                try (ResultSet resultSet = statement.executeQuery()) {
-                    return resultSet.next();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        return false;
-    }
-
     // Método para salir de la aplicación
     @FXML
     public void botonSalir() throws IOException {
@@ -203,6 +154,16 @@ public class CambioUsuarioController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(mensaje);
         alert.showAndWait();
+    }
+
+    // Método para establecer el ID del usuario actual
+    public void setUsuarioId(int usuarioId) {
+        this.usuarioId = usuarioId;
+    }
+
+    // Método para establecer el controlador de la ventana principal
+    public void setVentanaPrincipalController(VentanaPrincipalController controller) {
+        this.ventanaPrincipalController = controller;
     }
 
     // Método para permitir o no cerrar la ventana principal
