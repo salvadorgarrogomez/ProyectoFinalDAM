@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1250.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app_pcproyecto_2.pkg1.VentanaPrincipalController">
+    <left>
+        <Pane id="paneIzquierdo" prefHeight="741.0" prefWidth="200.0" style="-fx-background-color: #B0E0E6;" BorderPane.alignment="CENTER">
+            <children>
+                <Pane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="75.0" prefWidth="200.0" style="-fx-background-color: #F5F5DC;">
+                    <children>
+                        <Text layoutX="-41.0" layoutY="43.0" strokeWidth="0.0" text="      Bar el Escobar" wrappingWidth="240.4609375">
+                            <font>
+                                <Font name="Courier New Bold Italic" size="18.0" />
+                            </font>
+                        </Text>
+                    </children>
+                </Pane>
+                <Button fx:id="buttonInicio" alignment="CENTER" layoutX="13.0" layoutY="89.0" mnemonicParsing="false" onMouseClicked="#pantallaInicio" prefHeight="30.0" prefWidth="175.0" text="Inicio">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font></Button>
+                <Button id="buttonMesasComandas" alignment="CENTER" layoutX="13.0" layoutY="128.0" mnemonicParsing="false" onMouseClicked="#pantallaMesas" prefHeight="30.0" prefWidth="175.0" text="Mesas/Comandas">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font></Button>
+                <Button id="buttonMenus" fx:id="insertActua" alignment="CENTER" layoutX="13.0" layoutY="204.0" mnemonicParsing="false" onMouseClicked="#pantallaPlatos" prefHeight="30.0" prefWidth="175.0" text="Añadir/Actualizar platos">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font></Button>
+            <Button id="buttonMenus" fx:id="glosario" alignment="CENTER" layoutX="13.0" layoutY="165.0" mnemonicParsing="false" onMouseClicked="#pantallaGlosario" prefHeight="30.0" prefWidth="175.0" text="Glosario de platos">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font></Button>
+                  <Button id="registroComandas" alignment="CENTER" layoutX="13.0" layoutY="242.0" mnemonicParsing="false" onMouseClicked="#pantallaDetalle" prefHeight="30.0" prefWidth="175.0" text="Detalles Comandas">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font></Button>
+            </children>
+        </Pane>
+    </left>
+    <bottom>
+        <AnchorPane prefHeight="114.0" prefWidth="1243.0" style="-fx-background-color: #f0f0f0;" BorderPane.alignment="CENTER">
+            <children>
+                <Pane layoutY="-5.0" prefHeight="136.0" prefWidth="200.0" style="-fx-background-color: #B0E0E6;">
+                    <children>
+                        <Button id="buttonSalir" fx:id="buttonSalir" alignment="CENTER" layoutX="13.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#botonSalir" prefHeight="30.0" prefWidth="175.0" text="Salir">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font></Button>
+                      <Button fx:id="buttonUsuario" alignment="CENTER" layoutX="13.0" layoutY="52.0" mnemonicParsing="false" onMouseClicked="#mostrarLogin" prefHeight="30.0" prefWidth="175.0" text="Cerrar sesión">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font></Button>
+                  <Button id="registroComandas" fx:id="auditoria" alignment="CENTER" layoutX="13.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#pantallaAuditoria" prefHeight="30.0" prefWidth="175.0" text="Auditoria">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font>
+                  </Button>
+                    </children>
+                </Pane>
+            </children>
+        </AnchorPane>
+    </bottom>
+   <center>
+      <Pane fx:id="layout" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #f0f0f0;" BorderPane.alignment="CENTER" />
+   </center>
+</BorderPane>

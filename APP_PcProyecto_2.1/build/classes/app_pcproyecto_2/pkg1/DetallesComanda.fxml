@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:id="detalleComanda" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1070.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app_pcproyecto_2.pkg1.DetallesComandaController">
+   <center>
+      <Pane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label layoutX="14.0" layoutY="14.0" text="Revision de datos:">
+               <font>
+                  <Font name="Courier New Bold" size="24.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="79.0" text="Escoge un dia, para revisar por un lado todos los ticket de ese dia:">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font></Label>
+            <ListView fx:id="listTicket" layoutX="14.0" layoutY="200.0" onMouseClicked="#handleTicketSelection" prefHeight="354.0" prefWidth="348.0" />
+            <Label layoutX="14.0" layoutY="114.0" text="Calendario:">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font></Label>
+            <Label layoutX="14.0" layoutY="180.0" text="Listado de ticket del dia escogido.">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font></Label>
+            <ListView fx:id="comandasDIA" layoutX="382.0" layoutY="394.0" prefHeight="315.0" prefWidth="275.0" />
+            <Label layoutX="382.0" layoutY="359.0" text="Estadistica de comandas mas demandadas ">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font></Label>
+            <DatePicker fx:id="calendario" layoutX="7.0" layoutY="131.0" onAction="#manejarSeleccionFecha" prefHeight="25.0" prefWidth="111.0" />
+            <TextField fx:id="totalDIAsinIVA" editable="false" layoutX="858.0" layoutY="87.0" />
+            <TextField fx:id="totalDIAconIVA" editable="false" layoutX="858.0" layoutY="123.0" />
+            <TextField fx:id="comensalesDIA" editable="false" layoutX="858.0" layoutY="160.0" />
+            <Label layoutX="520.0" layoutY="91.0" text="Importe total de las comandas del dia:">
+               <font>
+                  <Font name="Courier New" size="11.0" />
+               </font></Label>
+            <Label layoutX="520.0" layoutY="127.0" text="Importe total de las comandas del dia + IVA:">
+               <font>
+                  <Font name="Courier New" size="11.0" />
+               </font></Label>
+            <Label layoutX="520.0" layoutY="164.0" text="Cantidad de comensales que entraron durante el dia:">
+               <font>
+                  <Font name="Courier New" size="11.0" />
+               </font></Label>
+            <Label layoutX="520.0" layoutY="256.0" text="Importe total sin IVA de todo el mes:">
+               <font>
+                  <Font name="Courier New" size="11.0" />
+               </font></Label>
+            <Label layoutX="520.0" layoutY="288.0" text="Importe total + IVA de todo el mes:">
+               <font>
+                  <Font name="Courier New" size="11.0" />
+               </font></Label>
+            <TextField fx:id="totalMESsinIVA" editable="false" layoutX="858.0" layoutY="252.0" />
+            <TextField fx:id="totalMESconIVA" editable="false" layoutX="858.0" layoutY="284.0" />
+            <TextField fx:id="comensalesMES" editable="false" layoutX="858.0" layoutY="317.0" />
+            <Label layoutX="520.0" layoutY="322.0" text="Cantidad de comensales que entraron durante el mes:">
+               <font>
+                  <Font name="Courier New" size="11.0" />
+               </font></Label>
+            <ListView fx:id="comandasMES" layoutX="731.0" layoutY="394.0" prefHeight="315.0" prefWidth="275.0" />
+            <Label layoutX="731.0" layoutY="359.0" text="Estadistica de comandas mas demandadas ">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font></Label>
+            <Label layoutX="382.0" layoutY="377.0" text="durante el dia:">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font></Label>
+            <Label layoutX="731.0" layoutY="377.0" text="durante el mes:">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font></Label>
+         </children>
+      </Pane>
+   </center>
+</BorderPane>

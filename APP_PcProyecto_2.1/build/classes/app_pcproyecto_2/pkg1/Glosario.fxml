@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="857.0" prefWidth="1243.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app_pcproyecto_2.pkg1.GlosarioController">
+    <children>
+        <Label layoutX="14.0" layoutY="14.0" text="Glorasio general de todo el contenido de la base de datos, relacionado con los platos y categorias existentes:">
+            <font>
+                <Font name="Courier New Bold" size="18.0" />
+            </font>
+        </Label>
+        <Label layoutX="14.0" layoutY="113.0" text="Seleccion una categoria para ver su listado de productos:">
+            <font>
+                <Font name="Courier New" size="12.0" />
+            </font>
+        </Label>
+        <ComboBox fx:id="glosarioCategoria" layoutX="434.0" layoutY="108.0" prefHeight="25.0" prefWidth="226.0" promptText="&lt; Selecciona una categoria &gt;" />
+        <Label layoutX="32.0" layoutY="184.0" text="Selecciona un plato:">
+            <font>
+                <Font name="Courier New" size="12.0" />
+            </font>
+        </Label>
+        <ListView fx:id="glosarioPlatos" layoutX="40.0" layoutY="213.0" prefHeight="385.0" prefWidth="362.0" />
+        <ImageView fitHeight="103.0" fitWidth="84.0" layoutX="420.0" layoutY="365.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@../../images/flecha.jpg" />
+            </image>
+        </ImageView>
+        <Label layoutX="523.0" layoutY="184.0" text="Detalles del producto:">
+            <font>
+                <Font name="Courier New" size="12.0" />
+            </font>
+        </Label>
+        <TextArea fx:id="areaDetalle" editable="false" layoutX="523.0" layoutY="213.0" prefHeight="385.0" prefWidth="427.0" />
+    </children>
+</Pane>
