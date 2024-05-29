@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1070.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app_pcproyecto_2.pkg1.ListadoMenusController">
+    <center>
+        <SplitPane dividerPositions="0.49625468164794007" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <items>
+                <AnchorPane fx:id="insert" minHeight="0.0" minWidth="0.0" prefHeight="855.0" prefWidth="593.0">
+                    <children>
+                        <Label layoutX="14.0" layoutY="14.0" text="Insertar platos a la carta de menus:">
+                            <font>
+                                <Font name="Courier New Bold" size="18.0" />
+                            </font>
+                        </Label>
+                        <Label layoutX="14.0" layoutY="85.0" text="Elige la categoria en la que iria el nuevo plato:">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font></Label>
+                        <ComboBox fx:id="selecionInsert" layoutX="156.0" layoutY="112.0" prefHeight="25.0" prefWidth="258.0" promptText="&lt; Selecciona una categoria &gt;" stylesheets="@../../estilos/estilos.css" />
+                        <Label layoutX="14.0" layoutY="169.0" text="Nombre del nuevo plato:">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font></Label>
+                        <TextField fx:id="platoNuevo" layoutX="185.0" layoutY="165.0" prefHeight="25.0" prefWidth="227.0" stylesheets="@../../estilos/estilos.css" />
+                        <TextArea fx:id="descriNuevo" layoutX="185.0" layoutY="252.0" onKeyPressed="#handleTabulation" prefHeight="200.0" prefWidth="200.0" />
+                        <Label layoutX="181.0" layoutY="230.0" text="Descripcion-receta (opcional)">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font></Label>
+                        <Label layoutX="13.0" layoutY="466.0" text="Precio que tendra el plato:">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font></Label>
+                        <TextField fx:id="precioNuevo" layoutX="210.0" layoutY="461.0" stylesheets="@../../estilos/estilos.css" />
+                        <Label layoutX="13.0" layoutY="500.0" text="Tipo de plato:">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font></Label>
+                        <TextField fx:id="tipoNuevo" layoutX="210.0" layoutY="495.0" stylesheets="@../../estilos/estilos.css" />
+                        <Label layoutX="14.0" layoutY="532.0" text="Tipo de porción:">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font></Label>
+                        <TextField fx:id="porcionNuevo" layoutX="210.0" layoutY="527.0" stylesheets="@../../estilos/estilos.css" />
+                        <Label layoutX="13.0" layoutY="584.0" text="Información adicional:">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font></Label>
+                        <CheckBox fx:id="vegeNuevo" layoutX="13.0" layoutY="618.0" mnemonicParsing="false" text="Vegetariano">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font></CheckBox>
+                        <CheckBox fx:id="vegaNuevo" layoutX="135.0" layoutY="618.0" mnemonicParsing="false" text="Vegano">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font></CheckBox>
+                        <CheckBox fx:id="glutenNuevo" layoutX="256.0" layoutY="618.0" mnemonicParsing="false" text="Sin gluten">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font></CheckBox>
+                        <CheckBox fx:id="lactosaNuevo" layoutX="13.0" layoutY="651.0" mnemonicParsing="false" text="Sin lactosa">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font></CheckBox>
+                        <CheckBox fx:id="picaNuevo" layoutX="135.0" layoutY="651.0" mnemonicParsing="false" text="Picante">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font></CheckBox>
+                        <Button fx:id="confirmarNuevo" layoutX="200.0" layoutY="690.0" mnemonicParsing="false" onAction="#confirmarNuevoPlato" text="Confirmar nuevo Plato" />
+                  <Label layoutX="14.0" layoutY="37.0" text="Inserta un nuevo plato a la base de datos, selecciona la categoria">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="14.0" layoutY="52.0" text="en la que quieres ingresar el plato y despues añade todos los valores.">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font>
+                  </Label>
+                    </children>
+                </AnchorPane>
+                <AnchorPane fx:id="actua" minHeight="0.0" minWidth="0.0" prefHeight="855.0" prefWidth="614.0">
+                    <children>
+                        <Label layoutX="14.0" layoutY="14.0" text="Actualizar platos de la carta de menus:">
+                            <font>
+                                <Font name="Courier New Bold" size="18.0" />
+                            </font>
+                        </Label>
+                        <Label layoutX="14.0" layoutY="84.0" text="Escoge la categoria y despues el producto que quieres editar:">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font></Label>
+                        <ComboBox fx:id="seleccionCategoriaActua" layoutX="14.0" layoutY="112.0" prefHeight="25.0" prefWidth="199.0" promptText="&lt; Selecciona una categoria &gt;" stylesheets="@../../estilos/estilos.css" />
+                        <Label layoutX="13.0" layoutY="197.0" text="Nombre del plato:">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font></Label>
+                        <TextField fx:id="nombreActua" layoutX="185.0" layoutY="192.0" prefHeight="25.0" prefWidth="226.0" stylesheets="@../../estilos/estilos.css" />
+                        <TextArea fx:id="descriActua" layoutX="185.0" layoutY="252.0" onKeyPressed="#handleTabulation" prefHeight="200.0" prefWidth="200.0" />
+                        <Label layoutX="181.0" layoutY="230.0" text="Descripcion-receta (opcional)">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font></Label>
+                        <Label layoutX="27.0" layoutY="464.0" text="Precio que tendra el plato:">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font></Label>
+                        <TextField fx:id="precioActua" layoutX="225.0" layoutY="460.0" stylesheets="@../../estilos/estilos.css" />
+                        <Label layoutX="27.0" layoutY="498.0" text="Tipo de plato:">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font></Label>
+                        <TextField fx:id="tipoActua" layoutX="225.0" layoutY="493.0" stylesheets="@../../estilos/estilos.css" />
+                        <Label layoutX="27.0" layoutY="530.0" text="Tipo de porción:">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font></Label>
+                        <TextField fx:id="porcionActua" layoutX="225.0" layoutY="525.0" stylesheets="@../../estilos/estilos.css" />
+                        <Label layoutX="27.0" layoutY="583.0" text="Información adicional:">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font></Label>
+                        <CheckBox fx:id="vegeActua" layoutX="27.0" layoutY="617.0" mnemonicParsing="false" text="Vegetariano">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font></CheckBox>
+                        <CheckBox fx:id="vegaActua" layoutX="149.0" layoutY="617.0" mnemonicParsing="false" text="Vegano">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font></CheckBox>
+                        <CheckBox fx:id="glutenActua" layoutX="270.0" layoutY="617.0" mnemonicParsing="false" text="Sin gluten">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font></CheckBox>
+                        <CheckBox fx:id="lactosaActua" layoutX="27.0" layoutY="652.0" mnemonicParsing="false" text="Sin lactosa">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font></CheckBox>
+                        <CheckBox fx:id="picanteActua" layoutX="149.0" layoutY="652.0" mnemonicParsing="false" text="Picante">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font></CheckBox>
+                        <Button fx:id="confirmarActuaButton" layoutX="200.0" layoutY="690.0" mnemonicParsing="false" onAction="#confirmarActua" text="Confirmar actualizacion Plato" />
+                  <ComboBox fx:id="selecctionProductoActua" layoutX="223.0" layoutY="112.0" prefHeight="25.0" prefWidth="202.0" promptText="&lt; Selecciona un producto &gt;" stylesheets="@../../estilos/estilos.css" />
+                  <Label layoutX="13.0" layoutY="159.0" text="Nombre de la categoria:">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font></Label>
+                  <Label layoutX="13.0" layoutY="37.0" text="Selecciona la categoria y despues el producto al que quieres cambiar datos.">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="13.0" layoutY="54.0" text="Si algun campo no quieres actualizarlo, no lo cambies, solo modifica el que te interesa.">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="categoriaActua" layoutX="185.0" layoutY="154.0" prefHeight="25.0" prefWidth="226.0" stylesheets="@../../estilos/estilos.css" />
+                  <Button fx:id="limpiar" layoutX="436.0" layoutY="112.0" mnemonicParsing="false" onAction="#limpiarCamposProducto" text="Limpiar campos" />
+                    </children>
+                </AnchorPane>
+            </items>
+        </SplitPane>
+    </center>
+</BorderPane>

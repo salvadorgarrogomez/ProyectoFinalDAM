@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.StackedBarChart?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1070.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app_pcproyecto_2.pkg1.AuditoriaController">
+   <center>
+      <SplitPane dividerPositions="0.4887640449438202" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <Label layoutX="16.0" layoutY="14.0" text="Pantalla de administracion:">
+                     <font>
+                        <Font name="Courier New Bold" size="24.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="16.0" layoutY="75.0" text="Insertar categoria nueva:">
+                     <font>
+                        <Font name="Courier New" size="11.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="newCategoria" layoutX="231.0" layoutY="71.0" prefHeight="25.0" prefWidth="185.0" promptText="Añade una categoria nueva" />
+                  <Button fx:id="confiCategor" layoutX="440.0" layoutY="71.0" mnemonicParsing="false" onAction="#insertarNuevaCategoria" prefHeight="25.0" prefWidth="170.0" text="Confirma la nueva Categoria">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font>
+                  </Button>
+                  <Label layoutX="14.0" layoutY="108.0" text="Cambiar nombre a una categoria:">
+                     <font>
+                        <Font name="Courier New" size="11.0" />
+                     </font>
+                  </Label>
+                  <ComboBox fx:id="selectCategor" layoutX="231.0" layoutY="104.0" prefHeight="25.0" prefWidth="185.0" promptText="&lt; Selecciona una categoria &gt;" />
+                  <Label layoutX="16.0" layoutY="141.0" text="Nuevo nombre:">
+                     <font>
+                        <Font name="Courier New" size="11.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="newNombreCatego" layoutX="231.0" layoutY="137.0" prefHeight="25.0" prefWidth="185.0" promptText="Nuevo nombre de la Categoria" />
+                  <Button fx:id="confirNuevoNomCateg" layoutX="440.0" layoutY="137.0" mnemonicParsing="false" onAction="#actualizarNombreCategoria" prefHeight="25.0" prefWidth="170.0" text="Confirma el nuevo nombre">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font>
+                  </Button>
+                  <Line endX="513.0" layoutX="117.0" layoutY="177.0" startX="-100.0" />
+                  <Label layoutX="17.0" layoutY="343.0" text="Borrar categoria:">
+                     <font>
+                        <Font name="Courier New" size="11.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="17.0" layoutY="378.0" text="Borrar plato:">
+                     <font>
+                        <Font name="Courier New" size="11.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="17.0" layoutY="415.0" text="Borrar usuario:">
+                     <font>
+                        <Font name="Courier New" size="11.0" />
+                     </font>
+                  </Label>
+                  <ComboBox fx:id="selectCategoriBorrar" layoutX="129.0" layoutY="337.0" prefHeight="25.0" prefWidth="194.0" promptText="&lt; Selecciona una categoria &gt;" />
+                  <ComboBox fx:id="selectUserBorrar" layoutX="129.0" layoutY="409.0" prefHeight="25.0" prefWidth="193.0" promptText="&lt; Selecciona un usuario &gt;" />
+                  <ComboBox fx:id="selectPlatoBorrar" layoutX="129.0" layoutY="372.0" prefHeight="25.0" prefWidth="193.0" promptText="&lt; Selecciona un plato &gt;" />
+                  <Button fx:id="buttonBorrarCateg" layoutX="476.0" layoutY="337.0" mnemonicParsing="false" onAction="#borrarCategoria" prefHeight="25.0" prefWidth="133.0" text="Borrar categoria">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="buttonBorrarPlato" layoutX="475.0" layoutY="372.0" mnemonicParsing="false" onAction="#borrarProducto" prefHeight="25.0" prefWidth="134.0" text="Borrar plato">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="buttonBorrarUser" layoutX="475.0" layoutY="409.0" mnemonicParsing="false" onAction="#borrarUsuarios" prefHeight="25.0" prefWidth="134.0" text="Borrar usuario">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font>
+                  </Button>
+                  <Label layoutX="17.0" layoutY="192.0" text="Cambiar de nombre a un usuario:">
+                     <font>
+                        <Font name="Courier New" size="11.0" />
+                     </font>
+                  </Label>
+                  <ComboBox fx:id="selectUser" layoutX="230.0" layoutY="188.0" prefHeight="25.0" prefWidth="185.0" promptText="&lt; Selecciona un usuario &gt;" />
+                  <Label layoutX="17.0" layoutY="226.0" text="Nuevo nombre:">
+                     <font>
+                        <Font name="Courier New" size="11.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="newNombreUser" layoutX="230.0" layoutY="221.0" prefHeight="25.0" prefWidth="185.0" promptText="Nuevo nombre del Usuario" />
+                  <Button fx:id="confirCambios" layoutX="439.0" layoutY="255.0" mnemonicParsing="false" onAction="#actualizarNombreUsuario" prefHeight="25.0" prefWidth="170.0" text="Confirmar cambios">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font>
+                  </Button>
+                  <Label layoutX="19.0" layoutY="260.0" text="Cambiar rol de Usuario">
+                     <font>
+                        <Font name="Courier New" size="11.0" />
+                     </font>
+                  </Label>
+                  <ComboBox fx:id="selectRol" layoutX="230.0" layoutY="255.0" prefHeight="25.0" prefWidth="185.0" promptText="&lt; Selecciona un ROL &gt;" />
+                  <TextField fx:id="borraCatego" layoutX="330.0" layoutY="337.0" prefHeight="25.0" prefWidth="139.0" promptText="Categoria" />
+                  <TextField fx:id="borraPlato" layoutX="330.0" layoutY="373.0" onAction="#borrarProducto" prefHeight="25.0" prefWidth="139.0" promptText="Plato" />
+                  <TextField fx:id="borraUser" layoutX="330.0" layoutY="410.0" prefHeight="25.0" prefWidth="139.0" promptText="Usuario" />
+                  <Line endX="513.0" layoutX="116.0" layoutY="310.0" startX="-100.0" />
+                  <Line endX="513.0" layoutX="115.0" layoutY="453.0" startX="-100.0" />
+                  <DatePicker fx:id="calendario" layoutX="17.0" layoutY="503.0" onAction="#manejarSeleccionFecha" />
+                  <ListView fx:id="ListComandas" layoutX="222.0" layoutY="503.0" onMouseClicked="#handleTicketSelection" prefHeight="219.0" prefWidth="396.0" />
+                  <Label layoutX="16.0" layoutY="469.0" text="Selecciona un dia, para borrar una comanda:">
+                     <font>
+                        <Font name="Courier New" size="11.0" />
+                     </font>
+                  </Label>
+                  <Button fx:id="borrarComanda" layoutX="16.0" layoutY="549.0" mnemonicParsing="false" onAction="#borrarElementoSeleccionado" prefHeight="25.0" prefWidth="171.0" text="Borrar comanda">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font>
+                  </Button>
+               </children>
+            </AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <Label layoutX="14.0" layoutY="14.0" text="Graficas de comandas, evolucion dia a dia:">
+                     <font>
+                        <Font name="Courier New" size="14.0" />
+                     </font>
+                  </Label>
+                  <DatePicker fx:id="calendarioTabla" layoutX="14.0" layoutY="41.0" />
+                  <TableView fx:id="tableDatos" layoutX="14.0" layoutY="84.0" prefHeight="192.0" prefWidth="530.0">
+                    <columns>
+                      <TableColumn fx:id="tableMES" prefWidth="75.0" text="Mes" />
+                      <TableColumn fx:id="tableDIA" prefWidth="75.0" text="Dia" />
+                        <TableColumn fx:id="tableComandas" prefWidth="116.0" text="Cant. Comandas" />
+                        <TableColumn fx:id="tableSIN" prefWidth="90.0" text=" Sin IVA" />
+                        <TableColumn fx:id="tableCON" prefWidth="84.0" text="Con IVA" />
+                        <TableColumn fx:id="tableComensa" prefWidth="89.0" text="Comensales" />
+                    </columns>
+                  </TableView>
+                  <TextField fx:id="totalSINIVA" editable="false" layoutX="395.0" layoutY="286.0" promptText="0.00" />
+                  <TextField fx:id="totalCONIVA" editable="false" layoutX="395.0" layoutY="319.0" promptText="0.00" />
+                  <TextField fx:id="totalComensales" editable="false" layoutX="395.0" layoutY="354.0" promptText="0" />
+                  <Label layoutX="14.0" layoutY="290.0" text="Computo total de la entrada mensual sin IVA:">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="14.0" layoutY="323.0" text="Computo total de la entrada mensual con IVA:">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="14.0" layoutY="358.0" text="Computo total de clientes al cabo del mes:">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="totalComandas" editable="false" layoutX="395.0" layoutY="391.0" promptText="0" />
+                  <Label layoutX="14.0" layoutY="395.0" text="Computo total de comandas al cabo del mes:">
+                     <font>
+                        <Font name="Courier New" size="12.0" />
+                     </font>
+                  </Label>
+                  <StackedBarChart fx:id="graficaDatos" layoutX="14.0" layoutY="423.0" prefHeight="302.0" prefWidth="546.0">
+                    <xAxis>
+                      <CategoryAxis side="BOTTOM" />
+                    </xAxis>
+                    <yAxis>
+                      <NumberAxis side="LEFT" />
+                    </yAxis>
+                  </StackedBarChart>
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+   </center>
+</BorderPane>

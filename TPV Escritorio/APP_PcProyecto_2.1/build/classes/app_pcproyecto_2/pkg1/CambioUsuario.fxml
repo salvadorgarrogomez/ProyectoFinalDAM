@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1070.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app_pcproyecto_2.pkg1.CambioUsuarioController">
+   <right>
+      <Pane fx:id="loginDerechoArriba" prefHeight="767.0" prefWidth="526.0" BorderPane.alignment="CENTER" />
+   </right>
+   <left>
+      <Pane fx:id="loginIzquierdo" prefHeight="650.0" prefWidth="1070.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label layoutX="481.0" layoutY="69.0" text="LOGIN">
+               <font>
+                  <Font name="Courier New Bold" size="36.0" />
+               </font>
+            </Label>
+            <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="458.0" layoutY="170.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../images/login.png" />
+               </image>
+            </ImageView>
+            <Label layoutX="214.0" layoutY="357.0" text="Introduce el nombre de Usuario:">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font></Label>
+            <Label layoutX="265.0" layoutY="394.0" text="Introduce la Contraseña:">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font></Label>
+            <TextField fx:id="usuarioNombre" layoutX="462.0" layoutY="352.0" />
+            <PasswordField fx:id="usuarioContrase" layoutX="462.0" layoutY="390.0" />
+            <Button fx:id="buttonEntrar" layoutX="631.0" layoutY="352.0" mnemonicParsing="false" onMouseClicked="#login" prefHeight="65.0" prefWidth="137.0" text="Entrar" />
+            <Label fx:id="incorrecto" layoutX="479.0" layoutY="428.0" text="Contraseña incorrecta">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </Label>
+            <Label layoutX="474.0" layoutY="450.0" text="Has olvidado la contraseña?">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </Label>
+            <Button fx:id="cambioContra" layoutX="462.0" layoutY="479.0" mnemonicParsing="false" onMouseClicked="#mostrarNuevaContra" prefHeight="25.0" prefWidth="144.0" text="Cambiar contraseña:" />
+            <Label layoutX="207.0" layoutY="560.0" text="Añadir nuevo usario al sistema:">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font></Label>
+            <Button fx:id="newUser" layoutX="462.0" layoutY="555.0" mnemonicParsing="false" onMouseClicked="#mostrarNuevoUsuario" prefHeight="25.0" prefWidth="145.0" text="Añadir usuario" />
+            <Button fx:id="salir" layoutX="462.0" layoutY="650.0" mnemonicParsing="false" onMouseClicked="#botonSalir" prefHeight="25.0" prefWidth="145.0" text="Salir" />
+         </children></Pane>
+   </left>
+</BorderPane>

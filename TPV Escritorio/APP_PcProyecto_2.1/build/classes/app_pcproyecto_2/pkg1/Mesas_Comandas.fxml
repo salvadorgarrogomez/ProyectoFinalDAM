@@ -1,0 +1,595 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" fx:id="mesas" prefHeight="650.0" prefWidth="1070.0" style="-fx-background-color: #f0f0f0;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app_pcproyecto_2.pkg1.Mesas_ComandasController">
+   <children>
+      <Label layoutX="69.0" layoutY="159.0" text="Selecciona una categoria de la carta:">
+         <font>
+            <Font name="Courier New" size="12.0" />
+         </font></Label>
+      <ComboBox fx:id="seleccionCategoria" layoutX="17.0" layoutY="180.0" prefHeight="25.0" prefWidth="372.0" promptText="&lt; Selecciona un dato &gt;" stylesheets="@../../estilos/estilos.css" />
+      <Label layoutX="14.0" layoutY="14.0" text="Pantalla de comandas y resumen de Mesas:">
+         <font>
+            <Font name="Courier New Bold" size="24.0" />
+         </font>
+      </Label>
+      <ListView fx:id="listProductos" layoutX="17.0" layoutY="213.0" prefHeight="200.0" prefWidth="372.0" />
+      <Label layoutX="58.0" layoutY="103.0" text="Selecciona una mesa para añadirle comandas:">
+         <font>
+            <Font name="Courier New" size="12.0" />
+         </font></Label>
+      <ComboBox fx:id="seleccionMesa" layoutX="113.0" layoutY="122.0" prefHeight="25.0" prefWidth="180.0" promptText="&lt; Selecciona una Mesa &gt;" stylesheets="@../../estilos/estilos.css" />
+      <Label layoutX="571.0" layoutY="99.0" text="Conjunto de mesas en el local:">
+         <font>
+            <Font name="Courier New" size="18.0" />
+         </font>
+      </Label>
+      <TabPane fx:id="tabPaneMesas" layoutX="405.0" layoutY="130.0" prefHeight="600.0" prefWidth="657.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab fx:id="Mesa_1" text="Mesa 1:">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="598.0" prefWidth="657.0">
+                     <children>
+                        <Label layoutX="375.0" layoutY="154.0" text="Importe acumulado sin IVA:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <TextField fx:id="acumuladoMesa1" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Button fx:id="confirmarMesa1" layoutX="418.0" layoutY="389.0" mnemonicParsing="false" onAction="#confirmarPago" prefHeight="25.0" prefWidth="106.0" text="Confirmar pago" />
+                        <Label layoutX="375.0" layoutY="310.0" text="Imprimir ticket?">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <CheckBox fx:id="ticketMesa1" layoutX="510.0" layoutY="310.0" mnemonicParsing="false" />
+                        <Label layoutX="376.0" layoutY="211.0" text="Importe acumulado con IVA:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="acumuladoMesa1conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Label layoutX="347.0" layoutY="14.0" text="Cantidad de comensales en la mesa:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextArea fx:id="ListMesa_1" layoutX="14.0" layoutY="14.0" prefHeight="400.0" prefWidth="300.0" />
+                        <Spinner fx:id="comensalesMesa1" layoutX="430.0" layoutY="29.0" prefHeight="23.0" prefWidth="82.0" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab fx:id="Mesa_2" text="Mesa 2:">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Label layoutX="375.0" layoutY="154.0" text="Importe acumulado sin IVA:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <TextField fx:id="acumuladoMesa2" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Button fx:id="confirmarMesa2" layoutX="418.0" layoutY="389.0" mnemonicParsing="false" onAction="#confirmarPago" prefHeight="25.0" prefWidth="106.0" text="Confirmar pago" />
+                        <Label layoutX="375.0" layoutY="310.0" text="Imprimir ticket?">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <CheckBox fx:id="ticketMesa2" layoutX="510.0" layoutY="310.0" mnemonicParsing="false" />
+                        <Label layoutX="376.0" layoutY="211.0" text="Importe acumulado con IVA:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="acumuladoMesa2conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Label layoutX="347.0" layoutY="14.0" text="Cantidad de comensales en la mesa:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextArea fx:id="ListMesa_2" layoutX="14.0" layoutY="14.0" prefHeight="400.0" prefWidth="300.0" />
+                        <Spinner fx:id="comensalesMesa2" layoutX="430.0" layoutY="29.0" prefHeight="23.0" prefWidth="82.0" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+            <Tab fx:id="Mesa_3" text="Mesa 3:">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Label layoutX="375.0" layoutY="154.0" text="Importe acumulado sin IVA:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <TextField fx:id="acumuladoMesa3" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Button fx:id="confirmarMesa3" layoutX="418.0" layoutY="389.0" mnemonicParsing="false" onAction="#confirmarPago" prefHeight="25.0" prefWidth="106.0" text="Confirmar pago" />
+                        <Label layoutX="375.0" layoutY="310.0" text="Imprimir ticket?">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <CheckBox fx:id="ticketMesa3" layoutX="510.0" layoutY="310.0" mnemonicParsing="false" />
+                        <Label layoutX="376.0" layoutY="211.0" text="Importe acumulado con IVA:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="acumuladoMesa3conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Label layoutX="347.0" layoutY="14.0" text="Cantidad de comensales en la mesa:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextArea fx:id="ListMesa_3" layoutX="14.0" layoutY="14.0" prefHeight="400.0" prefWidth="300.0" />
+                        <Spinner fx:id="comensalesMesa3" layoutX="430.0" layoutY="29.0" prefHeight="23.0" prefWidth="82.0" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab fx:id="Mesa_4" text="Mesa 4:">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="confirmarMesa4" layoutX="418.0" layoutY="389.0" mnemonicParsing="false" onAction="#confirmarPago" prefHeight="25.0" prefWidth="106.0" text="Confirmar pago" />
+                        <Label layoutX="375.0" layoutY="154.0" text="Importe acumulado sin IVA:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <TextField fx:id="acumuladoMesa4" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Label layoutX="375.0" layoutY="310.0" text="Imprimir ticket?">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <CheckBox fx:id="ticketMesa4" layoutX="510.0" layoutY="310.0" mnemonicParsing="false" />
+                        <Label layoutX="376.0" layoutY="211.0" text="Importe acumulado con IVA:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="acumuladoMesa4conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Label layoutX="347.0" layoutY="14.0" text="Cantidad de comensales en la mesa:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextArea fx:id="ListMesa_4" layoutX="14.0" layoutY="14.0" prefHeight="400.0" prefWidth="300.0" />
+                        <Spinner fx:id="comensalesMesa4" layoutX="430.0" layoutY="29.0" prefHeight="23.0" prefWidth="82.0" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab fx:id="Mesa_5" text="Mesa 5:">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="confirmarMesa5" layoutX="418.0" layoutY="389.0" mnemonicParsing="false" onAction="#confirmarPago" prefHeight="25.0" prefWidth="106.0" text="Confirmar pago" />
+                        <Label layoutX="375.0" layoutY="154.0" text="Importe acumulado sin IVA:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <TextField fx:id="acumuladoMesa5" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Label layoutX="375.0" layoutY="310.0" text="Imprimir ticket?">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <CheckBox fx:id="ticketMesa5" layoutX="510.0" layoutY="310.0" mnemonicParsing="false" />
+                        <Label layoutX="376.0" layoutY="211.0" text="Importe acumulado con IVA:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="acumuladoMesa5conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Label layoutX="347.0" layoutY="14.0" text="Cantidad de comensales en la mesa:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextArea fx:id="ListMesa_5" layoutX="14.0" layoutY="14.0" prefHeight="400.0" prefWidth="300.0" />
+                        <Spinner fx:id="comensalesMesa5" layoutX="430.0" layoutY="29.0" prefHeight="23.0" prefWidth="82.0" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab fx:id="Mesa_6" text="Mesa 6:">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="confirmarMesa6" layoutX="418.0" layoutY="389.0" mnemonicParsing="false" onAction="#confirmarPago" prefHeight="25.0" prefWidth="106.0" text="Confirmar pago" />
+                        <Label layoutX="375.0" layoutY="154.0" text="Importe acumulado sin IVA:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <TextField fx:id="acumuladoMesa6" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Label layoutX="375.0" layoutY="310.0" text="Imprimir ticket?">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <CheckBox fx:id="ticketMesa6" layoutX="510.0" layoutY="310.0" mnemonicParsing="false" />
+                        <Label layoutX="376.0" layoutY="211.0" text="Importe acumulado con IVA:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="acumuladoMesa6conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Label layoutX="347.0" layoutY="14.0" text="Cantidad de comensales en la mesa:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextArea fx:id="ListMesa_6" layoutX="14.0" layoutY="14.0" prefHeight="400.0" prefWidth="300.0" />
+                        <Spinner fx:id="comensalesMesa6" layoutX="430.0" layoutY="29.0" prefHeight="23.0" prefWidth="82.0" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab fx:id="Mesa_7" text="Mesa 7:">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="confirmarMesa7" layoutX="418.0" layoutY="389.0" mnemonicParsing="false" onAction="#confirmarPago" prefHeight="25.0" prefWidth="106.0" text="Confirmar pago" />
+                        <Label layoutX="375.0" layoutY="154.0" text="Importe acumulado sin IVA:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <TextField fx:id="acumuladoMesa7" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Label layoutX="375.0" layoutY="310.0" text="Imprimir ticket?">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <CheckBox fx:id="ticketMesa7" layoutX="510.0" layoutY="310.0" mnemonicParsing="false" />
+                        <Label layoutX="376.0" layoutY="211.0" text="Importe acumulado con IVA:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="acumuladoMesa7conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Label layoutX="347.0" layoutY="14.0" text="Cantidad de comensales en la mesa:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextArea fx:id="ListMesa_7" layoutX="14.0" layoutY="14.0" prefHeight="400.0" prefWidth="300.0" />
+                        <Spinner fx:id="comensalesMesa7" layoutX="430.0" layoutY="29.0" prefHeight="23.0" prefWidth="82.0" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab fx:id="Mesa_8" text="Mesa 8:">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="confirmarMesa8" layoutX="418.0" layoutY="389.0" mnemonicParsing="false" onAction="#confirmarPago" prefHeight="25.0" prefWidth="106.0" text="Confirmar pago" />
+                        <Label layoutX="375.0" layoutY="154.0" text="Importe acumulado sin IVA:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <TextField fx:id="acumuladoMesa8" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Label layoutX="375.0" layoutY="310.0" text="Imprimir ticket?">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <CheckBox fx:id="ticketMesa8" layoutX="510.0" layoutY="310.0" mnemonicParsing="false" />
+                        <Label layoutX="376.0" layoutY="211.0" text="Importe acumulado con IVA:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="acumuladoMesa8conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Label layoutX="347.0" layoutY="14.0" text="Cantidad de comensales en la mesa:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextArea fx:id="ListMesa_8" layoutX="14.0" layoutY="14.0" prefHeight="400.0" prefWidth="300.0" />
+                        <Spinner fx:id="comensalesMesa8" layoutX="430.0" layoutY="29.0" prefHeight="23.0" prefWidth="82.0" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab fx:id="Mesa_9" text="Mesa 9:">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="confirmarMesa9" layoutX="418.0" layoutY="389.0" mnemonicParsing="false" onAction="#confirmarPago" prefHeight="25.0" prefWidth="106.0" text="Confirmar pago" />
+                        <Label layoutX="375.0" layoutY="154.0" text="Importe acumulado sin IVA:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <TextField fx:id="acumuladoMesa9" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Label layoutX="375.0" layoutY="310.0" text="Imprimir ticket?">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <CheckBox fx:id="ticketMesa9" layoutX="510.0" layoutY="310.0" mnemonicParsing="false" />
+                        <Label layoutX="376.0" layoutY="211.0" text="Importe acumulado con IVA:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="acumuladoMesa9conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Label layoutX="347.0" layoutY="14.0" text="Cantidad de comensales en la mesa:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextArea fx:id="ListMesa_9" layoutX="14.0" layoutY="14.0" prefHeight="400.0" prefWidth="300.0" />
+                        <Spinner fx:id="comensalesMesa9" layoutX="430.0" layoutY="29.0" prefHeight="23.0" prefWidth="82.0" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab fx:id="Mesa_10" text="Mesa 10:">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="confirmarMesa10" layoutX="418.0" layoutY="389.0" mnemonicParsing="false" onAction="#confirmarPago" prefHeight="25.0" prefWidth="106.0" text="Confirmar pago" />
+                        <Label layoutX="375.0" layoutY="154.0" text="Importe acumulado sin IVA:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <TextField fx:id="acumuladoMesa10" editable="false" layoutX="416.0" layoutY="177.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Label layoutX="375.0" layoutY="310.0" text="Imprimir ticket?">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <CheckBox fx:id="ticketMesa10" layoutX="510.0" layoutY="310.0" mnemonicParsing="false" />
+                        <Label layoutX="376.0" layoutY="211.0" text="Importe acumulado con IVA:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="acumuladoMesa10conIVA" editable="false" layoutX="417.0" layoutY="233.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Label layoutX="347.0" layoutY="14.0" text="Cantidad de comensales en la mesa:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextArea fx:id="ListMesa_10" layoutX="14.0" layoutY="14.0" prefHeight="400.0" prefWidth="300.0" />
+                        <Spinner fx:id="comensalesMesa10" layoutX="430.0" layoutY="29.0" prefHeight="23.0" prefWidth="82.0" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab fx:id="Barra" text="Barra ">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="611.0" prefWidth="657.0">
+                     <children>
+                        <Label layoutX="14.0" layoutY="6.0" text="Barra 1:">
+                           <font>
+                              <Font name="Courier New Bold" size="12.0" />
+                           </font></Label>
+                        <Label layoutX="329.0" layoutY="6.0" text="Barra 2:">
+                           <font>
+                              <Font name="Courier New Bold" size="12.0" />
+                           </font></Label>
+                        <Label layoutX="17.0" layoutY="289.0" text="Barra 3:">
+                           <font>
+                              <Font name="Courier New Bold" size="12.0" />
+                           </font></Label>
+                        <Label layoutX="332.0" layoutY="289.0" text="Barra 4:">
+                           <font>
+                              <Font name="Courier New Bold" size="12.0" />
+                           </font></Label>
+                        <Button fx:id="confirmarBarra3" layoutX="189.0" layoutY="485.0" mnemonicParsing="false" onAction="#confirmarPago" prefHeight="25.0" prefWidth="106.0" text="Confirmar pago" />
+                        <Button fx:id="confirmarBarra1" layoutX="189.0" layoutY="228.0" mnemonicParsing="false" onAction="#confirmarPago" prefHeight="25.0" prefWidth="106.0" text="Confirmar pago" />
+                        <Button fx:id="confirmarBarra2" layoutX="504.0" layoutY="228.0" mnemonicParsing="false" onAction="#confirmarPago" prefHeight="25.0" prefWidth="106.0" text="Confirmar pago" />
+                        <Button fx:id="confirmarBarra4" layoutX="504.0" layoutY="485.0" mnemonicParsing="false" onAction="#confirmarPago" prefHeight="25.0" prefWidth="106.0" text="Confirmar pago" />
+                        <Label layoutX="189.0" layoutY="31.0" text="Importe sin IVA:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <TextField fx:id="acumuladoBarra1" editable="false" layoutX="189.0" layoutY="54.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Label layoutX="504.0" layoutY="30.0" text="Importe sin IVA:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <TextField fx:id="acumuladoBarra2" editable="false" layoutX="504.0" layoutY="53.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Label layoutX="192.0" layoutY="288.0" text="Importe sin IVA:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <TextField fx:id="acumuladoBarra3" editable="false" layoutX="192.0" layoutY="311.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Label layoutX="507.0" layoutY="287.0" text="Importe sin IVA:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <TextField fx:id="acumuladoBarra4" editable="false" layoutX="507.0" layoutY="310.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Label layoutX="201.0" layoutY="169.0" text="Imprimir ticket?">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <CheckBox fx:id="ticketBarra1" layoutX="234.0" layoutY="195.0" mnemonicParsing="false" />
+                        <Label layoutX="516.0" layoutY="165.0" text="Imprimir ticket?">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <CheckBox fx:id="ticketBarra2" layoutX="549.0" layoutY="191.0" mnemonicParsing="false" />
+                        <Label layoutX="201.0" layoutY="431.0" text="Imprimir ticket?">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <CheckBox fx:id="ticketBarra3" layoutX="234.0" layoutY="457.0" mnemonicParsing="false" />
+                        <Label layoutX="516.0" layoutY="427.0" text="Imprimir ticket?">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font></Label>
+                        <CheckBox fx:id="ticketBarra4" layoutX="549.0" layoutY="453.0" mnemonicParsing="false" />
+                        <Label layoutX="189.0" layoutY="88.0" text="Impuestos incluidos:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="acumuladoBarra1conIVA" editable="false" layoutX="189.0" layoutY="111.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Label layoutX="504.0" layoutY="87.0" text="Impuestos incluidos:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="acumuladoBarra2conIVA" editable="false" layoutX="504.0" layoutY="110.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Label layoutX="192.0" layoutY="345.0" text="Impuestos incluidos:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="acumuladoBarra3conIVA" editable="false" layoutX="192.0" layoutY="368.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Label layoutX="507.0" layoutY="344.0" text="Impuestos incluidos:">
+                           <font>
+                              <Font name="Courier New" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="acumuladoBarra4conIVA" editable="false" layoutX="507.0" layoutY="367.0" prefHeight="25.0" prefWidth="107.0" promptText="0.00" />
+                        <Label layoutX="14.0" layoutY="22.0" text="Comensales:">
+                           <font>
+                              <Font name="Courier New" size="11.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="325.0" layoutY="23.0" text="Comensales:">
+                           <font>
+                              <Font name="Courier New" size="11.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="17.0" layoutY="308.0" text="Comensales:">
+                           <font>
+                              <Font name="Courier New" size="11.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="328.0" layoutY="308.0" text="Comensales:">
+                           <font>
+                              <Font name="Courier New" size="11.0" />
+                           </font>
+                        </Label>
+                        <TextArea fx:id="ListBarra_1" layoutX="16.0" layoutY="53.0" prefHeight="225.0" prefWidth="175.0" />
+                        <TextArea fx:id="ListBarra_2" layoutX="331.0" layoutY="53.0" prefHeight="225.0" prefWidth="175.0" />
+                        <TextArea fx:id="ListBarra_3" layoutX="16.0" layoutY="334.0" prefHeight="225.0" prefWidth="175.0" />
+                        <TextArea fx:id="ListBarra_4" layoutX="332.0" layoutY="334.0" prefHeight="225.0" prefWidth="175.0" />
+                        <Spinner fx:id="comensalesBarra1" layoutX="100.0" layoutY="11.0" prefHeight="23.0" prefWidth="82.0" />
+                        <Spinner fx:id="comensalesBarra2" layoutX="416.0" layoutY="11.0" prefHeight="23.0" prefWidth="82.0" />
+                        <Spinner fx:id="comensalesBarra3" layoutX="106.0" layoutY="296.0" prefHeight="23.0" prefWidth="82.0" />
+                        <Spinner fx:id="comensalesBarra4" layoutX="422.0" layoutY="295.0" prefHeight="23.0" prefWidth="82.0" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+      <Pane fx:id="paneMesas" layoutX="7.0" layoutY="458.0" prefHeight="289.0" prefWidth="413.0">
+         <children>
+            <Label layoutX="30.0" layoutY="10.0" text="Resumen de Mesas (disponibilidad)">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="30.0" layoutY="73.0" text="Mesa 2:">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="30.0" layoutY="110.0" text="Mesa 3:">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="30.0" layoutY="144.0" text="Mesa 4:">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="30.0" layoutY="179.0" text="Mesa 5:">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="198.0" layoutY="39.0" text="Mesa 6:">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="198.0" layoutY="73.0" text="Mesa 7:">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="30.0" layoutY="39.0" text="Mesa 1:">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="198.0" layoutY="110.0" text="Mesa 8:">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="198.0" layoutY="144.0" text="Mesa 9:">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="194.0" layoutY="179.0" text="Mesa 10:">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="24.0" layoutY="214.0" text="Barra 1:">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="192.0" layoutY="214.0" text="Barra 3:">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="24.0" layoutY="250.0" text="Barra 2:">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="192.0" layoutY="250.0" text="Barra 4:">
+               <font>
+                  <Font name="Courier New" size="12.0" />
+               </font>
+            </Label>
+            <TextField fx:id="Mesa1" editable="false" layoutX="79.0" layoutY="35.0" prefHeight="25.0" prefWidth="96.0" stylesheets="@../../estilos/estilos.css" />
+            <TextField fx:id="Mesa2" editable="false" layoutX="79.0" layoutY="69.0" prefHeight="25.0" prefWidth="96.0" stylesheets="@../../estilos/estilos.css" />
+            <TextField fx:id="Mesa3" editable="false" layoutX="79.0" layoutY="106.0" prefHeight="25.0" prefWidth="96.0" stylesheets="@../../estilos/estilos.css" />
+            <TextField fx:id="Mesa4" editable="false" layoutX="79.0" layoutY="140.0" prefHeight="25.0" prefWidth="96.0" stylesheets="@../../estilos/estilos.css" />
+            <TextField fx:id="Mesa5" editable="false" layoutX="79.0" layoutY="175.0" prefHeight="25.0" prefWidth="96.0" stylesheets="@../../estilos/estilos.css" />
+            <TextField fx:id="Barra1" editable="false" layoutX="79.0" layoutY="209.0" prefHeight="25.0" prefWidth="96.0" stylesheets="@../../estilos/estilos.css" />
+            <TextField fx:id="Barra2" editable="false" layoutX="79.0" layoutY="245.0" prefHeight="25.0" prefWidth="96.0" stylesheets="@../../estilos/estilos.css" />
+            <TextField fx:id="Mesa6" editable="false" layoutX="250.0" layoutY="35.0" prefHeight="25.0" prefWidth="96.0" stylesheets="@../../estilos/estilos.css" />
+            <TextField fx:id="Mesa7" editable="false" layoutX="250.0" layoutY="69.0" prefHeight="25.0" prefWidth="96.0" stylesheets="@../../estilos/estilos.css" />
+            <TextField fx:id="Mesa8" editable="false" layoutX="250.0" layoutY="106.0" prefHeight="25.0" prefWidth="96.0" stylesheets="@../../estilos/estilos.css" />
+            <TextField fx:id="Mesa9" editable="false" layoutX="250.0" layoutY="140.0" prefHeight="25.0" prefWidth="96.0" stylesheets="@../../estilos/estilos.css" />
+            <TextField fx:id="Mesa10" editable="false" layoutX="250.0" layoutY="175.0" prefHeight="25.0" prefWidth="96.0" stylesheets="@../../estilos/estilos.css" />
+            <TextField fx:id="Barra3" editable="false" layoutX="250.0" layoutY="209.0" prefHeight="25.0" prefWidth="96.0" stylesheets="@../../estilos/estilos.css" />
+            <TextField fx:id="Barra4" editable="false" layoutX="250.0" layoutY="245.0" prefHeight="25.0" prefWidth="96.0" stylesheets="@../../estilos/estilos.css" />
+         </children>
+      </Pane>
+      <Label layoutX="17.0" layoutY="430.0" text="Cantidad del producto:">
+         <font>
+            <Font name="Courier New" size="12.0" />
+         </font>
+      </Label>
+      <Button fx:id="btnAgregarProductos" layoutX="293.0" layoutY="425.0" mnemonicParsing="false" onAction="#confirmarComanda" prefHeight="25.0" prefWidth="102.0" text="Siguiente producto/plato" />
+      <Spinner fx:id="cantidad" editable="true" layoutX="176.0" layoutY="425.0" prefHeight="25.0" prefWidth="102.0" stylesheets="@../../estilos/estilos.css" />
+      <ProgressIndicator fx:id="progreso" layoutX="497.0" layoutY="86.0" prefHeight="35.0" prefWidth="65.0" progress="0.0" stylesheets="@../../estilos/estilos.css" visible="false" />
+      <Label layoutX="17.0" layoutY="49.0" text="Selecciona la Mesa a la que quieres añadirle platos, para ir actualizando la comanda.">
+         <font>
+            <Font name="Courier New" size="11.0" />
+         </font></Label>
+      <Label layoutX="17.0" layoutY="67.0" text="Confirma el pago simplemente dandole al boton requerido para ello en cada una de las pestaña asociada a cada Mesa/Barra">
+         <font>
+            <Font name="Courier New" size="11.0" />
+         </font></Label>
+   </children>
+</AnchorPane>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="APP_PcProyecto_2.1.jnlp">
+  <information>
+    <title>APP_PcProyecto_2.1</title>
+    <vendor>salva</vendor>
+    <description>null</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="APP_PcProyecto_2.1.jar" size="7296183" download="eager" />
+    <jar href="lib\javafx-swt.jar" size="37082" download="eager" />
+    <jar href="lib\javafx.base.jar" size="756513" download="eager" />
+    <jar href="lib\javafx.controls.jar" size="2597130" download="eager" />
+    <jar href="lib\javafx.fxml.jar" size="130169" download="eager" />
+    <jar href="lib\javafx.graphics.jar" size="4303151" download="eager" />
+    <jar href="lib\javafx.media.jar" size="277400" download="eager" />
+    <jar href="lib\javafx.swing.jar" size="90415" download="eager" />
+    <jar href="lib\javafx.web.jar" size="716750" download="eager" />
+    <jar href="lib\postgresql-42.7.3.jar" size="1089312" download="eager" />
+  </resources>
+  <jfx:javafx-desc  width="800" height="600" main-class="app_pcproyecto_2.pkg1.APP_PcProyecto_21"  name="APP_PcProyecto_2.1" />
+  <update check="always"/>
+</jnlp>
