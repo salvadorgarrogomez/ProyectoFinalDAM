@@ -1,6 +1,0 @@
-private static final String URL = "jdbc:postgresql://192.168.1.138:5432/Bar_ElEscobar_2.0";
-private static final String USUARIO = "postgres";
-private static final String CONTRASEÑA = "12345";
-
-Codificación para el launch4j, para caracteres especiales:
--Dfile.encoding=UTF-8
