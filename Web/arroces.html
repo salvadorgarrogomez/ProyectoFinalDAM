@@ -5,22 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bar El Escobar - Arroces/Fideuá</title>
-    <link rel="stylesheet" href="entrantesCSS.css"> <!-- Enlaza tu archivo CSS externo -->
+    <!-- Se asocia el archivo CSS para darle formato a la página HTML -->
+    <link rel="stylesheet" href="entrantesCSS.css">
 </head>
 
 <body>
     <h1>Arroces</h1>
     <h3>Por encargo</h3>
     <nav class="menu-navegacion">
+        <!-- Boton para ir atras, a la pagina principal -->
         <ul>
             <li><a href="PaginaWeb.html">Atrás</a></li>
         </ul>
     </nav>
     <form>
+        <!-- Menú de navegación para diferentes platos -->
         <div class="menu">
             <div class="plato">
                 <h3>Arroz de conejo, magra con costilleja o pollo</h3>
-                <p>Precio ración: </p>
+                <p class="racion_completa"></p>
                 <p>11.00 € </p>
             </div>
         </div>
@@ -32,25 +35,27 @@
         <div class="menu">
             <div class="plato">
                 <h3>Fideuá de carne</h3>
-                <p>Precio ración: </p>
+                <p class="racion_completa"></p>
                 <p>8.50 € </p>
             </div>
             <div class="plato">
                 <h3>Fideuá de marisco</h3>
-                <p>Precio ración: </p>
+                <p class="racion_completa"></p>
                 <p>11.00 € </p>
             </div>
         </div>
     </form>
     <footer>
+        <!-- Elemento de traducción de Google -->
         <div id="google_translate_element" class="google"></div>
 
         <script type="text/javascript">
+            // Función de inicialización del elemento de traducción de Google
             function googleTranslateElementInit() {
                 new google.translate.TranslateElement({ pageLanguage: 'es', includedLanguages: 'ca,eu,gl,en,fr,it,pt,de', layout: google.translate.TranslateElement.InlineLayout.SIMPLE, gaTrack: true }, 'google_translate_element');
             }
         </script>
-
+        <!-- Carga el script de Google Translate y llama a la función de inicialización -->
         <script type="text/javascript"
             src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     </footer>
