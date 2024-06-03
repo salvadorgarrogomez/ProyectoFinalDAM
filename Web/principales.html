@@ -5,79 +5,82 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bar El Escobar - Carnes/Pescados</title>
-    <link rel="stylesheet" href="entrantesCSS.css"> <!-- Enlaza tu archivo CSS externo -->
+    <!-- Se asocia el archivo CSS para darle formato a la página HTML -->
+    <link rel="stylesheet" href="entrantesCSS.css">
 </head>
 
 <body>
     <h1>Menu de Carnes</h1>
     <h3>Consultar disponibilidad y/o por encargo</h3>
     <nav class="menu-navegacion">
+        <!-- Boton para ir atras, a la pagina principal -->
         <ul>
             <li><a href="PaginaWeb.html">Atrás</a></li>
         </ul>
     </nav>
     <form>
+        <!-- Menú de navegación para diferentes platos -->
         <div class="menu">
             <div class="plato">
                 <h3>Solomillo al Pedro Ximénez</h3>
-                <p>Precio ración: </p>
+                <p class="racion_completa"></p>
                 <p>10.90 € </p>
             </div>
             <div class="plato">
                 <h3>Solomillo al ron</h3>
-                <p>Precio ración: </p>
+                <p class="racion_completa"></p>
                 <p>10.90 € </p>
             </div>
             <div class="plato">
                 <h3>Pechugas de pollo a la sidra</h3>
-                <p>Precio ración: </p>
+                <p class="racion_completa"></p>
                 <p>9.50 € </p>
             </div>
             <div class="plato">
                 <h3>Albondigas con salsa al vino blanco</h3>
-                <p>Precio ración: </p>
+                <p class="racion_completa"></p>
                 <p>8.50 € </p>
             </div>
             <div class="plato">
                 <h3>Codillo en salsa</h2>
-                <p>Precio ración: </p>
-                <p>9.50 € </p>
+                    <p class="racion_completa"></p>
+                    <p>9.50 € </p>
             </div>
             <div class="plato">
                 <h3>Lomo al ron</h3>
-                <p>Precio ración: </p>
+                <p class="racion_completa"></p>
                 <p>9.50 € </p>
             </div>
             <div class="plato">
                 <h3>Costillar a baja temperatura con salsa barbacoa</h3>
-                <p>Precio ración: </p>
+                <p class="racion_completa"></p>
                 <p>10.90 € </p>
             </div>
             <div class="plato">
                 <h3>Pechugas a la crema con champiñones</h3>
-                <p>Precio ración: </p>
+                <p class="racion_completa"></p>
                 <p>9.50 € </p>
             </div>
             <div class="plato">
                 <h3>Ternera en salsa</h3>
-                <p>Precio ración: </p>
+                <p class="racion_completa"></p>
                 <p>7.90 € </p>
             </div>
             <div class="plato">
                 <h3>Manitas de cerdo</h3>
-                <p>Precio ración: </p>
+                <p class="racion_completa"></p>
                 <p>6.50 € </p>
             </div>
             <div class="plato">
                 <h3>Callos</h3>
-                <p>Precio ración: </p>
+                <p class="racion_completa"></p>
                 <p>6.50 € </p>
             </div>
             <div class="plato">
                 <h3>Magra con tomate</h3>
-                <p>Media ración: </p>
+                <p class="racion_media"></p>
                 <p>3.50 € </p>
-                <p>Ración completa: </p>
+                <p class="racion_completa"></p>
                 <p>6.50 €</p>
             </div>
         </div>
@@ -89,55 +92,57 @@
         <div class="menu">
             <div class="plato">
                 <h3>Fritura de pescado</h3>
-                <p>Precio ración: </p>
+                <p class="racion_completa"></p>
                 <p>6.50 € </p>
             </div>
             <div class="plato">
                 <h3>Tallarines con almejas</h3>
-                <p>Precio ración: </p>
+                <p class="racion_completa"></p>
                 <p>8.50 € </p>
             </div>
             <div class="plato">
                 <h3>Salmón a la plancha con guarnición</h3>
-                <p>Precio ración: </p>
+                <p class="racion_completa"></p>
                 <p>9.50 € </p>
             </div>
             <div class="plato">
                 <h3>Emperador a la plancha con guarnición</h3>
-                <p>Precio ración: </p>
+                <p class="racion_completa"></p>
                 <p>9.50 € </p>
             </div>
             <div class="plato">
                 <h3>Bacalao</h3>
-                <p>Precio ración: </p>
+                <p class="racion_completa"></p>
                 <p>9.80 € </p>
             </div>
             <div class="plato">
                 <h3>Almejas al ajillo</h3>
-                <p>Precio ración: </p>
+                <p class="racion_completa"></p>
                 <p>9.00 € </p>
             </div>
             <div class="plato">
                 <h3>Mejillones a la diabla</h3>
-                <p>Precio ración: </p>
+                <p class="racion_completa"></p>
                 <p>10.40 € </p>
             </div>
             <div class="plato">
                 <h3>Revuelto de gulas con huevo</h3>
-                <p>Precio ración: </p>
+                <p class="racion_completa"></p>
                 <p>8.00 € </p>
             </div>
         </div>
     </form>
     <footer>
+        <!-- Elemento de traducción de Google -->
         <div id="google_translate_element" class="google"></div>
 
         <script type="text/javascript">
+            // Función de inicialización del elemento de traducción de Google
             function googleTranslateElementInit() {
                 new google.translate.TranslateElement({ pageLanguage: 'es', includedLanguages: 'ca,eu,gl,en,fr,it,pt,de', layout: google.translate.TranslateElement.InlineLayout.SIMPLE, gaTrack: true }, 'google_translate_element');
             }
         </script>
-
+        <!-- Carga el script de Google Translate y llama a la función de inicialización -->
         <script type="text/javascript"
             src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     </footer>

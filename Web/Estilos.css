@@ -3,9 +3,9 @@ body {
     padding: 0;
     height: 100%;
     background-image: url('fondo.jpg'); /* Ruta de la imagen de fondo */
-    background-size: cover; /* Ajustar la imagen de fondo para cubrir todo el contenedor */
+    background-size: cover; /* Se ajusta la imagen de fondo para cubrir todo el contenedor */
     background-position: center; /* Centrar la imagen de fondo */
-    background-attachment: fixed; /* Fijar la imagen de fondo para que se mantenga visible al hacer scroll */
+    background-attachment: fixed; /* Fijado de la imagen de fondo para que se mantenga visible al hacer scroll */
     overflow-x: hidden;
 }
 
@@ -31,8 +31,8 @@ header img {
 }
 
 header h1 {
-    background-position: center; /* Centrar la imagen de fondo */
-    background-attachment: fixed; /* Fijar la imagen de fondo para que se mantenga visible al hacer scroll */
+    background-position: center; /* Se centra la imagen de fondo */
+    background-attachment: fixed; /* Se fija la imagen de fondo para que se mantenga visible al hacer scroll */
     margin-top: 10px; /* Margen superior para separar la imagen del título */
 }
 
@@ -51,7 +51,7 @@ header div a{
 }
 .paginas_menus li {
     display: table-cell;
-    width: 1%; /* Asegúrate de que cada celda tenga un ancho mínimo */
+    width: 1%; 
 }
 .paginas_menus a {
     display: block;
@@ -71,7 +71,7 @@ header div a{
 }
 
 main {
-    margin-top: 80px; /* Ajusta el margen superior para evitar que el contenido se solape con el header */
+    margin-top: 80px; /* Se ajusta el margen superior para evitar que el contenido se solape con el header */
     margin-top: auto;
     text-align: center;
 }
@@ -80,7 +80,7 @@ footer {
     margin-top: auto;
     width: 100%;
     color: white; /* Color del texto en el footer */
-    text-align: center; /* Centrar el contenido del footer */
+    text-align: center; /* Se centra el contenido del footer */
     padding: 20px;
 }
 

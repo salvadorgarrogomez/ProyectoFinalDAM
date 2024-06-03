@@ -1,11 +1,17 @@
 body {
-    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-image: url('fondo_crema.jpg');
-    overflow-x: hidden;
-    
+    height: 100%;
+    width: 100%;
+    background-image: url('fondo_crema.jpg'); /* Ruta de la imagen de fondo */
+    background-size: cover; /* Se ajusta la imagen de fondo para cubrir todo el contenedor */
+    background-position: center center; /* Se centra la imagen de fondo tanto horizontal como verticalmente */
+    background-attachment: fixed; /* Se fija la imagen de fondo para que se mantenga visible al hacer scroll */
+    background-repeat: no-repeat; /* Se evita que la imagen se repita */
+    overflow-x: hidden; /* Se oculta el desbordamiento horizontal */
 }
+
+
 
 h1 {
     text-align: center;
@@ -16,6 +22,29 @@ h1 {
     flex-wrap: wrap;
     justify-content: center;
 }
+
+.racion_completa {
+    background-image: url('completo-circulo.png');
+    background-size: contain; /* Se ajusta el tamaño de la imagen para que toda la imagen sea visible */
+    background-repeat: no-repeat; /* Se evita que la imagen se repita */
+    background-position: center; /* Se centra la imagen dentro del contenedor */
+    height: 50px; /* Se ajusta la altura del contenedor según el tamaño de la imagen */
+    display: flex; /* Se utiliza flexbox para centrar el contenido */
+    align-items: center; /* Centrar verticalmente el contenido */
+    padding-left: 60px; /* Dejar espacio a la izquierda del texto para la imagen */
+}
+
+.racion_media {
+    background-image: url('medio-circulo.png');
+    background-size: contain; /* Se ajusta el tamaño de la imagen para que toda la imagen sea visible */
+    background-repeat: no-repeat; /* Se evita que la imagen se repita */
+    background-position: center; /* Se centra la imagen dentro del contenedor */
+    height: 50px; /* Se ajusta la altura del contenedor según el tamaño de la imagen */
+    display: flex; /* Se utiliza flexbox para centrar el contenido */
+    align-items: center; /* Centrar verticalmente el contenido */
+    padding-left: 60px; /* Dejar espacio a la izquierda del texto para la imagen */
+}
+
 
 .plato {
     width: 300px;
@@ -41,17 +70,6 @@ img {
 label {
     display: block;
     margin-top: 10px;
-}
-
-button {
-    display: block;
-    margin: 20px auto;
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
 }
 
 h2 {
@@ -104,7 +122,7 @@ h3 {
 }
 
 .goog-te-gadget {
-    font-size: 14px; /* Tamaño de fuente */
+    font-size: 14px; /* Tamaño de la fuente */
     border-color: #ccc; /* Color del borde */
     border-radius: 5px; /* Borde redondeado */
 }
@@ -116,7 +134,7 @@ h3 {
 }
 
 .goog-te-gadget img {
-    display: none; /* Ocultar la imagen de la bandera */
+    display: none; /* Se oculta la imagen de la bandera */
 }
 
 .goog-te-gadget-simple {

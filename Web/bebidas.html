@@ -5,16 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bar El Escobar - Bebidas</title>
-    <link rel="stylesheet" href="entrantesCSS.css"> <!-- Enlaza tu archivo CSS externo -->
+    <!-- Se asocia el archivo CSS para darle formato a la página HTML -->
+    <link rel="stylesheet" href="entrantesCSS.css">
 </head>
 
 <body>
     <h1>Listado de bebidas</h1>
     <nav class="menu-navegacion">
+        <!-- Boton para ir atras, a la pagina principal -->
         <ul>
             <li><a href="PaginaWeb.html">Atrás</a></li>
         </ul>
     </nav>
+    <!-- Menú de navegación para diferentes platos -->
     <h1>Refrescos: </h1>
     <form>
         <div class="menu">
@@ -99,25 +102,27 @@
             <h2>-----------------------------------------------------------------------------------------</h2>
             <h1>Vinos: </h1>
             <form>
-            <div class="menu">
-                <div class="bebidas">
-                    <h3>Copa de vino</h3>
-                    <p>3 € </p>
+                <div class="menu">
+                    <div class="bebidas">
+                        <h3>Copa de vino</h3>
+                        <p>3 € </p>
+                    </div>
                 </div>
-            </div>
             </form>
-                <footer>
-                    <div id="google_translate_element" class="google"></div>
+            <footer>
+                <!-- Elemento de traducción de Google -->
+                <div id="google_translate_element" class="google"></div>
 
-                    <script type="text/javascript">
-                        function googleTranslateElementInit() {
-                            new google.translate.TranslateElement({ pageLanguage: 'es', includedLanguages: 'ca,eu,gl,en,fr,it,pt,de', layout: google.translate.TranslateElement.InlineLayout.SIMPLE, gaTrack: true }, 'google_translate_element');
-                        }
-                    </script>
-
-                    <script type="text/javascript"
-                        src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-                </footer>
+                <script type="text/javascript">
+                    // Función de inicialización del elemento de traducción de Google
+                    function googleTranslateElementInit() {
+                        new google.translate.TranslateElement({ pageLanguage: 'es', includedLanguages: 'ca,eu,gl,en,fr,it,pt,de', layout: google.translate.TranslateElement.InlineLayout.SIMPLE, gaTrack: true }, 'google_translate_element');
+                    }
+                </script>
+                <!-- Carga el script de Google Translate y llama a la función de inicialización -->
+                <script type="text/javascript"
+                    src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+            </footer>
 </body>
 
 </html>
