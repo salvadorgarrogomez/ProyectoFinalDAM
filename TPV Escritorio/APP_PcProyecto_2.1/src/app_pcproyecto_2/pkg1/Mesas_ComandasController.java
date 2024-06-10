@@ -21,9 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -246,7 +243,6 @@ public class Mesas_ComandasController implements Initializable {
         //  Inicializacion de los metodos, que iniciacializan de forma automatica un hilo paralelo
         actualizacionMesasThread = new ActualizacionMesasThread();
         actualizacionMesasThread.start();
-        iniciarActualizacionContinua();
         actualizarEstadosDesdeBD();
         productosMap = new HashMap<>();
         //  Creacion de una serie de hasmap, para tener localizados y poder trabajar con varios elementos a la misma vez
@@ -551,17 +547,9 @@ public class Mesas_ComandasController implements Initializable {
         }
     }
 
-    // Método para iniciar la actualización continua de las mesas, introduciendolo en un hilo paralelo
-    private void iniciarActualizacionContinua() {
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(() -> {
-            // Se actualizan los estados de las mesas desde la base de datos
-            actualizarEstadosDesdeBD();
-            // Se actualizan los TextField en la interfaz de usuario
-            actualizarTextFieldsWithMesas();
-        }, 0, 5, TimeUnit.SECONDS); // Actualizacion cada 5 segundos
-    }
-
+    // Con este metodo estableciendo una conexion  a la bbdd y mediante el select, se obtiene el estado actual del campo en la columna de la tabla,
+    // por un lado se inicializa al cargar la escena, para darle un funcionamiento inicial y mostrar el estado de las mesas
+    // por otro lado, lo que se ha realizado ha sido llamarlo desde el Thread o hilo para que de forma peridica vaya actualizando en la interfaz el estado de las mesas
     private void actualizarEstadosDesdeBD() {
         listaMesas.clear(); // Limpieza de la lista antes de actualizarla
         try (Connection connection = getConnection()) {
@@ -590,6 +578,7 @@ public class Mesas_ComandasController implements Initializable {
     // Dentro del hilo, y haciendo llamada a los estilos css indicados en la escena del SecenBuilder, se ajustan los datos que en una serie de textfield,
     //  a modo de muestra por interfaz y mas intuitivo, para saber que mesas estan ocupadas o libre
     private void actualizarTextFieldsWithMesas() {
+        // Aseguramos que los cambios en la interfaz de usuario se realicen en el hilo de la aplicación JavaFX.
         Platform.runLater(() -> {
             // Se itera sobre cada mesa en la lista
             for (Mesas mesa : listaMesas) {
@@ -632,6 +621,7 @@ public class Mesas_ComandasController implements Initializable {
             while (running) {
                 try {
                     Platform.runLater(() -> {
+                        actualizarEstadosDesdeBD();
                         actualizarTextFieldsWithMesas();
                     });
                     Thread.sleep(5000); // 5 segundos
