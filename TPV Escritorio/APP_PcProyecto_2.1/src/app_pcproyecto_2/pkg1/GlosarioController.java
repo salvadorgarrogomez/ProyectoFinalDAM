@@ -125,7 +125,10 @@ public class GlosarioController implements Initializable {
                     }
                     // Se formatea la fecha para eliminar los microsegundos
                     String fecha = resultSet.getString("fecha_hora");
-                    fecha = fecha.substring(0, fecha.indexOf('.'));
+                    int indexOfDot = fecha.indexOf('.');
+                    if (indexOfDot != -1) {
+                        fecha = fecha.substring(0, indexOfDot);
+                    }
                     detalles.append("Fecha de la ultima actualización: ").append(fecha).append("\n");
                 }
             }
