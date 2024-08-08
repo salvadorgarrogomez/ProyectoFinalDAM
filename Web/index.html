@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es" class="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bar El Escobar</title>
+  <!-- Se asocia el archivo CSS para darle formato a la página HTML -->
+  <link rel="stylesheet" href="assets/css/Estilos.css">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4012932424143362"
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.css">
+
+
+</head>
+
+<body>
+  <header>
+    <!-- Imagen de portada -->
+    <img src="assets/images/bar_elescobar.png" alt="Imagen de portada" class="imagen-portada">
+    <!-- <h1>Bar El Escobar</h1> -->
+    <!-- Enlace a la página de Instagram -->
+    <div id="redes-sociales">
+      <a href="https://www.instagram.com/barelescobar?igsh=cWQ0ZDNtbmNndXEy&utm_source=qr">Instagram</a>
+    </div>
+    <!-- Menú de navegación para diferentes categorías -->
+    <nav class="paginas_menus">
+      <ul>
+        <li><a href="pages/entrantes.html">Entrantes y Ensaladas</a></li>
+        <li><a href="pages/combinados.html">Combinados y Caldos</a></li>
+        <li><a href="pages/bebidas.html">Bebidas</a></li>
+      </ul>
+    </nav>
+    <nav class="paginas_menus">
+      <ul>
+        <li><a href="pages/pasta.html">Pasta</a></li>
+        <li><a href="pages/principales.html">Carnes y Pescados</a></li>
+        <li><a href="pages/arroces.html">Arroces y Fideuá</a></li>
+      </ul>
+    </nav>
+    <nav class="paginas_menus">
+      <ul>
+        <li><a href="pages/postres.html">Postres</a></li>
+      </ul>
+    </nav>
+  </header>
+  <br>
+  <main>
+    <!-- Mapa de Google Maps incrustado -->
+    <div id="map">
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3153.8014201774745!2d-1.2165041!3d37.7712542!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd649d30b26be2b7%3A0xb9cfcb36c9e33146!2sBar%20El%20Escobar!5e0!3m2!1ses!2ses!4v1709664912209!5m2!1ses!2ses"
+        width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+  </main>
+  <footer>
+    <!-- Elemento de traducción de Google -->
+    <div id="google_translate_element" class="google"></div>
+
+    <script type="text/javascript">
+      // Función de inicialización del elemento de traducción de Google 
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+          pageLanguage: 'es',
+          includedLanguages: 'es,ca,eu,gl,en,fr,it,pt,de',
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+          gaTrack: true
+        }, 'google_translate_element');
+      }
+    </script>
+
+    <!-- Carga el script de Google Translate y llama a la función de inicialización -->
+    <script type="text/javascript"
+      src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.js"></script>
+    <script>
+      window.addEventListener("load", function () {
+        window.cookieconsent.initialise({
+          "palette": {
+            "popup": {
+              "background": "#000"
+            },
+            "button": {
+              "background": "#f1d600"
+            }
+          },
+          "theme": "classic",
+          "content": {
+            "message": "Este sitio utiliza cookies para garantizar que obtenga la mejor experiencia en nuestro sitio web.",
+            "dismiss": "Aceptar",
+            "link": "Más información",
+            "href": "pages/politica_de_cookies.html"
+          }
+        });
+      });
+    </script>
+    <!-- Información de contacto -->
+    <p>Teléfenos de contacto (reservas): </p>
+    <p><b>623191754 | 683572682</b></p>
+    <div>
+      <a href="pages/politica_de_privacidad.html" target="_blank">Politica de privacidad</a>
+    </div>
+  </footer>
+</body>
+
+</html>
